@@ -23,7 +23,7 @@
 <style scoped>
 .files-container {
   height: calc(100vh - 2rem);
-  width: calc(100% - 320px);
+  width: calc(100% - 360px);
   border-top-left-radius: 40px;
   border-top-right-radius: 16px;
   border-bottom-left-radius: 40px;
