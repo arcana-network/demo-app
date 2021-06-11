@@ -22,12 +22,18 @@
         Bin
       </router-link>
     </div>
-    <div class="absolute menu-liquid-interaction" :class="liquidMenuTranslate">
+    <div
+      class="absolute menu-liquid-interaction hidden lg:block"
+      :class="liquidMenuTranslate"
+    >
       <div
         class="relative rounded-full h-9 w-9 bg-white px-3 py-3"
-        style="z-index: 100"
+        style="z-index: 2"
       >
-        <div class="rounded-full h-3 w-3 bg-blue-700"></div>
+        <div
+          class="rounded-full h-3 w-3"
+          style="background-color: #058aff"
+        ></div>
       </div>
       <div
         class="absolute menu-liquid-inset-curve h-12 w-12 bg-white"
@@ -66,7 +72,14 @@
       </div>
       <div class="my-1 font-ubuntu font-bold">9GB of 25GB</div>
       <div class="mt-10">
-        <button class="font-ubuntu font-bold buy-more-storage">
+        <button
+          class="
+            font-ubuntu font-bold
+            buy-more-storage
+            focus:outline-none
+            ripple
+          "
+        >
           Buy more storage
         </button>
       </div>
@@ -93,7 +106,7 @@
   width: 240px;
   padding: 10px 25px;
   border-radius: 30px;
-  transition: background-color 1s;
+  transition: background-color 0.7s;
 }
 
 .router-link-active {
@@ -103,7 +116,7 @@
 .menu-liquid-interaction {
   left: 300px;
   top: 218px;
-  transition: top 1s;
+  transition: top 0.6s;
 }
 
 .menu-liquid-inset-curve {

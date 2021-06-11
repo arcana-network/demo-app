@@ -69,6 +69,14 @@ const actions = {
     commit("addPrivateKey", privateKey);
     commit("addWalletAddress", walletAddress);
   },
+  clearStore({ commit }) {
+    commit("addEmail", "");
+    commit("addProfileImage", "");
+    commit("addGivenName", "");
+    commit("addPublicKey", "");
+    commit("addPrivateKey", "");
+    commit("addWalletAddress", "");
+  },
 };
 
 const authState = {

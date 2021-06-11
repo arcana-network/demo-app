@@ -9,3 +9,34 @@
 * {
   font-family: "Nunito", sans-serif !important;
 }
+
+.files-container {
+  height: calc(100vh - 2rem);
+  width: calc(100% - 360px);
+  border-top-left-radius: 40px;
+  border-top-right-radius: 16px;
+  border-bottom-left-radius: 40px;
+  border-bottom-right-radius: 16px;
+}
+
+@media screen and (max-width: 1024px) {
+  .files-container {
+    width: calc(100% - 1.5rem);
+    border-top-left-radius: 20px;
+    border-bottom-left-radius: 20px;
+  }
+}
+
+.ripple {
+  background-position: center;
+  transition: background 0.8s;
+}
+.ripple:hover {
+  background: #47a7f5 radial-gradient(circle, transparent 1%, #47a7f5 1%)
+    center/15000%;
+}
+.ripple:active {
+  background-color: #6eb9f7;
+  background-size: 100%;
+  transition: background 0s;
+}

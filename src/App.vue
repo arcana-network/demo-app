@@ -1,5 +1,6 @@
 <template>
   <fullsize-background>
+    <full-screen-loader v-if="loader" :message="loadingMessage" />
     <app-sidebar v-if="$route.name !== 'Login'" />
     <router-view></router-view>
   </fullsize-background>
@@ -8,9 +9,26 @@
 <script>
 import FullsizeBackground from "./components/FullsizeBackground.vue";
 import AppSidebar from "./components/AppSidebar.vue";
+import FullScreenLoader from "./components/FullScreenLoader.vue";
+import { useStore } from "vuex";
+import { computed } from "@vue/runtime-core";
 export default {
-  setup() {},
-  components: { FullsizeBackground, AppSidebar },
+  setup() {
+    const store = useStore();
+
+    let loader = computed(() => {
+      return store.getters.loader;
+    });
+    let loadingMessage = computed(() => {
+      return store.getters.loadingMessage;
+    });
+
+    return {
+      loader,
+      loadingMessage,
+    };
+  },
+  components: { FullsizeBackground, AppSidebar, FullScreenLoader },
 };
 </script>
 

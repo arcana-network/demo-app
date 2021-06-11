@@ -65,6 +65,7 @@ export default {
       });
     });
     async function onSignIn(googleUser) {
+      store.dispatch("showLoader", "");
       const { getPublicKey, getPrivateKey } = window.arcana_dkg.default;
       const profile = googleUser.getBasicProfile();
       const email = profile.getEmail();
@@ -85,7 +86,7 @@ export default {
         publicKey.X.padStart(64, "0") + publicKey.Y.padStart(64, "0");
       store
         .dispatch("addCryptoDetails", {
-          address: privateKey.address,
+          walletAddress: privateKey.address,
           privateKey: privateKey.privateKey,
           publicKey: actualPublicKey,
         })
