@@ -29,10 +29,11 @@
 </style>
 
 <script>
-import { onMounted } from "@vue/runtime-core";
+import { inject, onBeforeUnmount, onMounted } from "@vue/runtime-core";
 export default {
   setup() {
     let file;
+    const toast = inject("$toast");
     onMounted(() => {
       file = document.createElement("input");
       file.type = "file";
@@ -40,11 +41,20 @@ export default {
       file.multiple = false;
       file.onchange = fileChangeHandler;
     });
+    onBeforeUnmount(() => {
+      file.remove();
+    });
     function openFileUploadView() {
       file.click();
     }
     function fileChangeHandler(event) {
       console.log(event, this.files);
+      toast("File uploaded", {
+        styles: {
+          backgroundColor: "green",
+        },
+        type: "success",
+      });
     }
     return {
       openFileUploadView,

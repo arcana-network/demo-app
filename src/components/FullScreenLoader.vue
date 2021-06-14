@@ -1,11 +1,13 @@
 <template>
   <div class="fixed top-0 left-0 h-screen w-full overlay">
     <div
-      class="absolute"
+      class="absolute text-center"
       style="top: 50%; left: 50%; transform: translate(-50%, -50%)"
     >
-      <progress class="m-auto pure-material-progress-circular"></progress>
-      <div>{{ message }}</div>
+      <progress class="pure-material-progress-circular"></progress>
+      <div class="font-ubuntu" style="color: white; font-size: 1.2rem">
+        {{ message }}
+      </div>
     </div>
   </div>
 </template>

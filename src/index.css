@@ -2,6 +2,10 @@
 @tailwind components;
 @tailwind utilities;
 
+::root {
+  --primary-color: #058aff;
+}
+
 .font-ubuntu {
   font-family: "Ubuntu", sans-serif !important;
 }
@@ -39,4 +43,8 @@
   background-color: #6eb9f7;
   background-size: 100%;
   transition: background 0s;
+}
+
+.abcRioButton.abcRioButtonBlue {
+  margin: 0 auto !important;
 }

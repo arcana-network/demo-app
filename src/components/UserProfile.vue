@@ -74,7 +74,7 @@
         <!-- <Tooltip message="test"> -->
         <ClipboardCopyIcon
           class="h-5 w-5 inline -mt-1 ml-2 cursor-pointer"
-          @click.stop="copyToClipboard(profile.walletAddress)"
+          @click.stop="copy(profile.walletAddress)"
           title="Click to copy"
         />
         <!-- </Tooltip> -->
@@ -153,7 +153,7 @@
 import { ref } from "@vue/reactivity";
 import { useStore } from "vuex";
 import { useRouter } from "vue-router";
-import { onMounted } from "@vue/runtime-core";
+import { inject, onMounted } from "@vue/runtime-core";
 import { saveAs } from "file-saver";
 import { ClipboardCopyIcon } from "@heroicons/vue/outline";
 import Tooltip from "../components/Tooltip.vue";
@@ -164,6 +164,7 @@ export default {
     const router = useRouter();
     let profile = ref({});
     let profileOptions = ref(false);
+    const toast = inject("$toast");
     onMounted(() => {
       profile.value = store.getters.basicProfile;
       console.log(profile);
@@ -201,13 +202,33 @@ export default {
       });
     }
 
+    function copy(value) {
+      copyToClipboard(value)
+        .then(() => {
+          toast("Copied to clipboard", {
+            styles: {
+              backgroundColor: "green",
+            },
+            type: "success",
+          });
+        })
+        .catch(() => {
+          toast("Failed to copy", {
+            styles: {
+              backgroundColor: "red",
+            },
+            type: "error",
+          });
+        });
+    }
+
     return {
       profile,
       profileOptions,
       downloadKeys,
       toggleProfileOptions,
       logout,
-      copyToClipboard,
+      copy,
     };
   },
   components: { ClipboardCopyIcon, Tooltip },

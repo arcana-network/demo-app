@@ -1,17 +1,35 @@
 <template>
-  <div class="bg-white login-container mx-auto right-3 top-4">
-    <div id="google-signin-button"></div>
+  <div class="bg-white absolute login-container p-10 text-center">
+    <img
+      src="@/assets/vertical-light.svg"
+      style="height: 120px; display: inline"
+    />
+    <div class="inline-block mt-12">
+      By clicking on signin with google, you agree to Arcana Network's
+      <a href="/" style="color: #058aff; textdecoration: none"> Privacy </a>
+      &
+      <a href="/" style="color: #058aff; textdecoration: none"> Terms </a>
+    </div>
+    <div id="google-signin-button" class="font-ubuntu"></div>
   </div>
 </template>
 
 <style scoped>
+#google-signin-button {
+  position: relative;
+  margin: 0 auto;
+  margin-top: 2rem;
+  width: 240px;
+}
 .login-container {
-  height: 480px;
   width: 400px;
   border-top-left-radius: 20px;
   border-top-right-radius: 20px;
   border-bottom-left-radius: 20px;
   border-bottom-right-radius: 20px;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
 }
 
 .upload-fab {
@@ -65,7 +83,7 @@ export default {
       });
     });
     async function onSignIn(googleUser) {
-      store.dispatch("showLoader", "");
+      store.dispatch("showLoader", "Fetching keys...");
       const { getPublicKey, getPrivateKey } = window.arcana_dkg.default;
       const profile = googleUser.getBasicProfile();
       const email = profile.getEmail();
@@ -91,6 +109,7 @@ export default {
           publicKey: actualPublicKey,
         })
         .then(() => {
+          store.dispatch("hideLoader");
           router.push({ name: "My Files" });
         });
     }

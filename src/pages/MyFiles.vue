@@ -3,6 +3,7 @@
     <div id="my-files-container">
       <user-profile />
       <upload-fab />
+      <files-list :files="files" pageType="My Files" :listType="listType" />
     </div>
   </div>
 </template>
@@ -23,18 +24,26 @@
 </style>
 
 <script>
-import { onMounted } from "@vue/runtime-core";
+import { onMounted, ref } from "@vue/runtime-core";
 import UploadFab from "../components/UploadFab.vue";
 import UserProfile from "../components/UserProfile.vue";
+import FilesList from "../components/FilesList.vue";
 
 export default {
   name: "",
   setup() {
+    const files = ref([]);
+    const listType = ref("grid");
     onMounted(() => {
       document.title = "My Files | Arcana Demo";
     });
+
+    return {
+      files,
+      listType,
+    };
   },
-  components: { UploadFab, UserProfile },
+  components: { UploadFab, UserProfile, FilesList },
 };
 </script>
 
