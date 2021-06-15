@@ -1,11 +1,18 @@
 <template>
-  <div class="fixed top-0 left-0 h-screen w-full overlay">
+  <div class="fixed top-0 left-0 h-screen w-full overlay"></div>
+  <div
+    class="fixed top-0 left-0 h-screen w-full"
+    style="z-index: 100001; backdrop-filter: blur(1px)"
+  >
     <div
       class="absolute text-center"
       style="top: 50%; left: 50%; transform: translate(-50%, -50%)"
     >
-      <progress class="pure-material-progress-circular"></progress>
-      <div class="font-ubuntu" style="color: white; font-size: 1.2rem">
+      <progress class="pure-material-progress-circular opacity-100"></progress>
+      <div
+        class="font-ubuntu opacity-100"
+        style="color: white; font-size: 1.2rem"
+      >
         {{ message }}
       </div>
     </div>
@@ -14,10 +21,10 @@
 
 <style scoped>
 .overlay {
-  /* filter: blur(40px); */
   background-color: black;
-  opacity: 0.6;
+  opacity: 0.75;
   z-index: 10000;
+  filter: blur(4px);
 }
 
 .pure-material-progress-circular {
@@ -61,7 +68,7 @@
   display: block;
   box-sizing: border-box;
   margin-bottom: 0.25em;
-  border: solid 0.35rem transparent;
+  border: solid 0.5rem transparent;
   border-top-color: currentColor;
   border-radius: 50%;
   width: 100% !important;

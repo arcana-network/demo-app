@@ -1,12 +1,11 @@
 import { createWebHistory, createRouter } from "vue-router";
 import store from "../store";
 
-import MyFiles from "../pages/MyFiles.vue";
-import SharedWithMe from "../pages/SharedWithMe.vue";
-import TrashBin from "../pages/TrashBin.vue";
-import AppLogin from "../pages/AppLogin.vue";
+const AppLogin = () => import("@/pages/AppLogin.vue");
+const MyFiles = () => import("@/pages/MyFiles.vue");
+const SharedWithMe = () => import("@/pages/SharedWithMe.vue");
+const TrashBin = () => import("@/pages/TrashBin.vue");
 
-// const store = useStore();
 const routes = [
   {
     name: "My Files",
@@ -45,6 +44,7 @@ const router = createRouter({
 router.beforeEach((to, from, next) => {
   if (to.name !== "Login") {
     if (!store.getters.publicKey || !store.getters.privateKey) {
+      store.dispatch("updateRedirect", to);
       router.replace({ name: "Login" });
     }
   }

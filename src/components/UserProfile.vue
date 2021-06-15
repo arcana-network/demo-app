@@ -71,13 +71,12 @@
         >
           {{ profile.walletAddress }}
         </a>
-        <!-- <Tooltip message="test"> -->
+
         <ClipboardCopyIcon
           class="h-5 w-5 inline -mt-1 ml-2 cursor-pointer"
           @click.stop="copy(profile.walletAddress)"
           title="Click to copy"
         />
-        <!-- </Tooltip> -->
       </div>
       <hr class="mx-3 p-0 m-0" style="border: 1px solid #e0e0e0" />
       <div
@@ -142,6 +141,8 @@
   height: 0;
   opacity: 0;
   transition: height 0.6s, opacity 0.6s;
+  position: absolute;
+  background-color: white;
 }
 .profile-options.profile-options-active {
   height: 248px !important;
@@ -156,7 +157,6 @@ import { useRouter } from "vue-router";
 import { inject, onMounted } from "@vue/runtime-core";
 import { saveAs } from "file-saver";
 import { ClipboardCopyIcon } from "@heroicons/vue/outline";
-import Tooltip from "../components/Tooltip.vue";
 import copyToClipboard from "../utils/copyToClipboard";
 export default {
   setup() {
@@ -231,6 +231,6 @@ export default {
       copy,
     };
   },
-  components: { ClipboardCopyIcon, Tooltip },
+  components: { ClipboardCopyIcon },
 };
 </script>

@@ -3,7 +3,7 @@ import App from "./App.vue";
 import router from "./router";
 import store from "./store";
 import DKToast from "vue-dk-toast";
-import "./index.css";
+import "@/index.css";
 
 const app = createApp(App);
 

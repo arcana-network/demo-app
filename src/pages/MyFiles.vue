@@ -1,27 +1,22 @@
 <template>
-  <div class="bg-white files-container fixed right-3 top-4">
-    <div id="my-files-container">
+  <div
+    class="
+      bg-white
+      files-container
+      fixed
+      right-3
+      top-16
+      lg:top-4
+      overflow-y-auto
+    "
+  >
+    <div id="my-files-container" class="transition-fade">
       <user-profile />
       <upload-fab />
-      <files-list :files="files" pageType="My Files" :listType="listType" />
+      <files-list :files="files" pageTitle="My Files" />
     </div>
   </div>
 </template>
-
-<style scoped>
-#my-files-container {
-  opacity: 1;
-  animation: fade 1s;
-}
-@keyframes fade {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
-}
-</style>
 
 <script>
 import { onMounted, ref } from "@vue/runtime-core";
@@ -32,15 +27,63 @@ import FilesList from "../components/FilesList.vue";
 export default {
   name: "",
   setup() {
-    const files = ref([]);
-    const listType = ref("grid");
+    let files = ref([
+      {
+        name: "File 1",
+        size: 3012,
+        did: "randomhash",
+      },
+      {
+        name: "File 2",
+        size: 3512,
+        did: "randomhash2",
+      },
+      {
+        name: "File 3",
+        size: 9012,
+        did: "randomhash3",
+      },
+      {
+        name: "File 3",
+        size: 9012,
+        did: "randomhash3",
+      },
+      {
+        name: "File 2",
+        size: 3512,
+        did: "randomhash2",
+      },
+      {
+        name: "File 3",
+        size: 9012,
+        did: "randomhash3",
+      },
+      {
+        name: "File 3",
+        size: 9012,
+        did: "randomhash3",
+      },
+      {
+        name: "File 1 dfdfsewtwetrretwtewtrewr askjheoiuwqhyouwqheoiwqeowqehowqieuwqoieuoiwqeuiowqueoiwqueowq",
+        size: 3012,
+        did: "randomhash",
+      },
+      {
+        name: "File 2",
+        size: 3512,
+        did: "randomhash2",
+      },
+      {
+        name: "File 3",
+        size: 9012,
+        did: "randomhash3",
+      },
+    ]);
     onMounted(() => {
       document.title = "My Files | Arcana Demo";
     });
-
     return {
       files,
-      listType,
     };
   },
   components: { UploadFab, UserProfile, FilesList },

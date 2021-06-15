@@ -1,4 +1,7 @@
 <template>
+  <div class="header h-10 lg:hidden">
+    <img src="@/assets/horizontal-dark.svg" style="height: 32px" />
+  </div>
   <div class="sidebar">
     <div class="hero-image">
       <img src="@/assets/vertical-dark.svg" width="120" class="mt-8 inline" />
@@ -73,12 +76,7 @@
       <div class="my-1 font-ubuntu font-bold">9GB of 25GB</div>
       <div class="mt-10">
         <button
-          class="
-            font-ubuntu font-bold
-            buy-more-storage
-            focus:outline-none
-            ripple
-          "
+          class="font-ubuntu font-bold buy-more-storage focus:outline-none"
         >
           Buy more storage
         </button>

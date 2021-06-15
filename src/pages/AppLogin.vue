@@ -72,6 +72,10 @@ export default {
     const router = useRouter();
     onMounted(() => {
       document.title = "Login | Arcana Demo";
+      // window.addEventListener("google-loaded", renderGoogleLogin);
+      renderGoogleLogin();
+    });
+    function renderGoogleLogin() {
       const gapi = window.gapi;
       gapi.signin2.render("google-signin-button", {
         scope: "profile email",
@@ -81,7 +85,7 @@ export default {
         theme: "dark",
         onsuccess: onSignIn,
       });
-    });
+    }
     async function onSignIn(googleUser) {
       store.dispatch("showLoader", "Fetching keys...");
       const { getPublicKey, getPrivateKey } = window.arcana_dkg.default;
@@ -110,7 +114,11 @@ export default {
         })
         .then(() => {
           store.dispatch("hideLoader");
-          router.push({ name: "My Files" });
+          if (store.getters.redirectTo) {
+            const redirectTo = store.getters.redirectTo;
+            store.dispatch("removeRedirect");
+            router.replace(redirectTo);
+          } else router.replace({ name: "My Files" });
         });
     }
   },
