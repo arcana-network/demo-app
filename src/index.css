@@ -40,6 +40,7 @@
 @media screen and (max-width: 1024px) {
   .files-container {
     width: calc(100% - 1.5rem);
+    height: calc(100vh - 5rem);
     border-top-left-radius: 20px;
     border-bottom-left-radius: 20px;
   }

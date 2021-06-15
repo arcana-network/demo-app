@@ -3,9 +3,10 @@
     class="
       fixed
       rounded-3xl
-      right-14
+      right-8
+      lg:right-14
       lg:bottom-12
-      bottom-6
+      bottom-8
       px-6
       py-2
       cursor-pointer

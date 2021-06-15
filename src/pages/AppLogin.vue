@@ -22,7 +22,9 @@
   width: 240px;
 }
 .login-container {
-  width: 400px;
+  min-width: 320px;
+  max-width: 480px;
+  width: 50%;
   border-top-left-radius: 20px;
   border-top-right-radius: 20px;
   border-bottom-left-radius: 20px;

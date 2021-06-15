@@ -7,7 +7,7 @@
       right-3
       top-16
       lg:top-4
-      overflow-y-auto
+      overflow-y-auto overflow-x-hidden
     "
   >
     <div id="my-files-container" class="transition-fade">

@@ -11,11 +11,11 @@
     >
       {{ pageTitle }}
     </div>
-    <div class="mt-6 lg:ml-4 mr-16">
+    <div class="mt-6 lg:ml-4 mr-6 lg:mr-16">
       <table
         v-if="listType === 'table'"
-        class="transition-fade lg:mb-20 mb-28"
-        style="width: 100%"
+        class="transition-fade lg:mb-20 mb-20 overflow-x-scroll"
+        style="width: 100%; min-width: 200px"
       >
         <thead style="color: #b9b8b8">
           <tr>
@@ -66,7 +66,7 @@
           gap-4
           lg:gap-12
           lg:mb-20
-          mb-28
+          mb-20
           transition-fade
         "
       >
