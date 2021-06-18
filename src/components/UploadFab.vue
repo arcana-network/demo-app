@@ -33,10 +33,12 @@
 
 <script>
 import { inject, onBeforeUnmount, onMounted } from "@vue/runtime-core";
+import { useFileMixin } from "../mixins/file.mixin";
 export default {
   setup() {
     let file;
     const toast = inject("$toast");
+    const fileMixin = useFileMixin(toast);
     onMounted(() => {
       file = document.createElement("input");
       file.type = "file";
@@ -52,12 +54,7 @@ export default {
     }
     function fileChangeHandler(event) {
       console.log(event, this.files);
-      toast("File uploaded", {
-        styles: {
-          backgroundColor: "green",
-        },
-        type: "success",
-      });
+      fileMixin.upload(this.files[0]);
     }
     return {
       openFileUploadView,

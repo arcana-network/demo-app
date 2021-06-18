@@ -18,67 +18,20 @@
 </template>
 
 <script>
-import { onMounted, ref } from "@vue/runtime-core";
+import { onMounted, computed } from "@vue/runtime-core";
 import UserProfile from "../components/UserProfile.vue";
 import FilesList from "../components/FilesList.vue";
+import { useStore } from "vuex";
 
 export default {
   name: "",
   setup() {
-    let files = ref([
-      {
-        name: "File 1",
-        size: 3012,
-        did: "randomhash",
-      },
-      {
-        name: "File 2",
-        size: 3512,
-        did: "randomhash2",
-      },
-      {
-        name: "File 3",
-        size: 9012,
-        did: "randomhash3",
-      },
-      {
-        name: "File 3",
-        size: 9012,
-        did: "randomhash3",
-      },
-      {
-        name: "File 2",
-        size: 3512,
-        did: "randomhash2",
-      },
-      {
-        name: "File 3",
-        size: 9012,
-        did: "randomhash3",
-      },
-      {
-        name: "File 3",
-        size: 9012,
-        did: "randomhash3",
-      },
-      {
-        name: "File 1 dfdfsewtwetrretwtewtrewr askjheoiuwqhyouwqheoiwqeowqehowqieuwqoieuoiwqeuiowqueoiwqueowq",
-        size: 3012,
-        did: "randomhash",
-      },
-      {
-        name: "File 2",
-        size: 3512,
-        did: "randomhash2",
-      },
-      {
-        name: "File 3",
-        size: 9012,
-        did: "randomhash3",
-      },
-    ]);
+    const store = useStore();
+    let files = computed(() => {
+      return store.getters.trash;
+    });
     onMounted(() => {
-      document.title = "Shared With Me | Arcana Demo";
+      document.title = "Bin | Arcana Demo";
     });
 
     return {

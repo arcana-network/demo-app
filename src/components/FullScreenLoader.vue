@@ -68,7 +68,7 @@
   display: block;
   box-sizing: border-box;
   margin-bottom: 0.25em;
-  border: solid 0.5rem transparent;
+  border: solid 0.4rem transparent;
   border-top-color: currentColor;
   border-radius: 50%;
   width: 100% !important;

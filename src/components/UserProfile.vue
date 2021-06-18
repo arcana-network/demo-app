@@ -55,28 +55,38 @@
         "
       >
         <span class="font-medium"> Wallet Address : </span>
-        <a
-          class="
-            font-medium
-            overflow-ellipsis overflow-hidden
-            whitespace-nowrap
-            inline-block
-            w-24
-          "
-          style="color: #058aff; vertical-align: middle"
-          :href="
-            'https://explorer.arcana.network/address/' + profile.walletAddress
-          "
-          target="__blank"
-        >
+        <n-tooltip trigger="hover">
+          <template #trigger>
+            <a
+              class="
+                font-medium
+                overflow-ellipsis overflow-hidden
+                whitespace-nowrap
+                inline-block
+                w-24
+              "
+              style="color: #058aff; vertical-align: middle"
+              :href="
+                'https://explorer.arcana.network/address/' +
+                profile.walletAddress
+              "
+              target="__blank"
+            >
+              {{ profile.walletAddress }}
+            </a>
+          </template>
           {{ profile.walletAddress }}
-        </a>
-
-        <ClipboardCopyIcon
-          class="h-5 w-5 inline -mt-1 ml-2 cursor-pointer"
-          @click.stop="copy(profile.walletAddress)"
-          title="Click to copy"
-        />
+        </n-tooltip>
+        <n-tooltip trigger="hover">
+          <template #trigger>
+            <ClipboardCopyIcon
+              class="h-5 w-5 inline -mt-1 ml-2 cursor-pointer"
+              @click.stop="copy(profile.walletAddress)"
+              title="Click to copy"
+            />
+          </template>
+          Copy Address
+        </n-tooltip>
       </div>
       <hr class="mx-3 p-0 m-0" style="border: 1px solid #e0e0e0" />
       <div
@@ -158,6 +168,7 @@ import { inject, onMounted } from "@vue/runtime-core";
 import { saveAs } from "file-saver";
 import { ClipboardCopyIcon } from "@heroicons/vue/outline";
 import copyToClipboard from "../utils/copyToClipboard";
+import { NTooltip } from "naive-ui";
 export default {
   setup() {
     const store = useStore();
@@ -231,6 +242,6 @@ export default {
       copy,
     };
   },
-  components: { ClipboardCopyIcon },
+  components: { ClipboardCopyIcon, NTooltip },
 };
 </script>

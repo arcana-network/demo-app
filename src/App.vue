@@ -1,7 +1,7 @@
 <template>
   <fullsize-background>
     <full-screen-loader v-if="loader" :message="loadingMessage" />
-    <app-sidebar v-if="$route.name !== 'Login'" />
+    <app-sidebar v-if="privateKey && $route.name !== 'Login'" />
     <router-view></router-view>
   </fullsize-background>
 </template>
@@ -22,10 +22,14 @@ export default {
     let loadingMessage = computed(() => {
       return store.getters.loadingMessage;
     });
+    let privateKey = computed(() => {
+      return store.getters.privateKey;
+    });
 
     return {
       loader,
       loadingMessage,
+      privateKey,
     };
   },
   components: { FullsizeBackground, AppSidebar, FullScreenLoader },

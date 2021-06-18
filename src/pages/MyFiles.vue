@@ -1,4 +1,5 @@
 <template>
+  <!-- <div></div> -->
   <div
     class="
       bg-white
@@ -7,7 +8,7 @@
       right-3
       top-16
       lg:top-4
-      overflow-y-auto overflow-x-hidden
+      overflow-y-auto
     "
   >
     <div id="my-files-container" class="transition-fade">
@@ -19,66 +20,19 @@
 </template>
 
 <script>
-import { onMounted, ref } from "@vue/runtime-core";
+import { computed, onMounted } from "@vue/runtime-core";
 import UploadFab from "../components/UploadFab.vue";
 import UserProfile from "../components/UserProfile.vue";
 import FilesList from "../components/FilesList.vue";
+import { useStore } from "vuex";
 
 export default {
   name: "",
   setup() {
-    let files = ref([
-      {
-        name: "File 1",
-        size: 3012,
-        did: "randomhash",
-      },
-      {
-        name: "File 2",
-        size: 3512,
-        did: "randomhash2",
-      },
-      {
-        name: "File 3",
-        size: 9012,
-        did: "randomhash3",
-      },
-      {
-        name: "File 3",
-        size: 9012,
-        did: "randomhash3",
-      },
-      {
-        name: "File 2",
-        size: 3512,
-        did: "randomhash2",
-      },
-      {
-        name: "File 3",
-        size: 9012,
-        did: "randomhash3",
-      },
-      {
-        name: "File 3",
-        size: 9012,
-        did: "randomhash3",
-      },
-      {
-        name: "File 1 dfdfsewtwetrretwtewtrewr askjheoiuwqhyouwqheoiwqeowqehowqieuwqoieuoiwqeuiowqueoiwqueowq",
-        size: 3012,
-        did: "randomhash",
-      },
-      {
-        name: "File 2",
-        size: 3512,
-        did: "randomhash2",
-      },
-      {
-        name: "File 3",
-        size: 9012,
-        did: "randomhash3",
-      },
-    ]);
+    const store = useStore();
+    let files = computed(() => {
+      return store.getters.myFiles;
+    });
     onMounted(() => {
       document.title = "My Files | Arcana Demo";
     });

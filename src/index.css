@@ -60,6 +60,17 @@
   transition: background 0s;
 }
 
+.ripple.default-ripple:hover {
+  background: #e8e8e8 radial-gradient(circle, transparent 1%, #e8e8e8 1%)
+    center/15000%;
+}
+
+.ripple.default-ripple:active {
+  background-color: #d6d9d9;
+  background-size: 100%;
+  transition: background 0s;
+}
+
 .abcRioButton.abcRioButtonBlue {
   margin: 0 auto !important;
 }

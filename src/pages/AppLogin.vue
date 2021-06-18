@@ -68,13 +68,14 @@
 import { onMounted } from "@vue/runtime-core";
 import { useStore } from "vuex";
 import { useRouter } from "vue-router";
+import { findUser, saveUser } from "../services/user.service";
+import bytes from "bytes";
 export default {
   setup() {
     const store = useStore();
     const router = useRouter();
     onMounted(() => {
       document.title = "Login | Arcana Demo";
-      // window.addEventListener("google-loaded", renderGoogleLogin);
       renderGoogleLogin();
     });
     function renderGoogleLogin() {
@@ -89,25 +90,29 @@ export default {
       });
     }
     async function onSignIn(googleUser) {
-      store.dispatch("showLoader", "Fetching keys...");
+      store.dispatch("showLoader", "Fetching keys and wallet address...");
       const { getPublicKey, getPrivateKey } = window.arcana_dkg.default;
       const profile = googleUser.getBasicProfile();
       const email = profile.getEmail();
       const verifier = "google";
-      const idToken = googleUser.getAuthResponse().id_token;
+      // const idToken = googleUser.getAuthResponse().id_token;
       store.dispatch("addBasicDetails", {
         email,
         profileImage: profile.getImageUrl(),
         givenName: profile.getGivenName(),
       });
       const publicKey = await getPublicKey(verifier, email);
+      const actualPublicKey =
+        publicKey.X.padStart(64, "0") + publicKey.Y.padStart(64, "0");
+      const authResponse = await gapi.auth2
+        .getAuthInstance()
+        .currentUser.get()
+        .reloadAuthResponse();
       const privateKey = await getPrivateKey({
         id: email,
         verifier,
-        idToken,
+        idToken: authResponse.id_token,
       });
-      const actualPublicKey =
-        publicKey.X.padStart(64, "0") + publicKey.Y.padStart(64, "0");
       store
         .dispatch("addCryptoDetails", {
           walletAddress: privateKey.address,
@@ -115,12 +120,38 @@ export default {
           publicKey: actualPublicKey,
         })
         .then(() => {
-          store.dispatch("hideLoader");
-          if (store.getters.redirectTo) {
-            const redirectTo = store.getters.redirectTo;
-            store.dispatch("removeRedirect");
-            router.replace(redirectTo);
-          } else router.replace({ name: "My Files" });
+          findUser(actualPublicKey).then((snapshot) => {
+            let user;
+            if (snapshot.exists) {
+              user = snapshot.data();
+            } else {
+              user = {
+                totalStorage: bytes("25GB"),
+                storageUsed: 0,
+                address: actualPublicKey,
+                myFiles: [],
+                sharedWithMe: [],
+                trash: [],
+              };
+              saveUser(user);
+            }
+            store.dispatch("updateStorage", {
+              totalStorage: user.totalStorage,
+              storageUsed: user.storageUsed,
+            });
+            store.dispatch("updateFiles", user);
+            if (store.getters.redirectTo.name) {
+              const redirectTo = store.getters.redirectTo;
+              store.dispatch("removeRedirect");
+              console.log(redirectTo);
+              router
+                .replace(redirectTo)
+                .then(() => store.dispatch("hideLoader"));
+            } else
+              router
+                .replace({ name: "My Files" })
+                .then(() => store.dispatch("hideLoader"));
+          });
         });
     }
   },
