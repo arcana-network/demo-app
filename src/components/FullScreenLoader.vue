@@ -1,5 +1,5 @@
 <template>
-  <div class="fixed top-0 left-0 h-screen w-full overlay"></div>
+  <full-screen-overlay />
   <div
     class="fixed top-0 left-0 h-screen w-full"
     style="z-index: 100001; backdrop-filter: blur(1px)"
@@ -20,13 +20,6 @@
 </template>
 
 <style scoped>
-.overlay {
-  background-color: black;
-  opacity: 0.75;
-  z-index: 10000;
-  filter: blur(4px);
-}
-
 .pure-material-progress-circular {
   -webkit-appearance: none;
   -moz-appearance: none;
@@ -153,7 +146,9 @@
 </style>
 
 <script>
+import FullScreenOverlay from "./FullScreenOverlay.vue";
 export default {
+  components: { FullScreenOverlay },
   props: ["message"],
   setup() {},
 };

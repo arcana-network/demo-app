@@ -13,7 +13,6 @@
     </div>
     <div v-if="!files.length">
       <div
-        src="@/assets/file_image.png"
         class="absolute inline-block top-1/2 left-1/2 font-bold text-center"
         style="
           transform: translate(-50%, -50%);
@@ -86,14 +85,10 @@
                 {{ file.name }}
               </td>
               <td class="pt-6 pb-3" style="vertical-align: middle">
-                {{
-                  file.createdAt
-                    ? moment(file.createdAt).format("DD-MM-YYYY")
-                    : moment().format("DD-MM-YYYY")
-                }}
+                {{ getReadableDate(file.createdAt) }}
               </td>
               <td class="pt-6 pb-3" style="vertical-align: middle">
-                {{ bytes(file.size) }}
+                {{ getReadableSize(file.size) }}
               </td>
               <td>
                 <div
@@ -132,23 +127,28 @@
           </div>
           <img src="@/assets/image_gallery.png" class="mx-auto mt-0" />
           <div class="mt-6 mx-5">
-            <span
-              class="
-                inline-block
-                overflow-ellipsis overflow-hidden
-                whitespace-nowrap
-                font-ubuntu font-medium
-              "
-              style="
-                width: 56%;
-                vertical-align: middle;
-                font-size: 0.85rem;
-                color: #4b4b4b;
-                text-align: center;
-              "
-            >
+            <n-tooltip trigger="hover">
+              <template #trigger>
+                <span
+                  class="
+                    inline-block
+                    overflow-ellipsis overflow-hidden
+                    whitespace-nowrap
+                    font-ubuntu font-medium
+                  "
+                  style="
+                    width: 56%;
+                    vertical-align: middle;
+                    font-size: 0.85rem;
+                    color: #4b4b4b;
+                    text-align: center;
+                  "
+                >
+                  {{ file.name }}
+                </span>
+              </template>
               {{ file.name }}
-            </span>
+            </n-tooltip>
             <span
               class="font-ubuntu"
               style="color: #4b4b4b88; font-size: 0.9rem"
@@ -162,8 +162,9 @@
                 text-align: center;
                 font-size: 0.75rem;
               "
-              >{{ bytes(file.size) }}</span
             >
+              {{ getReadableSize(file.size) }}
+            </span>
           </div>
         </div>
       </div>
@@ -197,6 +198,38 @@
       <ViewListIcon class="h-6 w-6 inline-block" />
     </div>
   </div>
+  <dialog-box v-if="shareDialog" @close="closeDialog">
+    <h3 class="font-ubuntu font-bold" style="color: #707070; font-size: 1.3em">
+      Share file
+    </h3>
+    <label
+      class="block mt-4 mb-2 font-semibold"
+      for="recipient-email"
+      style="color: #707070"
+    >
+      Recipient Email
+    </label>
+    <input
+      type="email"
+      id="recipient-email"
+      v-model="shareEmail"
+      class="focus:outline-none rounded-full px-4 py-2 w-full"
+    />
+    <div class="text-center mt-5 mb-3">
+      <button
+        class="focus:outline-none py-2 px-5 rounded-full font-bold shadow-2xl"
+        :class="!shareEmailInvalid ? 'cursor-pointer' : 'cursor-not-allowed'"
+        :style="{
+          background: !shareEmailInvalid ? '#058aff' : '#a1cdf8',
+          color: 'white',
+        }"
+        :disabled="shareEmailInvalid"
+        @click.stop="shareFile"
+      >
+        Share
+      </button>
+    </div>
+  </dialog-box>
 </template>
 
 <style scoped>
@@ -224,6 +257,14 @@
   border-radius: 20px;
 }
 
+#recipient-email {
+  border: 2px solid #a1cdf8;
+}
+
+#recipient-email:focus {
+  border: 2px solid #058aff;
+}
+
 .file-menu:hover {
   background-color: #4b4b4b;
   color: white;
@@ -231,6 +272,9 @@
 </style>
 
 <script>
+import { ref } from "@vue/reactivity";
+import { inject, onMounted, watch } from "@vue/runtime-core";
+
 import {
   ViewGridIcon,
   ViewListIcon,
@@ -242,109 +286,112 @@ import {
   XCircleIcon,
   RefreshIcon,
 } from "@heroicons/vue/outline";
-import { ref } from "@vue/reactivity";
-import bytes from "bytes";
+import { NTooltip } from "naive-ui";
 import DropdownMenu from "./DropdownMenu.vue";
-import { inject, onMounted } from "@vue/runtime-core";
-import { useFileMixin } from "../mixins/file.mixin";
+import DialogBox from "./DialogBox.vue";
+import isValidEmail from "pragmatic-email-regex";
+
+import bytes from "bytes";
 import moment from "moment";
+import { useFileMixin } from "../mixins/file.mixin";
+
 export default {
   setup(props) {
     let listType = ref("table");
     let menuPosition = ref({});
     let showMenu = ref(false);
+    let shareDialog = ref(false);
+    let shareEmail = ref("");
+    let shareEmailInvalid = ref(false);
     const toast = inject("$toast");
     const fileMixin = useFileMixin(toast);
     let selectedFile;
 
-    let menuItemsArr = [];
+    let menuItem = {};
+    menuItem.verify = {
+      label: "Verify",
+      icon: PencilAltIcon,
+      command: () => {
+        window.open(
+          "https://explorer.arcana.network/did/" + selectedFile.did,
+          "__blank"
+        );
+      },
+    };
 
+    menuItem.download = {
+      label: "Download",
+      icon: DownloadIcon,
+      command: () => {
+        fileMixin.download(selectedFile);
+      },
+    };
+
+    menuItem.share = {
+      label: "Share",
+      icon: ShareIcon,
+      command: () => {
+        shareDialog.value = true;
+      },
+    };
+
+    menuItem.remove = {
+      label: "Delete",
+      icon: TrashIcon,
+      command: () => {},
+      disabled: true,
+    };
+
+    menuItem.recover = {
+      label: "Recover",
+      icon: RefreshIcon,
+      command: () => {},
+    };
+
+    menuItem.delete = {
+      label: "Delete Forever",
+      icon: XCircleIcon,
+      command: () => {},
+    };
+
+    let menuItemsArr = [];
     if (props.pageTitle === "My Files") {
       menuItemsArr = [
-        {
-          label: "Verify",
-          icon: PencilAltIcon,
-          command: () => {
-            window.open(
-              "https://explorer.arcana.network/did/" + selectedFile.did,
-              "__blank"
-            );
-          },
-        },
-        {
-          label: "Download",
-          icon: DownloadIcon,
-          command: () => {
-            fileMixin.download(selectedFile);
-          },
-        },
-        {
-          label: "Share",
-          icon: ShareIcon,
-          command: () => {},
-        },
-        {
-          label: "Delete",
-          icon: TrashIcon,
-          command: () => {},
-          disabled: true,
-        },
+        menuItem.verify,
+        menuItem.download,
+        menuItem.share,
+        menuItem.remove,
       ];
     } else if (props.pageTitle === "Shared With Me") {
-      menuItemsArr = [
-        {
-          label: "Verify",
-          icon: PencilAltIcon,
-          command: () => {},
-        },
-        {
-          label: "Download",
-          icon: DownloadIcon,
-          command: () => {
-            fileMixin.download(selectedFile);
-          },
-        },
-      ];
+      menuItemsArr = [menuItem.verify, menuItem.download];
     } else {
-      menuItemsArr = [
-        {
-          label: "Recover",
-          icon: RefreshIcon,
-          command: () => {},
-        },
-        {
-          label: "Delete Forever",
-          icon: XCircleIcon,
-          command: () => {},
-        },
-      ];
+      menuItemsArr = [menuItem.recover, menuItem.delete];
     }
-    console.log("Menu Items Arr", menuItemsArr);
     let menuItems = ref(menuItemsArr);
 
     function fileMenu(file, event) {
       selectedFile = file;
-      showMenu.value = true;
-      const menuEl = event.path.find(
-        (el) =>
-          typeof el.className === "string" && el.className.includes("file-menu")
-      );
-      if (menuEl) {
-        const rect = menuEl.getBoundingClientRect();
-        menuPosition.value = {
-          x: rect.left,
-          y: rect.top,
-          el: {
-            w: rect.width,
-            h: rect.height,
-          },
-        };
-      }
+      showMenu.value = false;
+      setTimeout(() => {
+        showMenu.value = true;
+        const menuEl = event.path.find(
+          (el) =>
+            typeof el.className === "string" &&
+            el.className.includes("file-menu")
+        );
+        if (menuEl) {
+          const rect = menuEl.getBoundingClientRect();
+          menuPosition.value = {
+            x: rect.left,
+            y: rect.top,
+            el: {
+              w: rect.width,
+              h: rect.height,
+            },
+          };
+        }
+      }, 100);
     }
-
-    onMounted(() => {
-      document.querySelector(".files-container").onscroll = hideMenu;
-    });
 
     function hideMenu() {
       showMenu.value = false;
@@ -354,18 +401,69 @@ export default {
       showMenu.value = false;
     }
 
+    function getReadableDate(date) {
+      if (date) {
+        return moment(date).format("DD-MM-YYYY");
+      }
+      return moment().format("DD-MM-YYYY");
+    }
+
+    function getReadableSize(size) {
+      return bytes(size);
+    }
+
+    function closeDialog() {
+      shareEmail.value = "";
+      shareEmailInvalid.value = false;
+      shareDialog.value = false;
+    }
+
+    function shareFile() {
+      fileMixin.share(selectedFile, shareEmail.value);
+      closeDialog();
+    }
+
+    onMounted(() => {
+      document.querySelector(".files-container").onscroll = hideMenu;
+    });
+
+    watch(
+      () => shareEmail.value,
+      () => {
+        console.log("Watching");
+        if (isValidEmail(shareEmail.value)) {
+          shareEmailInvalid.value = false;
+        } else {
+          shareEmailInvalid.value = true;
+        }
+      }
+    );
+
     return {
       listType,
       bytes,
-      fileMenu,
       menuPosition,
       showMenu,
-      closeDropdown,
       menuItems,
-      moment,
+      shareDialog,
+      shareEmail,
+      shareEmailInvalid,
+      fileMenu,
+      closeDropdown,
+      getReadableDate,
+      getReadableSize,
+      shareFile,
+      closeDialog,
     };
   },
   props: ["files", "pageTitle"],
-  components: { ViewGridIcon, ViewListIcon, DotsVerticalIcon, DropdownMenu },
+  components: {
+    ViewGridIcon,
+    ViewListIcon,
+    DotsVerticalIcon,
+    DropdownMenu,
+    NTooltip,
+    DialogBox,
+  },
 };
 </script>

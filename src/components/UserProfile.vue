@@ -178,8 +178,7 @@ export default {
     const toast = inject("$toast");
     onMounted(() => {
       profile.value = store.getters.basicProfile;
-      console.log(profile);
-      document.onclick = handleMenuCollapse;
+      document.addEventListener("click", handleMenuCollapse);
     });
 
     function handleMenuCollapse(event) {

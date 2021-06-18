@@ -8,7 +8,7 @@
       @click.stop="openMenu"
     />
   </div>
-  <div v-if="menu" class="fixed top-0 left-0 h-screen w-full overlay"></div>
+  <full-screen-overlay v-if="menu" />
   <div
     class="sidebar overflow-x-hidden fixed top-0 bottom-0 left-0"
     :class="menu ? 'sidebar-active' : ''"
@@ -117,12 +117,6 @@
 </template>
 
 <style scoped>
-.overlay {
-  background-color: black;
-  opacity: 0.75;
-  z-index: 10000;
-  filter: blur(4px);
-}
 .sidebar,
 .sidebar-active {
   width: 350px;
@@ -229,6 +223,10 @@
 </style>
 
 <script>
+import { useRoute } from "vue-router";
+import { watch, ref, onMounted, computed } from "@vue/runtime-core";
+import { useStore } from "vuex";
+
 import {
   FolderOpenIcon,
   UsersIcon,
@@ -236,10 +234,10 @@ import {
   MenuIcon,
   XIcon,
 } from "@heroicons/vue/outline";
-import { useRoute } from "vue-router";
-import { watch, ref, onMounted, computed } from "@vue/runtime-core";
+
 import bytes from "bytes";
-import { useStore } from "vuex";
+import FullScreenOverlay from "./FullScreenOverlay.vue";
+
 export default {
   setup() {
     const route = useRoute();
@@ -260,8 +258,7 @@ export default {
       window.onresize = function () {
         menu.value = false;
       };
-      document.onclick = function (event) {
-        console.log(event);
+      document.addEventListener("click", (event) => {
         const menuContainer = event.path.find(
           (el) =>
             typeof el.className === "string" && el.className.includes("sidebar")
@@ -269,7 +266,7 @@ export default {
         if (!menuContainer) {
           menu.value = false;
         }
-      };
+      });
     });
 
     liquidMenuTransition();
@@ -300,6 +297,13 @@ export default {
       bytes,
     };
   },
-  components: { FolderOpenIcon, UsersIcon, TrashIcon, MenuIcon, XIcon },
+  components: {
+    FolderOpenIcon,
+    UsersIcon,
+    TrashIcon,
+    MenuIcon,
+    XIcon,
+    FullScreenOverlay,
+  },
 };
 </script>

@@ -143,7 +143,6 @@ export default {
             if (store.getters.redirectTo.name) {
               const redirectTo = store.getters.redirectTo;
               store.dispatch("removeRedirect");
-              console.log(redirectTo);
               router
                 .replace(redirectTo)
                 .then(() => store.dispatch("hideLoader"));

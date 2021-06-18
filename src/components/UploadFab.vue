@@ -53,7 +53,6 @@ export default {
       file.click();
     }
     function fileChangeHandler(event) {
-      console.log(event, this.files);
       fileMixin.upload(this.files[0]);
     }
     return {

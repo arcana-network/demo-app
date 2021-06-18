@@ -10,6 +10,7 @@
       'border-bottom-left-radius': `${bottomLeftRadius}px`,
       'border-bottom-right-radius': `${bottomRightRadius}px`,
       visibility: show ? 'visible' : 'hidden',
+      opacity: show ? 1 : 0,
     }"
     style="
       color: #707070;
@@ -28,8 +29,8 @@
         "
         @click.stop="executeCommand(item)"
       >
-        <!-- <span v-if="item.icon">{{ item.icon }}</span> -->
         <component
+          v-if="item.icon"
           :is="item.icon"
           class="h-5 w-5 inline-block mr-2 -mt-1"
         ></component>
@@ -42,6 +43,9 @@
 </template>
 
 <style scoped>
+#arcana-dropdown-menu {
+  transition: opacity 100ms;
+}
 </style>
 
 <script>
@@ -57,9 +61,8 @@ export default {
     let dropdownMenuContainer;
 
     onMounted(() => {
-      document.onclick = handleMenuCollapse;
+      document.addEventListener("click", handleMenuCollapse);
       dropdownMenuContainer = document.querySelector("#arcana-dropdown-menu");
-      console.log("Items", props.items);
     });
 
     watch(() => props.position.x, updatePosition);
@@ -117,7 +120,6 @@ export default {
           left.value = props.position.x - dropdownMenuContainer.clientWidth;
         }
       }
-      console.log(left.value, top.value);
     }
 
     function executeCommand(item) {
