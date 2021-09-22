@@ -171,6 +171,14 @@
     </div>
   </div>
   <div class="absolute top-7 right-6 lg:top-16 lg:right-16">
+    <div class="inline-block mr-5">
+      <div
+        class="inline-block rounded-full p-1 cursor-pointer"
+        style="background: #c6c9c9"
+      >
+        <SearchIcon class="h-6 w-6 inline-block text-white" />
+      </div>
+    </div>
     <div
       class="inline-block cursor-pointer list-type mt-1 lg"
       :class="listType === 'grid' ? 'list-active' : ''"
@@ -285,6 +293,7 @@ import {
   TrashIcon,
   XCircleIcon,
   RefreshIcon,
+  SearchIcon,
 } from "@heroicons/vue/outline";
 import { NTooltip } from "naive-ui";
 import DropdownMenu from "./DropdownMenu.vue";
@@ -461,6 +470,7 @@ export default {
     ViewGridIcon,
     ViewListIcon,
     DotsVerticalIcon,
+    SearchIcon,
     DropdownMenu,
     NTooltip,
     DialogBox,

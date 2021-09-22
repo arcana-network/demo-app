@@ -34,6 +34,9 @@ const actions = {
     commit("updateSharedWithMe", sharedWithMe);
     commit("updateTrash", trash);
   },
+  updateSharedWithMe({ commit }, sharedWithMe) {
+    commit("updateSharedWithMe", sharedWithMe);
+  },
 };
 
 const fileState = {

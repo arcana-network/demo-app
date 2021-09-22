@@ -6,9 +6,9 @@
     />
     <div class="inline-block mt-12">
       By clicking on signin with google, you agree to Arcana Network's
-      <a href="/" style="color: #058aff; textdecoration: none"> Privacy </a>
+      <a href="/" style="color: #058aff; text-decoration: none"> Privacy </a>
       &
-      <a href="/" style="color: #058aff; textdecoration: none"> Terms </a>
+      <a href="/" style="color: #058aff; text-decoration: none"> Terms </a>
     </div>
     <div id="google-signin-button" class="font-ubuntu"></div>
   </div>
@@ -91,7 +91,7 @@ export default {
     }
     async function onSignIn(googleUser) {
       store.dispatch("showLoader", "Fetching keys and wallet address...");
-      const { getPublicKey, getPrivateKey } = window.arcana_dkg.default;
+      const { getPublicKey, getPrivateKey } = window.arcana_dkg;
       const profile = googleUser.getBasicProfile();
       const email = profile.getEmail();
       const verifier = "google";

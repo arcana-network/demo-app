@@ -22,6 +22,7 @@ import { onMounted, computed } from "@vue/runtime-core";
 import UserProfile from "../components/UserProfile.vue";
 import FilesList from "../components/FilesList.vue";
 import { useStore } from "vuex";
+import { findUser } from "../services/user.service";
 
 export default {
   name: "",
@@ -32,6 +33,11 @@ export default {
     });
     onMounted(() => {
       document.title = "Shared With Me | Arcana Demo";
+      const publicKey = store.getters.publicKey;
+      findUser(publicKey).then((snapshot) => {
+        const user = snapshot.data();
+        store.dispatch("updateSharedWithMe", user.sharedWithMe);
+      });
     });
 
     return {
