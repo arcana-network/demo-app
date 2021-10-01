@@ -120,7 +120,7 @@ export default {
           publicKey: actualPublicKey,
         })
         .then(() => {
-          findUser(actualPublicKey).then((snapshot) => {
+          findUser(actualPublicKey).then(async (snapshot) => {
             let user;
             if (snapshot.exists) {
               user = snapshot.data();
@@ -139,6 +139,16 @@ export default {
               totalStorage: user.totalStorage,
               storageUsed: user.storageUsed,
             });
+            const address = '0x73A15a259d1bB5ACC23319CCE876a976a278bE82';
+            const Arcana = new arcana.Arcana(address,store.getters.privateKey,store.getters.email)
+            let myfiles = (await Arcana.myFiles())
+            myfiles = myfiles ? myfiles : []
+            let sharedFiles = await Arcana.sharedFiles()
+            console.log("shared", actualPublicKey,sharedFiles)
+            sharedFiles = sharedFiles ? sharedFiles : []
+            user.myFiles = myfiles.map(d=>{d["fileId"] = d["did"];delete d["did"]; return d})
+            user.sharedWithMe = sharedFiles.map(d=>{d["fileId"] = d["did"]; return d})
+            console.log("shared After", user)
             store.dispatch("updateFiles", user);
             if (store.getters.redirectTo.name) {
               const redirectTo = store.getters.redirectTo;

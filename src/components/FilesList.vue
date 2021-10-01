@@ -82,7 +82,7 @@
                   vertical-align: middle;
                 "
               >
-                {{ file.name }}
+                {{ file.fileId }}
               </td>
               <td class="pt-6 pb-3" style="vertical-align: middle">
                 {{ getReadableDate(file.createdAt) }}
