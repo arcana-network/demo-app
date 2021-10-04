@@ -68,7 +68,6 @@
 import { onMounted } from "@vue/runtime-core";
 import { useStore } from "vuex";
 import { useRouter } from "vue-router";
-import { findUser, saveUser } from "../services/user.service";
 import bytes from "bytes";
 export default {
   setup() {
@@ -119,21 +118,14 @@ export default {
           privateKey: privateKey.privateKey,
           publicKey: actualPublicKey,
         })
-        .then(() => {
-          findUser(actualPublicKey).then(async (snapshot) => {
-            let user;
-            if (snapshot.exists) {
-              user = snapshot.data();
-            } else {
-              user = {
+        .then(async () => {
+            let user = {
                 totalStorage: bytes("25GB"),
                 storageUsed: 0,
                 address: actualPublicKey,
                 myFiles: [],
                 sharedWithMe: [],
                 trash: [],
-              };
-              saveUser(user);
             }
             store.dispatch("updateStorage", {
               totalStorage: user.totalStorage,
@@ -161,7 +153,6 @@ export default {
                 .replace({ name: "My Files" })
                 .then(() => store.dispatch("hideLoader"));
           });
-        });
     }
   },
 };

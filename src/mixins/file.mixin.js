@@ -1,10 +1,4 @@
 import { useStore } from "vuex";
-import { downloadFile, uploadFile } from "../services/file.service";
-import { saveAs } from "file-saver";
-import { addTx } from "../services/tx.service";
-import { generateId } from "../utils/hash";
-import { findUser, saveUser } from "../services/user.service";
-import bytes from "bytes";
 
 const successToast = {
   styles: {
