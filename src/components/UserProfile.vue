@@ -169,6 +169,8 @@ import { saveAs } from "file-saver";
 import { ClipboardCopyIcon } from "@heroicons/vue/outline";
 import copyToClipboard from "../utils/copyToClipboard";
 import { NTooltip } from "naive-ui";
+import * as arcanaAuth from "../utils/arcana-login";
+
 export default {
   setup() {
     const store = useStore();
@@ -203,12 +205,9 @@ export default {
     }
 
     function logout() {
-      const gapi = window.gapi;
-      const auth2 = gapi.auth2.getAuthInstance();
-      auth2.signOut().then(() => {
-        store.dispatch("clearStore").then(() => {
-          router.replace("/login");
-        });
+      arcanaAuth.logout();
+      store.dispatch("clearStore").then(() => {
+        router.replace("/login");
       });
     }
 

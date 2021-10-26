@@ -5,6 +5,7 @@ const AppLogin = () => import("@/pages/AppLogin.vue");
 const MyFiles = () => import("@/pages/MyFiles.vue");
 const SharedWithMe = () => import("@/pages/SharedWithMe.vue");
 const TrashBin = () => import("@/pages/TrashBin.vue");
+const AuthRedirect = () => import("@/pages/AuthRedirect.vue");
 
 const routes = [
   {
@@ -28,8 +29,13 @@ const routes = [
     component: AppLogin,
   },
   {
-    name: "/",
+    path: "/",
     redirect: "/login",
+  },
+  {
+    name: "Auth Redirect",
+    path: "/auth/redirect",
+    component: AuthRedirect,
   },
 ];
 
@@ -42,7 +48,7 @@ const router = createRouter({
 });
 
 router.beforeEach((to, from, next) => {
-  if (to.name !== "Login") {
+  if (to.name !== "Login" && to.name !== "Auth Redirect") {
     if (!store.getters.publicKey || !store.getters.privateKey) {
       store.dispatch("updateRedirect", to);
       router.replace({ name: "Login" });

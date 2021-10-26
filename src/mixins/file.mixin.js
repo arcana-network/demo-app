@@ -1,4 +1,5 @@
 import { useStore } from "vuex";
+import { getArcanaAuth } from "../utils/arcana-login";
 
 const successToast = {
   styles: {
@@ -6,32 +7,36 @@ const successToast = {
   },
   type: "success",
 };
-const address = '0x73A15a259d1bB5ACC23319CCE876a976a278bE82';
+const address = "0x73A15a259d1bB5ACC23319CCE876a976a278bE82";
 
 export function useFileMixin(toast) {
   const store = useStore();
-  const Arcana = new arcana.Arcana(address,store.getters.privateKey,store.getters.email)
+  const Arcana = new arcana.Arcana(
+    address,
+    store.getters.privateKey,
+    store.getters.email
+  );
 
   async function download(file) {
     store.dispatch(
       "showLoader",
       "Downloading chunks from distributed storage..."
     );
-    const downloder = await Arcana.getDownloader()
-    let did = file.fileId
-    did = did.substring(0,2) !== "0x" ? "0x"+ did : did
-    downloder.download(did)
+    const downloder = await Arcana.getDownloader();
+    let did = file.fileId;
+    did = did.substring(0, 2) !== "0x" ? "0x" + did : did;
+    downloder.download(did);
     downloder.onSuccess = () => {
-          toast("All chunks downloaded", successToast);
-          toast(
-            "Transaction successfully updated in arcana network's blockchain",
-            successToast
-          );
-          store.dispatch("hideLoader");
-    }
-    downloder.onProgress = (a,b) => {
+      toast("All chunks downloaded", successToast);
+      toast(
+        "Transaction successfully updated in arcana network's blockchain",
+        successToast
+      );
+      store.dispatch("hideLoader");
+    };
+    downloder.onProgress = (a, b) => {
       store.dispatch("showLoader", `Completed ${a} out of ${b} bytes`);
-    }
+    };
     // setTimeout(() => {
     //   store.dispatch("showLoader", "Decrypting data and recreating file...");
 
@@ -61,28 +66,22 @@ export function useFileMixin(toast) {
 
   async function share(fileToShare, email) {
     store.dispatch("showLoader", "Sharing file...");
-    const { getPublicKey } = window.arcana_dkg  ;
-      getPublicKey("google", email).then(async (publicKey) => {
+    const arcanaAuth = getArcanaAuth();
+    arcanaAuth.getPublicKey("google", email).then(async (publicKey) => {
       store.dispatch(
         "showLoader",
         "Encrypting file data with recipient's public key......"
       );
       const actualPublicKey =
-        "0x04"+publicKey.X.padStart(64, "0") + publicKey.Y.padStart(64, "0");
-      console.log(actualPublicKey, email, fileToShare)
+        "0x04" + publicKey.X.padStart(64, "0") + publicKey.Y.padStart(64, "0");
+      console.log(actualPublicKey, email, fileToShare);
       const access = await Arcana.getAccess();
-      let did = fileToShare.fileId 
-      did = did.substring(0,2) != "0x" ? "0x" + did: did
-      store.dispatch(
-        "showLoader",
-        `Sharing file with ${email}`
-      );
-      
+      let did = fileToShare.fileId;
+      did = did.substring(0, 2) != "0x" ? "0x" + did : did;
+      store.dispatch("showLoader", `Sharing file with ${email}`);
+
       await access.share([did], [actualPublicKey], [1000000]);
-      toast(
-            `Shared file successfully with ${email}`,
-            successToast
-          );
+      toast(`Shared file successfully with ${email}`, successToast);
       store.dispatch("hideLoader");
 
       // const file = Object.assign({}, fileToShare);
@@ -135,29 +134,22 @@ export function useFileMixin(toast) {
   async function upload(fileToUpload) {
     store.dispatch("showLoader", "Encrypting file...");
     const publicKey = store.getters.publicKey;
-    const uploader = await Arcana.getUploader()
-    store.dispatch(
-      "showLoader",
-      "Uploading file to distributed storage..."
-    );
+    const uploader = await Arcana.getUploader();
+    store.dispatch("showLoader", "Uploading file to distributed storage...");
 
-    const did = uploader.upload(fileToUpload)
+    const did = uploader.upload(fileToUpload);
     uploader.onProgress = (uploaded, total) => {
-        store.dispatch(
-            "showLoader",
-            `Uploaded ${uploaded} out of ${total}`
-        );
-    }
+      store.dispatch("showLoader", `Uploaded ${uploaded} out of ${total}`);
+    };
     uploader.onSuccess = () => {
-        toast("Upload Success", successToast);
-        toast(
-            "Transaction successfully updated in arcana network's blockchain",
-            successToast
-        );
-        store.dispatch("hideLoader");
-        
-    }
- 
+      toast("Upload Success", successToast);
+      toast(
+        "Transaction successfully updated in arcana network's blockchain",
+        successToast
+      );
+      store.dispatch("hideLoader");
+    };
+
     // findUser(publicKey).then((snapshot) => {
     //   setTimeout(() => {
     //     const user = snapshot.data();
