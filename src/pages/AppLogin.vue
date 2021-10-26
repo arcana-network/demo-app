@@ -75,7 +75,8 @@
   color: white;
   border-radius: 10px;
   cursor: pointer;
-  margin: 1em;
+  margin: 1em 0;
+  white-space: nowrap;
   font-weight: 800;
   font-size: 1.2em;
 }
@@ -93,101 +94,19 @@ export default {
   setup() {
     const store = useStore();
     const router = useRouter();
+    let arcanaAuth;
+
     onMounted(() => {
       document.title = "Login | Arcana Demo";
-      renderGoogleLogin();
+      arcanaAuth = getArcanaAuth();
+      if (arcanaAuth.isLoggedIn("google")) {
+        overrideClick();
+      }
     });
-    function renderGoogleLogin() {
-      // const gapi = window.gapi;
-      // gapi.signin2.render("google-signin-button", {
-      //   scope: "profile email",
-      //   width: 240,
-      //   height: 50,
-      //   longtitle: true,
-      //   theme: "dark",
-      //   // onsuccess: onSignIn,
-      // });
-    }
-    async function onSignIn(googleUser) {
-      store.dispatch("showLoader", "Fetching keys and wallet address...");
-      const { getPublicKey, getPrivateKey } = window.arcana_dkg;
-      const profile = googleUser.getBasicProfile();
-      const email = profile.getEmail();
-      const verifier = "google";
-      // const idToken = googleUser.getAuthResponse().id_token;
-      store.dispatch("addBasicDetails", {
-        email,
-        profileImage: profile.getImageUrl(),
-        givenName: profile.getGivenName(),
-      });
-      const publicKey = await getPublicKey(verifier, email);
-      const actualPublicKey =
-        publicKey.X.padStart(64, "0") + publicKey.Y.padStart(64, "0");
-      const authResponse = await gapi.auth2
-        .getAuthInstance()
-        .currentUser.get()
-        .reloadAuthResponse();
-      const privateKey = await getPrivateKey({
-        id: email,
-        verifier,
-        idToken: authResponse.id_token,
-      });
-      store
-        .dispatch("addCryptoDetails", {
-          walletAddress: privateKey.address,
-          privateKey: privateKey.privateKey,
-          publicKey: actualPublicKey,
-        })
-        .then(async () => {
-          let user = {
-            totalStorage: bytes("25GB"),
-            storageUsed: 0,
-            address: actualPublicKey,
-            myFiles: [],
-            sharedWithMe: [],
-            trash: [],
-          };
-          store.dispatch("updateStorage", {
-            totalStorage: user.totalStorage,
-            storageUsed: user.storageUsed,
-          });
-          const address = "0x73A15a259d1bB5ACC23319CCE876a976a278bE82";
-          const Arcana = new arcana.Arcana(
-            address,
-            store.getters.privateKey,
-            store.getters.email
-          );
-          let myfiles = await Arcana.myFiles();
-          myfiles = myfiles ? myfiles : [];
-          let sharedFiles = await Arcana.sharedFiles();
-          console.log("shared", actualPublicKey, sharedFiles);
-          sharedFiles = sharedFiles ? sharedFiles : [];
-          user.myFiles = myfiles.map((d) => {
-            d["fileId"] = d["did"];
-            delete d["did"];
-            return d;
-          });
-          user.sharedWithMe = sharedFiles.map((d) => {
-            d["fileId"] = d["did"];
-            return d;
-          });
-          console.log("shared After", user);
-          store.dispatch("updateFiles", user);
-          if (store.getters.redirectTo.name) {
-            const redirectTo = store.getters.redirectTo;
-            store.dispatch("removeRedirect");
-            router.replace(redirectTo).then(() => store.dispatch("hideLoader"));
-          } else
-            router
-              .replace({ name: "My Files" })
-              .then(() => store.dispatch("hideLoader"));
-        });
-    }
 
     async function overrideClick() {
       try {
         store.dispatch("showLoader", "Fetching keys and wallet address...");
-        const arcanaAuth = getArcanaAuth();
         console.log(arcanaAuth);
         const pk = await arcanaAuth.signIn("google");
         console.log({ pk });
