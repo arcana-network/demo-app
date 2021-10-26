@@ -67,66 +67,71 @@ export function useFileMixin(toast) {
   async function share(fileToShare, email) {
     store.dispatch("showLoader", "Sharing file...");
     const arcanaAuth = getArcanaAuth();
-    arcanaAuth.getPublicKey("google", email).then(async (publicKey) => {
-      store.dispatch(
-        "showLoader",
-        "Encrypting file data with recipient's public key......"
-      );
-      const actualPublicKey =
-        "0x04" + publicKey.X.padStart(64, "0") + publicKey.Y.padStart(64, "0");
-      console.log(actualPublicKey, email, fileToShare);
-      const access = await Arcana.getAccess();
-      let did = fileToShare.fileId;
-      did = did.substring(0, 2) != "0x" ? "0x" + did : did;
-      store.dispatch("showLoader", `Sharing file with ${email}`);
+    console.log({ arcanaAuth });
+    arcanaAuth
+      .getPublicKey({ verifier: "google", id: email })
+      .then(async (publicKey) => {
+        store.dispatch(
+          "showLoader",
+          "Encrypting file data with recipient's public key......"
+        );
+        const actualPublicKey =
+          "0x04" +
+          publicKey.X.padStart(64, "0") +
+          publicKey.Y.padStart(64, "0");
+        console.log(actualPublicKey, email, fileToShare);
+        const access = await Arcana.getAccess();
+        let did = fileToShare.fileId;
+        did = did.substring(0, 2) != "0x" ? "0x" + did : did;
+        store.dispatch("showLoader", `Sharing file with ${email}`);
 
-      await access.share([did], [actualPublicKey], [1000000]);
-      toast(`Shared file successfully with ${email}`, successToast);
-      store.dispatch("hideLoader");
+        await access.share([did], [actualPublicKey], [1000000]);
+        toast(`Shared file successfully with ${email}`, successToast);
+        store.dispatch("hideLoader");
 
-      // const file = Object.assign({}, fileToShare);
-      // file.ref = generateId();
-      // let user;
-      // findUser(actualPublicKey).then((snapshot) => {
-      //   if (snapshot.exists) {
-      //     user = snapshot.data();
-      //     user.sharedWithMe.push(file);
-      //   } else {
-      //     user = {
-      //       address: actualPublicKey,
-      //       totalStorage: bytes("25GB"),
-      //       storageUsed: 0,
-      //       myFiles: [],
-      //       sharedWithMe: [file],
-      //       trash: [],
-      //     };
-      //   }
-      //   saveUser(user).then(() => {
-      //     toast("File shared with the recipient", successToast);
-      //     store.dispatch(
-      //       "showLoader",
-      //       "Updating transaction on blockchain......"
-      //     );
-      //     const tx = {
-      //       type: "share",
-      //       hash: file.ref,
-      //       did: file.did,
-      //       fileMeta: {
-      //         size: file.size,
-      //       },
-      //       timestamp: Date.now(),
-      //       transactionFee: 0.0001,
-      //       status: "File Shared",
-      //     };
-      //     addTx(tx);
-      //     toast(
-      //       "Transaction successfully updated in arcana network's blockchain",
-      //       successToast
-      //     );
-      //     store.dispatch("hideLoader");
-      //   });
-      // });
-    });
+        // const file = Object.assign({}, fileToShare);
+        // file.ref = generateId();
+        // let user;
+        // findUser(actualPublicKey).then((snapshot) => {
+        //   if (snapshot.exists) {
+        //     user = snapshot.data();
+        //     user.sharedWithMe.push(file);
+        //   } else {
+        //     user = {
+        //       address: actualPublicKey,
+        //       totalStorage: bytes("25GB"),
+        //       storageUsed: 0,
+        //       myFiles: [],
+        //       sharedWithMe: [file],
+        //       trash: [],
+        //     };
+        //   }
+        //   saveUser(user).then(() => {
+        //     toast("File shared with the recipient", successToast);
+        //     store.dispatch(
+        //       "showLoader",
+        //       "Updating transaction on blockchain......"
+        //     );
+        //     const tx = {
+        //       type: "share",
+        //       hash: file.ref,
+        //       did: file.did,
+        //       fileMeta: {
+        //         size: file.size,
+        //       },
+        //       timestamp: Date.now(),
+        //       transactionFee: 0.0001,
+        //       status: "File Shared",
+        //     };
+        //     addTx(tx);
+        //     toast(
+        //       "Transaction successfully updated in arcana network's blockchain",
+        //       successToast
+        //     );
+        //     store.dispatch("hideLoader");
+        //   });
+        // });
+      });
   }
 
   function remove() {}
