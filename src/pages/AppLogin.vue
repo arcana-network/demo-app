@@ -183,7 +183,7 @@ export default {
     }
 
     return {
-      overrideClick,
+      onSignInClick,
     };
   },
 };
