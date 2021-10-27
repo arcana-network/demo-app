@@ -6,7 +6,7 @@ This app helps you test login functionality (sso login and distributed key gener
 
 ## Quick Start
 
-- Prerequisites: You'll need an up to date `**node.js**` and `**npm**` installed in your system for this demo to work
+- Prerequisites: You'll need an up to date **`node.js`** and **`npm`** installed in your system for this demo to work
 
 - Clone this repo
 
