@@ -15,7 +15,7 @@
       @click.stop="overrideClick"
       class="font-ubuntu"
     ></div>
-    <a class="google-button" @click.stop="overrideClick">Sign In with Google</a>
+    <a class="google-button" @click.stop="onSignInClick">Sign In with Google</a>
   </div>
 </template>
 
@@ -100,14 +100,13 @@ export default {
       document.title = "Login | Arcana Demo";
       arcanaAuth = getArcanaAuth();
       if (arcanaAuth.isLoggedIn("google")) {
-        overrideClick();
+        onSignInClick();
       }
     });
 
-    async function overrideClick() {
+    async function onSignInClick() {
       try {
         store.dispatch("showLoader", "Fetching keys and wallet address...");
-        console.log(arcanaAuth);
         const pk = await arcanaAuth.signIn("google");
         console.log({ pk });
         const userInfo = await arcanaAuth.getUserInfo("google");
@@ -144,7 +143,7 @@ export default {
               totalStorage: user.totalStorage,
               storageUsed: user.storageUsed,
             });
-            const address = "0x73A15a259d1bB5ACC23319CCE876a976a278bE82";
+            const address = import.meta.env.VITE_ARCANA_APP_ID;
             const Arcana = new arcana.Arcana(
               address,
               store.getters.privateKey,

@@ -7,7 +7,7 @@ const successToast = {
   },
   type: "success",
 };
-const address = "0x73A15a259d1bB5ACC23319CCE876a976a278bE82";
+const address = import.meta.env.VITE_ARCANA_APP_ID;
 
 export function useFileMixin(toast) {
   const store = useStore();
