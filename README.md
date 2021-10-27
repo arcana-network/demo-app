@@ -20,11 +20,13 @@ git clone <repo-url>
 npm install
 ```
 
-- Create `.env` file in root and copy the content of `.env.example`. Replace all variable values with actual environment variables
+- Create `.env` file in root and copy the content of `.env.example`.
 
 ```bash
 cp .env.example .env
 ```
+
+**Replace all variable values with actual environment variables**
 
 - To run the project in development environment
 
