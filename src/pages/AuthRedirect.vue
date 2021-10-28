@@ -10,7 +10,7 @@ export default {
       const { AuthProvider } = window.arcana_login;
 
       // window.onload = () => {
-      AuthProvider.handleRedirectPage(import.meta.env.VITE_ORIGIN);
+      AuthProvider.handleRedirectPage(window.location);
       // };
     });
   },
