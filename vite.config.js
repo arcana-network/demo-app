@@ -12,4 +12,7 @@ export default defineConfig({
   build: {
     chunkSizeWarningLimit: 1024,
   },
+  define: {
+    "process.env": process.env,
+  },
 });
