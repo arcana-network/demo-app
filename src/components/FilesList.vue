@@ -107,8 +107,7 @@
         class="
           flex flex-row flex-wrap
           gap-4
-          lg:gap-12
-          lg:mb-20
+          lg:gap-12 lg:mb-20
           mb-20
           transition-fade
         "
@@ -170,7 +169,7 @@
       </div>
     </div>
   </div>
-  <div class="absolute top-7 right-6 lg:top-16 lg:right-16">
+  <!-- <div class="absolute top-7 right-6 lg:top-16 lg:right-16">
     <div class="inline-block mr-5">
       <div
         class="inline-block rounded-full p-1 cursor-pointer"
@@ -205,7 +204,7 @@
     >
       <ViewListIcon class="h-6 w-6 inline-block" />
     </div>
-  </div>
+  </div> -->
   <dialog-box v-if="shareDialog" @close="closeDialog">
     <h3 class="font-ubuntu font-bold" style="color: #707070; font-size: 1.3em">
       Share file

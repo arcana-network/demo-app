@@ -41,10 +41,10 @@
         Shared With Me
       </router-link>
       <br />
-      <router-link to="/bin" class="inline-block mx-10 my-2 font-bold">
+      <!-- <router-link to="/bin" class="inline-block mx-10 my-2 font-bold">
         <TrashIcon class="h-6 w-6 inline -mt-1 mr-2" />
         Bin
-      </router-link>
+      </router-link> -->
     </div>
     <div
       class="absolute menu-liquid-interaction hidden lg:block"
