@@ -29,9 +29,7 @@ export default {
   setup() {
     const store = useStore();
     let files = computed(() => {
-      files = store.getters.sharedWithMe;
-      console.log("Files inside comp", files);
-      return files;
+      return store.getters.sharedWithMe;
     });
     onMounted(async () => {
       document.title = "Shared With Me | Arcana Demo";

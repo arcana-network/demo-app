@@ -1,20 +1,35 @@
 <template>
   <div>
     <div class="flex flex-row mt-6 ml-6 lg:mt-16 lg:ml-16">
-      <div class="rounded-full h-12 w-24" style="background: #eef1f6">
+      <div
+        class="rounded-full h-12 w-20 cursor-pointer relative hover:w-24"
+        style="background: #eef1f6; transition: width 0.4s"
+        @click.stop="toggleProfileOptions"
+      >
         <img
           :src="profile.profileImage"
-          class="rounded-full h-12 w-12 cursor-pointer"
-          @click.stop="toggleProfileOptions"
+          class="rounded-full h-12 w-12 inline"
         />
-        <!-- <ChevronDownIcon style="color: black" /> -->
+        <img
+          :src="ArrowDownIcon"
+          class="h-4 w-4 right-2.5 top-4 absolute inline"
+          style="transition: transform 0.4s, margin-left 0.4s"
+          :style="
+            profileOptions
+              ? 'transform: rotate(-180deg)'
+              : 'transform: rotate(0)'
+          "
+        />
       </div>
-      <span class="mt-2 ml-4 font-ubuntu font-light" style="font-size: 1.3rem">
+      <span
+        class="mt-2 ml-4 font-ubuntu font-light"
+        style="color: #253d52; font-size: 1.3rem"
+      >
         Hello,
       </span>
       <span
         class="mt-2 ml-1 font-ubuntu font-bold"
-        style="color: #058aff; font-size: 1.3rem"
+        style="color: #253d52; font-size: 1.3rem"
       >
         {{ profile.givenName }}!
       </span>
@@ -169,14 +184,14 @@ import { useStore } from "vuex";
 import { useRouter } from "vue-router";
 import { inject, onMounted } from "@vue/runtime-core";
 import { saveAs } from "file-saver";
-import { ClipboardCopyIcon, ChevronDownIcon } from "@heroicons/vue/outline";
+import { ClipboardCopyIcon } from "@heroicons/vue/outline";
 import copyToClipboard from "../utils/copyToClipboard";
 import { NTooltip } from "naive-ui";
 import * as arcanaAuth from "../utils/arcana-sdk";
+import ArrowDownIcon from "../assets/triangle-down.svg";
 
 export default {
   setup() {
-    console.log(ChevronDownIcon);
     const store = useStore();
     const router = useRouter();
     let profile = ref({});
@@ -242,7 +257,7 @@ export default {
       toggleProfileOptions,
       logout,
       copy,
-      ChevronDownIcon,
+      ArrowDownIcon,
     };
   },
   components: { ClipboardCopyIcon, NTooltip },

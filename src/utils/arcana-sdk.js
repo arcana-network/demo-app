@@ -1,8 +1,9 @@
-// import { AuthProvider } from "@arcana_tech/arcana-login";
+import { AuthProvider } from "@arcana_tech/arcana-login";
+import { Arcana as ArcanaSDK } from "@arcana_tech/storage-sdk";
 import store from "../store";
 
-const { AuthProvider } = window.arcana_login;
-const ArcanaSDK = window.arcana.Arcana;
+// const { AuthProvider } = window.arcana_login;
+// const ArcanaSDK = window.arcana.Arcana;
 
 const arcanaAuth = new AuthProvider({
   appID: import.meta.env.VITE_ARCANA_APP_ID,
@@ -15,6 +16,8 @@ const arcanaAuth = new AuthProvider({
   ],
 });
 
+const address = import.meta.env.VITE_ARCANA_APP_ID;
+
 export function getArcanaAuthProvider() {
   return AuthProvider;
 }
@@ -24,7 +27,6 @@ export function getArcanaAuth() {
 }
 
 export function getArcanaStorage() {
-  const address = import.meta.env.VITE_ARCANA_APP_ID;
   const Arcana = new ArcanaSDK(
     address,
     store.getters.privateKey,

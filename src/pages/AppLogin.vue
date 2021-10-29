@@ -112,14 +112,11 @@ export default {
       try {
         store.dispatch("showLoader", "Fetching keys and wallet address...");
         const pk = await arcanaAuth.signIn("google");
-        console.log({ pk });
         const userInfo = await arcanaAuth.getUserInfo("google");
-        console.log({ userInfo });
         const publicKey = await arcanaAuth.getPublicKey({
           verifier: "google",
           id: userInfo.id,
         });
-        console.log({ publicKey });
         const actualPublicKey =
           publicKey.X.padStart(64, "0") + publicKey.Y.padStart(64, "0");
         const wallet = new Wallet(pk.privateKey);
@@ -136,29 +133,16 @@ export default {
           })
           .then(async () => {
             let user = {
-              totalStorage: bytes("5 GB"),
-              totalBandwidth: bytes("5 GB"),
-              storageUsed: 0,
-              bandwidthUsed: 0,
               address: actualPublicKey,
               myFiles: [],
               sharedWithMe: [],
               trash: [],
             };
-            fileMixin.getLimits();
-            store.dispatch("updateStorage", {
-              totalStorage: user.totalStorage,
-              storageUsed: user.storageUsed,
-            });
-            store.dispatch("updateBandwidth", {
-              totalBandwidth: user.totalBandwidth,
-              bandwidthUsed: user.bandwidthUsed,
-            });
+            await fileMixin.updateLimits();
             const arcanaStorage = getArcanaStorage();
             let myfiles = await arcanaStorage.myFiles();
             myfiles = myfiles ? myfiles : [];
             let sharedFiles = await arcanaStorage.sharedFiles();
-            console.log("shared", actualPublicKey, sharedFiles);
             sharedFiles = sharedFiles ? sharedFiles : [];
             user.myFiles = myfiles.map((d) => {
               d["fileId"] = d["did"];
@@ -168,14 +152,13 @@ export default {
               d["fileId"] = d["did"];
               return d;
             });
-            console.log("shared After", user);
             store.dispatch("updateFiles", user);
             router
               .replace({ name: "My Files" })
               .then(() => store.dispatch("hideLoader"));
           });
       } catch (e) {
-        console.log("error", e);
+        console.error("error", e);
         store.dispatch("hideLoader");
       }
     }

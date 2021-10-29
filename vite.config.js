@@ -1,13 +1,14 @@
 import { defineConfig } from "vite";
 import vue from "@vitejs/plugin-vue";
 import path from "path";
-import inject from "@rollup/plugin-inject";
-// import nodePolyfill from "rollup-plugin-node-polyfills";
+// import inject from "@rollup/plugin-inject";
 
 export default defineConfig({
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "/src"),
+      stream: "stream-browserify",
+      crypto: "crypto-browserify",
     },
   },
   plugins: [vue()],
@@ -15,7 +16,7 @@ export default defineConfig({
     chunkSizeWarningLimit: 1024,
   },
   define: {
-    process: import.meta,
+    "process.env": process.env,
   },
 });
 
@@ -25,15 +26,18 @@ export default defineConfig({
 //     resolve: {
 //       alias: {
 //         "@": path.resolve(__dirname, "/src"),
+//         stream: "stream-browserify",
+//         crypto: "crypto-browserify",
 //       },
 //     },
 //   };
+//   console.log({ command, mode });
 //   if (command === "build") {
 //     config.build = {
 //       rollupOptions: {
 //         plugins: [
 //           inject({
-//             process: "process",
+//             "process.env": process.env,
 //           }),
 //         ],
 //       },

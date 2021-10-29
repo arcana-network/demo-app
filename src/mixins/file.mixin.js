@@ -22,17 +22,25 @@ const UNAUTHORIZED = "UNAUTHORIZED";
 export function useFileMixin(toast) {
   const store = useStore();
 
-  async function getLimits() {
+  async function updateLimits() {
     const arcanaStorage = getArcanaStorage();
     const access = await arcanaStorage.getAccess();
-    const [consumedStorage, totalStorage] = await access.getUploadLimit();
-    const [consumedBandwidth, totalBandwidth] = await access.getDownloadLimit();
-    console.log({
-      consumedBandwidth,
-      totalBandwidth,
-      consumedStorage,
+    const [storageUsed, totalStorage] = await access.getUploadLimit();
+    const [bandwidthUsed, totalBandwidth] = await access.getDownloadLimit();
+    store.dispatch("updateStorage", {
       totalStorage,
+      storageUsed,
     });
+    store.dispatch("updateBandwidth", {
+      totalBandwidth,
+      bandwidthUsed,
+    });
+    return {
+      bandwidthUsed,
+      totalBandwidth,
+      storageUsed,
+      totalStorage,
+    };
   }
 
   async function download(file) {
@@ -64,6 +72,7 @@ export function useFileMixin(toast) {
       }
     });
     downloder.onSuccess = () => {
+      updateLimits();
       toast("All chunks downloaded", successToast);
       toast(
         "Transaction successfully updated in arcana network's blockchain",
@@ -90,7 +99,6 @@ export function useFileMixin(toast) {
       );
       const actualPublicKey =
         "0x04" + publicKey.X.padStart(64, "0") + publicKey.Y.padStart(64, "0");
-      console.log(actualPublicKey, email, fileToShare);
       const arcanaStorage = getArcanaStorage();
       const access = await arcanaStorage.getAccess();
       let did = fileToShare.fileId;
@@ -114,6 +122,7 @@ export function useFileMixin(toast) {
       let did = fileToDelete.fileId;
       did = did.substring(0, 2) != "0x" ? "0x" + did : did;
       await access.deleteFile(did);
+      updateLimits();
       let myFiles = [...store.getters.myFiles];
       myFiles = myFiles.filter((file) => file.fileId !== fileToDelete.fileId);
       store.dispatch("updateMyFiles", myFiles);
@@ -165,12 +174,12 @@ export function useFileMixin(toast) {
         totalSize = total;
       };
       uploader.onSuccess = () => {
+        updateLimits();
         toast("Upload Success", successToast);
         toast(
           "Transaction successfully updated in arcana network's blockchain",
           successToast
         );
-        console.log("Upload Success");
         let myFiles = [...store.getters.myFiles];
         myFiles.push({
           fileId: did,
@@ -182,7 +191,9 @@ export function useFileMixin(toast) {
         store.dispatch("hideLoader");
       };
       uploader.onError = (err) => {
-        console.log("Error caught", err);
+        console.error("Error caught", err);
+        toast("Something went wrong. Try again", errorToast);
+        store.dispatch("hideLoader");
       };
     } catch (e) {
       console.error(e);
@@ -196,6 +207,6 @@ export function useFileMixin(toast) {
     remove,
     upload,
     share,
-    getLimits,
+    updateLimits,
   };
 }

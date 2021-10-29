@@ -5,7 +5,7 @@
 <style scoped>
 .overlay {
   background-color: black;
-  opacity: 0.75;
+  opacity: 0.7;
   z-index: 10000;
   filter: blur(4px);
 }

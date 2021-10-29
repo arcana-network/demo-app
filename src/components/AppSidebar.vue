@@ -100,9 +100,13 @@
         </div>
       </div>
       <div class="my-2 font-ubuntu" style="font-weight: 300">
-        <span style="font-weight: 800">{{ bytes(storage.storageUsed) }}</span>
+        <span style="font-weight: 800">{{
+          readableBytes(storage.storageUsed)
+        }}</span>
         of
-        <span style="font-weight: 800">{{ bytes(storage.totalStorage) }}</span>
+        <span style="font-weight: 800">{{
+          readableBytes(storage.totalStorage)
+        }}</span>
       </div>
       <div class="mt-8 font-ubuntu font-bold" style="font-size: 1.5em">
         Bandwidth Status
@@ -111,14 +115,18 @@
         <div class="progress-container mx-auto">
           <div
             class="progress-success-container"
-            :style="{ width: storage.percentage + '%' }"
+            :style="{ width: bandwidth.percentage + '%' }"
           ></div>
         </div>
       </div>
       <div class="my-2 font-ubuntu" style="font-weight: 300">
-        <span style="font-weight: 800">{{ bytes(storage.storageUsed) }}</span>
+        <span style="font-weight: 800">{{
+          readableBytes(bandwidth.bandwidthUsed)
+        }}</span>
         of
-        <span style="font-weight: 800">{{ bytes(storage.totalStorage) }}</span>
+        <span style="font-weight: 800">{{
+          readableBytes(bandwidth.totalBandwidth)
+        }}</span>
       </div>
     </div>
   </div>
@@ -203,7 +211,7 @@
 .progress-container {
   background-color: #eef1f6;
   width: 220px;
-  height: 8px;
+  height: 10px;
   border-radius: 30px;
   overflow: hidden;
 }
@@ -211,8 +219,9 @@
 .progress-success-container {
   background-color: #26de43;
   width: 0;
-  height: 8px;
+  height: 10px;
   border-radius: 30px;
+  transition: width 1s;
 }
 
 .liquid-translate-my-files {
@@ -252,10 +261,34 @@ export default {
     let menu = ref(false);
     let storage = computed(() => {
       const storageState = store.getters.storage;
+      if (storageState.totalStorage === bytes("10 TB")) {
+        storageState.totalStorage = "Unlimited";
+        return {
+          ...storageState,
+          percentage: storageState.storageUsed === 0 ? 0 : 1,
+        };
+      }
       const percentage =
         (storageState.storageUsed / storageState.totalStorage) * 100;
       return {
         ...storageState,
+        percentage,
+      };
+    });
+
+    let bandwidth = computed(() => {
+      const bandwidthState = store.getters.bandwidth;
+      if (bandwidthState.totalBandwidth === bytes("10 TB")) {
+        bandwidthState.totalBandwidth = "Unlimited";
+        return {
+          ...bandwidthState,
+          percentage: bandwidthState.bandwidthUsed === 0 ? 0 : 1,
+        };
+      }
+      const percentage =
+        (bandwidthState.bandwidthUsed / bandwidthState.totalBandwidth) * 100;
+      return {
+        ...bandwidthState,
         percentage,
       };
     });
@@ -295,12 +328,17 @@ export default {
       }
     }
 
+    function readableBytes(value) {
+      return bytes(value);
+    }
+
     return {
       liquidMenuTranslate,
       menu,
       openMenu,
       storage,
-      bytes,
+      bandwidth,
+      readableBytes,
     };
   },
   components: {

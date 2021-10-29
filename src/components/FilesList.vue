@@ -206,13 +206,13 @@
     </div>
   </div> -->
   <dialog-box v-if="shareDialog" @close="closeDialog">
-    <h3 class="font-ubuntu font-bold" style="color: #707070; font-size: 1.3em">
+    <h3 class="font-ubuntu font-bold" style="color: #253d52; font-size: 1.5em">
       Share file
     </h3>
     <label
       class="block mt-4 mb-2 font-semibold"
       for="recipient-email"
-      style="color: #707070"
+      style="color: #707070; font-size: 1.2em"
     >
       Recipient Email
     </label>
@@ -442,7 +442,6 @@ export default {
     watch(
       () => shareEmail.value,
       () => {
-        console.log("Watching");
         if (isValidEmail(shareEmail.value)) {
           shareEmailInvalid.value = false;
         } else {

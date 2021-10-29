@@ -18,6 +18,11 @@
       name="google-signin-client_id"
       content="938953074000-p8k3r9mu6ce8oqmvdtpdn3mm2lbmm6q9.apps.googleusercontent.com"
     />
+    <!-- polyfill global because shit dependencies -->
+    <script>
+      globalThis.global = globalThis;
+    </script>
+    <!-- end polyfill -->
     <script src="/arcana_login.js"></script>
     <script src="/arcana.js"></script>
   </head>
