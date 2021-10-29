@@ -22,6 +22,19 @@ const UNAUTHORIZED = "UNAUTHORIZED";
 export function useFileMixin(toast) {
   const store = useStore();
 
+  async function getLimits() {
+    const arcanaStorage = getArcanaStorage();
+    const access = await arcanaStorage.getAccess();
+    const [consumedStorage, totalStorage] = await access.getUploadLimit();
+    const [consumedBandwidth, totalBandwidth] = await access.getDownloadLimit();
+    console.log({
+      consumedBandwidth,
+      totalBandwidth,
+      consumedStorage,
+      totalStorage,
+    });
+  }
+
   async function download(file) {
     store.dispatch(
       "showLoader",
@@ -65,37 +78,53 @@ export function useFileMixin(toast) {
 
   async function share(fileToShare, email) {
     store.dispatch("showLoader", "Sharing file...");
-    const arcanaAuth = getArcanaAuth();
-    arcanaAuth
-      .getPublicKey({ verifier: "google", id: email })
-      .then(async (publicKey) => {
-        store.dispatch(
-          "showLoader",
-          "Encrypting file data with recipient's public key......"
-        );
-        const actualPublicKey =
-          "0x04" +
-          publicKey.X.padStart(64, "0") +
-          publicKey.Y.padStart(64, "0");
-        console.log(actualPublicKey, email, fileToShare);
-        const arcanaStorage = getArcanaStorage();
-        const access = await arcanaStorage.getAccess();
-        let did = fileToShare.fileId;
-        did = did.substring(0, 2) != "0x" ? "0x" + did : did;
-        store.dispatch("showLoader", `Sharing file with ${email}`);
-        try {
-          await access.share([did], [actualPublicKey], [1000000]);
-          toast(`Shared file successfully with ${email}`, successToast);
-          store.dispatch("hideLoader");
-        } catch (e) {
-          console.error(e);
-          toast("Something went wrong. Try again", errorToast);
-          store.dispatch("hideLoader");
-        }
+    try {
+      const arcanaAuth = getArcanaAuth();
+      const publicKey = await arcanaAuth.getPublicKey({
+        verifier: "google",
+        id: email,
       });
+      store.dispatch(
+        "showLoader",
+        "Encrypting file data with recipient's public key......"
+      );
+      const actualPublicKey =
+        "0x04" + publicKey.X.padStart(64, "0") + publicKey.Y.padStart(64, "0");
+      console.log(actualPublicKey, email, fileToShare);
+      const arcanaStorage = getArcanaStorage();
+      const access = await arcanaStorage.getAccess();
+      let did = fileToShare.fileId;
+      did = did.substring(0, 2) != "0x" ? "0x" + did : did;
+      store.dispatch("showLoader", `Sharing file with ${email}`);
+      await access.share([did], [actualPublicKey], [1000000]);
+      toast(`Shared file successfully with ${email}`, successToast);
+      store.dispatch("hideLoader");
+    } catch (e) {
+      console.error(e);
+      toast("Something went wrong. Try again", errorToast);
+      store.dispatch("hideLoader");
+    }
   }
 
-  function remove() {}
+  async function remove(fileToDelete) {
+    store.dispatch("showLoader", "Deleting file...");
+    const arcanaStorage = getArcanaStorage();
+    const access = await arcanaStorage.getAccess();
+    try {
+      let did = fileToDelete.fileId;
+      did = did.substring(0, 2) != "0x" ? "0x" + did : did;
+      await access.deleteFile(did);
+      let myFiles = [...store.getters.myFiles];
+      myFiles = myFiles.filter((file) => file.fileId !== fileToDelete.fileId);
+      store.dispatch("updateMyFiles", myFiles);
+      toast(`File Deleted`, successToast);
+      store.dispatch("hideLoader");
+    } catch (e) {
+      console.error(e);
+      toast("Something went wrong. Try again", errorToast);
+      store.dispatch("hideLoader");
+    }
+  }
 
   async function upload(fileToUpload) {
     try {
@@ -143,7 +172,6 @@ export function useFileMixin(toast) {
         );
         console.log("Upload Success");
         let myFiles = [...store.getters.myFiles];
-        console.log(did);
         myFiles.push({
           fileId: did,
           did,
@@ -168,5 +196,6 @@ export function useFileMixin(toast) {
     remove,
     upload,
     share,
+    getLimits,
   };
 }

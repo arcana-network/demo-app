@@ -87,7 +87,7 @@
         ></div>
       </div>
     </div>
-    <div class="absolute bottom-4 mx-auto footer">
+    <div class="absolute bottom-10 mx-auto footer">
       <div class="mt-8 font-ubuntu font-bold" style="font-size: 1.5em">
         Storage Status
       </div>
@@ -95,7 +95,7 @@
         <div class="progress-container mx-auto">
           <div
             class="progress-success-container"
-            :style="{ width: storage.percentage }"
+            :style="{ width: storage.percentage + '%' }"
           ></div>
         </div>
       </div>
@@ -115,9 +115,10 @@
           ></div>
         </div>
       </div>
-      <div class="my-2 font-ubuntu">
-        <span class="font-bold">{{ bytes(storage.storageUsed) }}</span> of
-        <span class="font-bold">{{ bytes(storage.totalStorage) }}</span>
+      <div class="my-2 font-ubuntu" style="font-weight: 300">
+        <span style="font-weight: 800">{{ bytes(storage.storageUsed) }}</span>
+        of
+        <span style="font-weight: 800">{{ bytes(storage.totalStorage) }}</span>
       </div>
     </div>
   </div>

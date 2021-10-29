@@ -1,11 +1,14 @@
 <template>
   <div>
     <div class="flex flex-row mt-6 ml-6 lg:mt-16 lg:ml-16">
-      <img
-        :src="profile.profileImage"
-        class="rounded-full h-12 w-12 cursor-pointer"
-        @click.stop="toggleProfileOptions"
-      />
+      <div class="rounded-full h-12 w-24" style="background: #eef1f6">
+        <img
+          :src="profile.profileImage"
+          class="rounded-full h-12 w-12 cursor-pointer"
+          @click.stop="toggleProfileOptions"
+        />
+        <!-- <ChevronDownIcon style="color: black" /> -->
+      </div>
       <span class="mt-2 ml-4 font-ubuntu font-light" style="font-size: 1.3rem">
         Hello,
       </span>
@@ -166,13 +169,14 @@ import { useStore } from "vuex";
 import { useRouter } from "vue-router";
 import { inject, onMounted } from "@vue/runtime-core";
 import { saveAs } from "file-saver";
-import { ClipboardCopyIcon } from "@heroicons/vue/outline";
+import { ClipboardCopyIcon, ChevronDownIcon } from "@heroicons/vue/outline";
 import copyToClipboard from "../utils/copyToClipboard";
 import { NTooltip } from "naive-ui";
 import * as arcanaAuth from "../utils/arcana-sdk";
 
 export default {
   setup() {
+    console.log(ChevronDownIcon);
     const store = useStore();
     const router = useRouter();
     let profile = ref({});
@@ -238,6 +242,7 @@ export default {
       toggleProfileOptions,
       logout,
       copy,
+      ChevronDownIcon,
     };
   },
   components: { ClipboardCopyIcon, NTooltip },

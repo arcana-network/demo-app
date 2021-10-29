@@ -83,21 +83,24 @@
 </style>
 
 <script>
-import { onMounted } from "@vue/runtime-core";
+import { onBeforeMount, onMounted, inject } from "@vue/runtime-core";
 import { useStore } from "vuex";
 import { useRouter } from "vue-router";
 import bytes from "bytes";
 import { getArcanaAuth, getArcanaStorage } from "../utils/arcana-sdk";
 import { Wallet } from "ethers";
 // import { Arcana as ArcanaSDK } from "@arcana_tech/storage-sdk";
+import { useFileMixin } from "../mixins/file.mixin";
 
 export default {
   setup() {
     const store = useStore();
     const router = useRouter();
     let arcanaAuth;
+    const toast = inject("$toast");
+    const fileMixin = useFileMixin(toast);
 
-    onMounted(() => {
+    onBeforeMount(() => {
       document.title = "Login | Arcana Demo";
       arcanaAuth = getArcanaAuth();
       if (arcanaAuth.isLoggedIn("google")) {
@@ -142,6 +145,7 @@ export default {
               sharedWithMe: [],
               trash: [],
             };
+            fileMixin.getLimits();
             store.dispatch("updateStorage", {
               totalStorage: user.totalStorage,
               storageUsed: user.storageUsed,

@@ -373,12 +373,7 @@ export default {
 
     let menuItemsArr = [];
     if (props.pageTitle === "My Files") {
-      menuItemsArr = [
-        // menuItem.verify,
-        menuItem.download,
-        menuItem.share,
-        menuItem.remove,
-      ];
+      menuItemsArr = [menuItem.download, menuItem.share, menuItem.remove];
     } else if (props.pageTitle === "Shared With Me") {
       menuItemsArr = [menuItem.download];
     } else {
