@@ -29,13 +29,16 @@ const mutations = {
 };
 
 const actions = {
-  updateFiles({ commit }, { myFiles, sharedWithMe, trash }) {
+  updateFiles({ commit }, { myFiles, sharedWithMe }) {
     commit("updateMyFiles", myFiles);
     commit("updateSharedWithMe", sharedWithMe);
-    commit("updateTrash", trash);
+    // commit("updateTrash", trash);
   },
   updateSharedWithMe({ commit }, sharedWithMe) {
     commit("updateSharedWithMe", sharedWithMe);
+  },
+  updateMyFiles({ commit }, myFiles) {
+    commit("updateMyFiles", myFiles);
   },
 };
 

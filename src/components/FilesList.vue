@@ -65,7 +65,7 @@
           <tbody style="color: #707070">
             <tr
               v-for="file in files"
-              :key="file.did"
+              :key="file.fileId"
               style="border-bottom: 2px solid #a1cdf8"
             >
               <td
@@ -114,13 +114,13 @@
       >
         <div
           v-for="file in files"
-          :key="file.did"
+          :key="file.fileId"
           class="w-44 h-48"
           style="border: 3px solid #e0e0e0; border-radius: 20px"
         >
           <div
             class="py-2 ml-1 mt-1 file-menu inline-block"
-            @click.stop="fileMenu(file.did, $event)"
+            @click.stop="fileMenu(file.fileId, $event)"
           >
             <DotsVerticalIcon class="h-5 w-5" />
           </div>
@@ -143,10 +143,10 @@
                     text-align: center;
                   "
                 >
-                  {{ file.name }}
+                  {{ file.fileId }}
                 </span>
               </template>
-              {{ file.name }}
+              {{ file.fileId }}
             </n-tooltip>
             <span
               class="font-ubuntu"
@@ -346,8 +346,17 @@ export default {
     menuItem.remove = {
       label: "Delete",
       icon: TrashIcon,
-      command: () => {},
-      disabled: true,
+      command: () => {
+        fileMixin.remove(selectedFile);
+      },
+    };
+
+    menuItem.revoke = {
+      label: "Revoke",
+      icon: PencilAltIcon,
+      command: () => {
+        console.log("Revoke");
+      },
     };
 
     menuItem.recover = {
@@ -365,13 +374,13 @@ export default {
     let menuItemsArr = [];
     if (props.pageTitle === "My Files") {
       menuItemsArr = [
-        menuItem.verify,
+        // menuItem.verify,
         menuItem.download,
         menuItem.share,
         menuItem.remove,
       ];
     } else if (props.pageTitle === "Shared With Me") {
-      menuItemsArr = [menuItem.verify, menuItem.download];
+      menuItemsArr = [menuItem.download];
     } else {
       menuItemsArr = [menuItem.recover, menuItem.delete];
     }

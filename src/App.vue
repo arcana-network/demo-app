@@ -1,6 +1,10 @@
 <template>
   <fullsize-background>
-    <full-screen-loader v-if="loader" :message="loadingMessage" />
+    <full-screen-loader
+      v-if="loader"
+      :key="'arcana-demo-app-loader'"
+      :message="loadingMessage"
+    />
     <app-sidebar v-if="privateKey && $route.name !== 'Login'" />
     <router-view></router-view>
   </fullsize-background>

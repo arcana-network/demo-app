@@ -9,6 +9,8 @@ const state = {
   redirectTo: {},
   totalStorage: 0,
   storageUsed: 0,
+  totalBandwidth: 0,
+  bandwidthUsed: 0,
 };
 
 const getters = {
@@ -19,6 +21,12 @@ const getters = {
     return {
       totalStorage: state.totalStorage,
       storageUsed: state.storageUsed,
+    };
+  },
+  bandwidth: (state) => {
+    return {
+      totalBandwidth: state.totalBandwidth,
+      bandwidthUsed: state.bandwidthUsed,
     };
   },
 };
@@ -36,6 +44,12 @@ const mutations = {
   updateStorageUsed(state, storageUsed) {
     state.storageUsed = storageUsed;
   },
+  updateTotalBandwidth(state, totalBandwidth) {
+    state.totalBandwidth = totalBandwidth;
+  },
+  updateBandwidthUsed(state, bandwidthUsed) {
+    state.bandwidthUsed = bandwidthUsed;
+  },
 };
 
 const actions = {
@@ -48,6 +62,10 @@ const actions = {
   updateStorage({ commit }, payload) {
     commit("updateTotalStorage", payload.totalStorage);
     commit("updateStorageUsed", payload.storageUsed);
+  },
+  updateBandwidth({ commit }, payload) {
+    commit("updateTotalBandwidth", payload.totalBandwidth);
+    commit("updateBandwidthUsed", payload.bandwidthUsed);
   },
 };
 

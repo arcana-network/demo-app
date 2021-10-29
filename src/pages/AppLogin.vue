@@ -87,8 +87,9 @@ import { onMounted } from "@vue/runtime-core";
 import { useStore } from "vuex";
 import { useRouter } from "vue-router";
 import bytes from "bytes";
-import { getArcanaAuth } from "../utils/arcana-login";
+import { getArcanaAuth, getArcanaStorage } from "../utils/arcana-sdk";
 import { Wallet } from "ethers";
+// import { Arcana as ArcanaSDK } from "@arcana_tech/storage-sdk";
 
 export default {
   setup() {
@@ -132,8 +133,10 @@ export default {
           })
           .then(async () => {
             let user = {
-              totalStorage: bytes("25GB"),
+              totalStorage: bytes("5 GB"),
+              totalBandwidth: bytes("5 GB"),
               storageUsed: 0,
+              bandwidthUsed: 0,
               address: actualPublicKey,
               myFiles: [],
               sharedWithMe: [],
@@ -143,20 +146,18 @@ export default {
               totalStorage: user.totalStorage,
               storageUsed: user.storageUsed,
             });
-            const address = import.meta.env.VITE_ARCANA_APP_ID;
-            const Arcana = new arcana.Arcana(
-              address,
-              store.getters.privateKey,
-              store.getters.email
-            );
-            let myfiles = await Arcana.myFiles();
+            store.dispatch("updateBandwidth", {
+              totalBandwidth: user.totalBandwidth,
+              bandwidthUsed: user.bandwidthUsed,
+            });
+            const arcanaStorage = getArcanaStorage();
+            let myfiles = await arcanaStorage.myFiles();
             myfiles = myfiles ? myfiles : [];
-            let sharedFiles = await Arcana.sharedFiles();
+            let sharedFiles = await arcanaStorage.sharedFiles();
             console.log("shared", actualPublicKey, sharedFiles);
             sharedFiles = sharedFiles ? sharedFiles : [];
             user.myFiles = myfiles.map((d) => {
               d["fileId"] = d["did"];
-              delete d["did"];
               return d;
             });
             user.sharedWithMe = sharedFiles.map((d) => {
@@ -165,13 +166,6 @@ export default {
             });
             console.log("shared After", user);
             store.dispatch("updateFiles", user);
-            // if (store.getters.redirectTo.name) {
-            //   const redirectTo = store.getters.redirectTo;
-            //   store.dispatch("removeRedirect");
-            //   router
-            //     .replace(redirectTo)
-            //     .then(() => store.dispatch("hideLoader"));
-            // } else
             router
               .replace({ name: "My Files" })
               .then(() => store.dispatch("hideLoader"));

@@ -30,17 +30,26 @@ export default {
     const store = useStore();
     let files = computed(() => {
       files = store.getters.sharedWithMe;
-      console.log("Files inside comp",files)
+      console.log("Files inside comp", files);
       return files;
     });
-    // onMounted(() => {
-    //   document.title = "Shared With Me | Arcana Demo";
-    //   const publicKey = store.getters.publicKey;
-    //   findUser(publicKey).then((snapshot) => {
-    //     const user = snapshot.data();
-    //     store.dispatch("updateSharedWithMe", user.sharedWithMe);
-    //   });
-    // });
+    onMounted(async () => {
+      document.title = "Shared With Me | Arcana Demo";
+      const address = import.meta.env.VITE_ARCANA_APP_ID;
+      const Arcana = new arcana.Arcana(
+        address,
+        store.getters.privateKey,
+        store.getters.email
+      );
+      let sharedFiles = await Arcana.sharedFiles();
+      store.dispatch(
+        "updateSharedWithMe",
+        sharedFiles.map((d) => {
+          d["fileId"] = d["did"];
+          return d;
+        })
+      );
+    });
 
     return {
       files,

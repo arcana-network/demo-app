@@ -169,7 +169,7 @@ import { saveAs } from "file-saver";
 import { ClipboardCopyIcon } from "@heroicons/vue/outline";
 import copyToClipboard from "../utils/copyToClipboard";
 import { NTooltip } from "naive-ui";
-import * as arcanaAuth from "../utils/arcana-login";
+import * as arcanaAuth from "../utils/arcana-sdk";
 
 export default {
   setup() {

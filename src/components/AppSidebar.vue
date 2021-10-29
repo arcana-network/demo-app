@@ -88,8 +88,10 @@
       </div>
     </div>
     <div class="absolute bottom-4 mx-auto footer">
-      <div class="mt-10 font-ubuntu font-bold">Storage Status</div>
-      <div class="my-1">
+      <div class="mt-8 font-ubuntu font-bold" style="font-size: 1.5em">
+        Storage Status
+      </div>
+      <div class="my-2">
         <div class="progress-container mx-auto">
           <div
             class="progress-success-container"
@@ -97,20 +99,25 @@
           ></div>
         </div>
       </div>
-      <div class="my-1 font-ubuntu font-bold">
-        {{ bytes(storage.storageUsed) }} of {{ bytes(storage.totalStorage) }}
+      <div class="my-2 font-ubuntu" style="font-weight: 300">
+        <span style="font-weight: 800">{{ bytes(storage.storageUsed) }}</span>
+        of
+        <span style="font-weight: 800">{{ bytes(storage.totalStorage) }}</span>
       </div>
-      <div class="mt-10">
-        <button
-          class="
-            font-ubuntu font-bold
-            buy-more-storage
-            focus:outline-none
-            cursor-not-allowed
-          "
-        >
-          Buy more storage
-        </button>
+      <div class="mt-8 font-ubuntu font-bold" style="font-size: 1.5em">
+        Bandwidth Status
+      </div>
+      <div class="my-2">
+        <div class="progress-container mx-auto">
+          <div
+            class="progress-success-container"
+            :style="{ width: storage.percentage + '%' }"
+          ></div>
+        </div>
+      </div>
+      <div class="my-2 font-ubuntu">
+        <span class="font-bold">{{ bytes(storage.storageUsed) }}</span> of
+        <span class="font-bold">{{ bytes(storage.totalStorage) }}</span>
       </div>
     </div>
   </div>
@@ -137,12 +144,12 @@
 
 @media screen and (max-width: 1024px) {
   .sidebar {
-    width: 0px;
-    transition: width 1s, z-index 1s;
+    transition: transform 0.5s;
+    transform: translateX(-340px);
     z-index: 10001;
   }
   .sidebar-active {
-    width: 340px;
+    transform: translateX(0);
   }
 
   .menu a {
@@ -178,8 +185,6 @@
 .footer {
   width: 340px;
   height: 220px;
-  background-image: url("/buystorage.png");
-  background-size: cover;
   text-align: center;
   color: white;
   font-weight: bold;
@@ -196,16 +201,16 @@
 
 .progress-container {
   background-color: #eef1f6;
-  width: 160px;
-  height: 6px;
+  width: 220px;
+  height: 8px;
   border-radius: 30px;
   overflow: hidden;
 }
 
 .progress-success-container {
   background-color: #26de43;
-  width: 0px;
-  height: 6px;
+  width: 0;
+  height: 8px;
   border-radius: 30px;
 }
 

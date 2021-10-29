@@ -1,5 +1,6 @@
 import { useStore } from "vuex";
-import { getArcanaAuth } from "../utils/arcana-login";
+import { getArcanaAuth, getArcanaStorage } from "../utils/arcana-sdk";
+import bytes from "bytes";
 
 const successToast = {
   styles: {
@@ -7,25 +8,48 @@ const successToast = {
   },
   type: "success",
 };
-const address = import.meta.env.VITE_ARCANA_APP_ID;
+
+const errorToast = {
+  styles: {
+    backgroundColor: "red",
+  },
+  type: "error",
+};
+
+const NO_SPACE = "No space left for user";
+const UNAUTHORIZED = "UNAUTHORIZED";
 
 export function useFileMixin(toast) {
   const store = useStore();
-  const Arcana = new arcana.Arcana(
-    address,
-    store.getters.privateKey,
-    store.getters.email
-  );
 
   async function download(file) {
     store.dispatch(
       "showLoader",
       "Downloading chunks from distributed storage..."
     );
-    const downloder = await Arcana.getDownloader();
+    const arcanaStorage = getArcanaStorage();
+    const downloder = await arcanaStorage.getDownloader();
     let did = file.fileId;
     did = did.substring(0, 2) !== "0x" ? "0x" + did : did;
-    downloder.download(did);
+    downloder.download(did).catch((error) => {
+      console.error(error);
+      if (error.message === NO_SPACE) {
+        toast(
+          "Download failed. Bandwidth limit exceeded. Upgrade your account to continue",
+          errorToast
+        );
+        store.dispatch("hideLoader");
+      } else if (error.code === UNAUTHORIZED) {
+        toast(
+          "Seems like you don't have access to download this file",
+          errorToast
+        );
+        store.dispatch("hideLoader");
+      } else {
+        toast("Something went wrong. Try again", errorToast);
+        store.dispatch("hideLoader");
+      }
+    });
     downloder.onSuccess = () => {
       toast("All chunks downloaded", successToast);
       toast(
@@ -35,39 +59,13 @@ export function useFileMixin(toast) {
       store.dispatch("hideLoader");
     };
     downloder.onProgress = (a, b) => {
-      store.dispatch("showLoader", `Completed ${a} out of ${b} bytes`);
+      store.dispatch("showLoader", `Completed ${bytes(a)} out of ${bytes(b)}`);
     };
-    // setTimeout(() => {
-    //   store.dispatch("showLoader", "Decrypting data and recreating file...");
-
-    //   downloadFile(file.did).then((fileBlob) => {
-    //     if (toast) {
-    //       toast("All chunks downloaded", successToast);
-    //       store.dispatch("showLoader", "Updating transaction on blockchain...");
-    //       saveAs(fileBlob, file.name);
-    //       const transaction = {
-    //         type: "download",
-    //         hash: generateId(),
-    //         did: file.did,
-    //         timestamp: Date.now(),
-    //         transactionFee: 0.0001,
-    //         status: "File Downloaded",
-    //       };
-    //       addTx(transaction);
-    //       toast(
-    //         "Transaction successfully updated in arcana network's blockchain",
-    //         successToast
-    //       );
-    //       store.dispatch("hideLoader");
-    //     }
-    //   });
-    // }, 2000);
   }
 
   async function share(fileToShare, email) {
     store.dispatch("showLoader", "Sharing file...");
     const arcanaAuth = getArcanaAuth();
-    console.log({ arcanaAuth });
     arcanaAuth
       .getPublicKey({ verifier: "google", id: email })
       .then(async (publicKey) => {
@@ -80,123 +78,89 @@ export function useFileMixin(toast) {
           publicKey.X.padStart(64, "0") +
           publicKey.Y.padStart(64, "0");
         console.log(actualPublicKey, email, fileToShare);
-        const access = await Arcana.getAccess();
+        const arcanaStorage = getArcanaStorage();
+        const access = await arcanaStorage.getAccess();
         let did = fileToShare.fileId;
         did = did.substring(0, 2) != "0x" ? "0x" + did : did;
         store.dispatch("showLoader", `Sharing file with ${email}`);
-
-        await access.share([did], [actualPublicKey], [1000000]);
-        toast(`Shared file successfully with ${email}`, successToast);
-        store.dispatch("hideLoader");
-
-        // const file = Object.assign({}, fileToShare);
-        // file.ref = generateId();
-        // let user;
-        // findUser(actualPublicKey).then((snapshot) => {
-        //   if (snapshot.exists) {
-        //     user = snapshot.data();
-        //     user.sharedWithMe.push(file);
-        //   } else {
-        //     user = {
-        //       address: actualPublicKey,
-        //       totalStorage: bytes("25GB"),
-        //       storageUsed: 0,
-        //       myFiles: [],
-        //       sharedWithMe: [file],
-        //       trash: [],
-        //     };
-        //   }
-        //   saveUser(user).then(() => {
-        //     toast("File shared with the recipient", successToast);
-        //     store.dispatch(
-        //       "showLoader",
-        //       "Updating transaction on blockchain......"
-        //     );
-        //     const tx = {
-        //       type: "share",
-        //       hash: file.ref,
-        //       did: file.did,
-        //       fileMeta: {
-        //         size: file.size,
-        //       },
-        //       timestamp: Date.now(),
-        //       transactionFee: 0.0001,
-        //       status: "File Shared",
-        //     };
-        //     addTx(tx);
-        //     toast(
-        //       "Transaction successfully updated in arcana network's blockchain",
-        //       successToast
-        //     );
-        //     store.dispatch("hideLoader");
-        //   });
-        // });
+        try {
+          await access.share([did], [actualPublicKey], [1000000]);
+          toast(`Shared file successfully with ${email}`, successToast);
+          store.dispatch("hideLoader");
+        } catch (e) {
+          console.error(e);
+          toast("Something went wrong. Try again", errorToast);
+          store.dispatch("hideLoader");
+        }
       });
   }
 
   function remove() {}
 
   async function upload(fileToUpload) {
-    store.dispatch("showLoader", "Encrypting file...");
-    const publicKey = store.getters.publicKey;
-    const uploader = await Arcana.getUploader();
-    store.dispatch("showLoader", "Uploading file to distributed storage...");
+    try {
+      store.dispatch("showLoader", "Encrypting file...");
+      const arcanaStorage = getArcanaStorage();
+      const uploader = await arcanaStorage.getUploader();
+      store.dispatch("showLoader", "Uploading file to distributed storage...");
+      let uploadDate, totalSize, did;
 
-    const did = uploader.upload(fileToUpload);
-    uploader.onProgress = (uploaded, total) => {
-      store.dispatch("showLoader", `Uploaded ${uploaded} out of ${total}`);
-    };
-    uploader.onSuccess = () => {
-      toast("Upload Success", successToast);
-      toast(
-        "Transaction successfully updated in arcana network's blockchain",
-        successToast
-      );
+      uploadDate = new Date();
+
+      uploader
+        .upload(fileToUpload)
+        .then((fileDid) => {
+          did = fileDid;
+        })
+        .catch((error) => {
+          console.error(error);
+          if (error.message === NO_SPACE) {
+            toast(
+              "Upload failed. Storage limit exceeded. Upgrade your account to continue",
+              errorToast
+            );
+            store.dispatch("hideLoader");
+          } else if (error.code === UNAUTHORIZED) {
+            toast("Upload failed. Kindly login and try again", errorToast);
+            store.dispatch("hideLoader");
+          } else {
+            toast("Something went wrong. Try again", errorToast);
+            store.dispatch("hideLoader");
+          }
+        });
+      uploader.onProgress = (uploaded, total) => {
+        store.dispatch(
+          "showLoader",
+          `Uploaded ${bytes(uploaded)} out of ${bytes(total)}`
+        );
+        totalSize = total;
+      };
+      uploader.onSuccess = () => {
+        toast("Upload Success", successToast);
+        toast(
+          "Transaction successfully updated in arcana network's blockchain",
+          successToast
+        );
+        console.log("Upload Success");
+        let myFiles = [...store.getters.myFiles];
+        console.log(did);
+        myFiles.push({
+          fileId: did,
+          did,
+          createdAt: uploadDate,
+          size: totalSize,
+        });
+        store.dispatch("updateMyFiles", myFiles);
+        store.dispatch("hideLoader");
+      };
+      uploader.onError = (err) => {
+        console.log("Error caught", err);
+      };
+    } catch (e) {
+      console.error(e);
+      toast("Something went wrong. Try again", errorToast);
       store.dispatch("hideLoader");
-    };
-
-    // findUser(publicKey).then((snapshot) => {
-    //   setTimeout(() => {
-    //     const user = snapshot.data();
-    //     const uploadTask = uploadFile(fileToUpload, did);
-    //     uploadTask.on(
-    //       "state_changed",
-    //       () => {
-    //         //State change handler
-    //       },
-    //       () => {
-    //         //Error handler
-    //       },
-    //       () => {
-    //         //Success handler
-    //         const hash = generateId();
-    //         user.myFiles.push({
-    //           type: "file",
-    //           fileId: did,
-    //           name: fileToUpload.name,
-    //           size: fileToUpload.size,
-    //           fileType: fileToUpload.type,
-    //           createdAt: Date.now(),
-    //           did: did,
-    //           ref: hash,
-    //         });
-    //         saveUser(user);
-    //         const tx = {
-    //           type: "upload",
-    //           hash,
-    //           did,
-    //           fileMeta: {
-    //             size: fileToUpload.size,
-    //           },
-    //           timestamp: Date.now(),
-    //           transactionFee: 0.0035,
-    //           status: "File Uploaded",
-    //         };
-    //         addTx(tx);
-    //       }
-    //     );
-    //   }, 1000);
-    // });
+    }
   }
 
   return {
