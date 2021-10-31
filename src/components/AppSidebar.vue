@@ -253,6 +253,9 @@ import {
 import bytes from "bytes";
 import FullScreenOverlay from "./FullScreenOverlay.vue";
 
+const UNLIMITED = "Unlimited";
+const TEN_TB = "10 TB";
+
 export default {
   setup() {
     const route = useRoute();
@@ -261,8 +264,8 @@ export default {
     let menu = ref(false);
     let storage = computed(() => {
       const storageState = store.getters.storage;
-      if (storageState.totalStorage === bytes("10 TB")) {
-        storageState.totalStorage = "Unlimited";
+      if (storageState.totalStorage === bytes(TEN_TB)) {
+        storageState.totalStorage = UNLIMITED;
         return {
           ...storageState,
           percentage: storageState.storageUsed === 0 ? 0 : 1,
@@ -278,8 +281,8 @@ export default {
 
     let bandwidth = computed(() => {
       const bandwidthState = store.getters.bandwidth;
-      if (bandwidthState.totalBandwidth === bytes("10 TB")) {
-        bandwidthState.totalBandwidth = "Unlimited";
+      if (bandwidthState.totalBandwidth === bytes(TEN_TB)) {
+        bandwidthState.totalBandwidth = UNLIMITED;
         return {
           ...bandwidthState,
           percentage: bandwidthState.bandwidthUsed === 0 ? 0 : 1,
@@ -329,6 +332,9 @@ export default {
     }
 
     function readableBytes(value) {
+      if (value === UNLIMITED) {
+        return UNLIMITED;
+      }
       return bytes(value);
     }
 
