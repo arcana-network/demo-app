@@ -85,7 +85,7 @@
                 {{ file.fileId }}
               </td>
               <td class="pt-6 pb-3" style="vertical-align: middle">
-                {{ getReadableDate(file.createdAt) }}
+                {{ getReadableDate(file.uploaded_on) }}
               </td>
               <td class="pt-6 pb-3" style="vertical-align: middle">
                 {{ getReadableSize(file.size) }}

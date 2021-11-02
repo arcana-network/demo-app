@@ -22,6 +22,7 @@ import { onMounted, computed } from "@vue/runtime-core";
 import UserProfile from "../components/UserProfile.vue";
 import FilesList from "../components/FilesList.vue";
 import { useStore } from "vuex";
+import { getArcanaStorage } from "../utils/arcana-sdk";
 // import { findUser } from "../services/user.service";
 
 export default {
@@ -33,12 +34,7 @@ export default {
     });
     onMounted(async () => {
       document.title = "Shared With Me | Arcana Demo";
-      const address = import.meta.env.VITE_ARCANA_APP_ID;
-      const Arcana = new arcana.Arcana(
-        address,
-        store.getters.privateKey,
-        store.getters.email
-      );
+      const Arcana = getArcanaStorage();
       let sharedFiles = await Arcana.sharedFiles();
       store.dispatch(
         "updateSharedWithMe",
