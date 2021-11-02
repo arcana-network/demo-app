@@ -7,6 +7,7 @@ import "@/index.css";
 import { Buffer } from "buffer";
 
 window.Buffer = Buffer;
+globalThis.global = globalThis;
 
 const app = createApp(App);
 
