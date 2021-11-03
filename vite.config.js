@@ -2,11 +2,12 @@ import { defineConfig } from "vite";
 import vue from "@vitejs/plugin-vue";
 import path from "path";
 // import inject from "@rollup/plugin-inject";
+// import { viteCommonjs, esbuildCommonjs } from "@originjs/vite-plugin-commonjs";
+import resolve from "@rollup/plugin-node-resolve";
+import commonjs from "@rollup/plugin-commonjs";
+import nodePolyfills from "rollup-plugin-node-polyfills";
 import builtins from "rollup-plugin-node-builtins";
-import globals from "rollup-plugin-node-globals";
-import { viteCommonjs, esbuildCommonjs } from "@originjs/vite-plugin-commonjs";
-import commonjs from "rollup-plugin-commonjs";
-import nodeResolve from "rollup-plugin-node-resolve";
+// import babel from "@rollup/plugin-babel";
 
 export default defineConfig({
   resolve: {
@@ -16,27 +17,13 @@ export default defineConfig({
       crypto: "crypto-browserify",
     },
   },
-  plugins: [
-    vue(),
-    globals(),
-    builtins(),
-    esbuildCommonjs(["@arcana_tech/arcana-login", "@arcana_tech/storage-sdk"]),
-  ],
+  plugins: [vue()],
   build: {
-    chunkSizeWarningLimit: 1024,
+    chunkSizeWarningLimit: 2048,
     rollupOptions: {
-      plugins: [
-        globals(),
-        builtins(),
-        nodeResolve(),
-        commonjs({
-          namedExports: {
-            "js-sha3": ["default"],
-          },
-          include: "node_modules/**", // Default: undefined
-        }),
-      ],
+      plugins: [builtins(), commonjs(), resolve()],
     },
+    commonjsOptions: {},
   },
   define: {
     "process.env": process.env,

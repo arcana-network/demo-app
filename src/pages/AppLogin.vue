@@ -118,7 +118,9 @@ export default {
           id: userInfo.id,
         });
         const actualPublicKey =
-          publicKey.X.padStart(64, "0") + publicKey.Y.padStart(64, "0");
+          "0x04" +
+          publicKey.X.padStart(64, "0") +
+          publicKey.Y.padStart(64, "0");
         const wallet = new Wallet(pk.privateKey);
         store.dispatch("addBasicDetails", {
           email: userInfo.id,
