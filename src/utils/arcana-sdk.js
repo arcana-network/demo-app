@@ -1,4 +1,4 @@
-import { AuthProvider } from "@arcana_tech/arcana-login";
+import { AuthProvider } from "arcana-login";
 import { Arcana as ArcanaSDK } from "@arcana_tech/storage-sdk";
 import store from "../store";
 
