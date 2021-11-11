@@ -1,9 +1,12 @@
-import { AuthProvider } from "arcana-login";
-import { Arcana as ArcanaSDK } from "@arcana_tech/storage-sdk";
+// import { AuthProvider } from "arcana-login";
+import { Arcana as ArcanaSDK } from "@arcana/storage/dist/standalone/storage.umd";
 import store from "../store";
 
-// const { AuthProvider } = window.arcana_login;
+// Use this until Login SDK is polyfilled
+const { AuthProvider } = window.arcana_login;
 // const ArcanaSDK = window.arcana.Arcana;
+
+console.log({ ArcanaSDK });
 
 const arcanaAuth = new AuthProvider({
   appID: import.meta.env.VITE_ARCANA_APP_ID,
@@ -27,11 +30,12 @@ export function getArcanaAuth() {
 }
 
 export function getArcanaStorage() {
-  const Arcana = new ArcanaSDK(
+  const Arcana = new ArcanaSDK({
+    gateway: "https://gateway02.arcana.network",
     address,
-    store.getters.privateKey,
-    store.getters.email
-  );
+    privateKey: store.getters.privateKey,
+    email: store.getters.email,
+  });
   return Arcana;
 }
 
