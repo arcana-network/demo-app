@@ -136,6 +136,7 @@ export function useFileMixin(toast) {
   }
 
   async function upload(fileToUpload) {
+    console.time("Upload");
     try {
       store.dispatch("showLoader", "Encrypting file...");
       const arcanaStorage = getArcanaStorage();
@@ -189,6 +190,7 @@ export function useFileMixin(toast) {
         });
         store.dispatch("updateMyFiles", myFiles);
         store.dispatch("hideLoader");
+        console.timeEnd("Upload");
       };
       uploader.onError = (err) => {
         console.error("Error caught", err);

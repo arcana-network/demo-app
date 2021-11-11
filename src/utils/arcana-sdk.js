@@ -8,18 +8,19 @@ const { AuthProvider } = window.arcana_login;
 
 console.log({ ArcanaSDK });
 
+const address = import.meta.env.VITE_ARCANA_APP_ADDRESS;
+const appId = import.meta.env.VITE_ARCANA_APP_ID;
+
 const arcanaAuth = new AuthProvider({
-  appID: import.meta.env.VITE_ARCANA_APP_ID,
+  appID: address,
   oauthCreds: [
     {
       type: "google",
       clientId: import.meta.env.VITE_GOOGLE_CLIENT_ID,
-      redirectUri: import.meta.env.VITE_REDIRECT_URL,
     },
   ],
+  redirectUri: import.meta.env.VITE_REDIRECT_URL,
 });
-
-const address = import.meta.env.VITE_ARCANA_APP_ID;
 
 export function getArcanaAuthProvider() {
   return AuthProvider;
@@ -31,8 +32,8 @@ export function getArcanaAuth() {
 
 export function getArcanaStorage() {
   const Arcana = new ArcanaSDK({
-    gateway: "https://gateway02.arcana.network",
-    address,
+    gateway: "https://gateway02.arcana.network/",
+    appId,
     privateKey: store.getters.privateKey,
     email: store.getters.email,
   });
@@ -40,6 +41,6 @@ export function getArcanaStorage() {
 }
 
 export function logout() {
-  arcanaAuth.clearSession();
+  arcanaAuth.logout();
   sessionStorage.clear();
 }
