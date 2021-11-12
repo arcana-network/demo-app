@@ -1,9 +1,9 @@
-// import { AuthProvider } from "arcana-login";
+import { AuthProvider } from "@arcana/auth";
 import { Arcana as ArcanaSDK } from "@arcana/storage/dist/standalone/storage.umd";
 import store from "../store";
 
 // Use this until Login SDK is polyfilled
-const { AuthProvider } = window.arcana_login;
+// const { AuthProvider } = window.arcana_login;
 // const ArcanaSDK = window.arcana.Arcana;
 
 console.log({ ArcanaSDK });
