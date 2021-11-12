@@ -1,5 +1,5 @@
-import { AuthProvider } from "arcana-login";
-import { Arcana as ArcanaSDK } from "@arcana_tech/storage-sdk";
+import { AuthProvider } from "@arcana/login";
+import { Arcana as ArcanaSDK } from "@arcana/storage";
 import store from "../store";
 
 // const { AuthProvider } = window.arcana_login;

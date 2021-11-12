@@ -7,9 +7,9 @@
     "serve": "vite preview"
   },
   "dependencies": {
-    "@arcana_tech/storage-sdk": "0.0.10",
+    "@arcana/auth": "^0.0.1",
+    "@arcana/storage": "^0.0.2",
     "@heroicons/vue": "^1.0.1",
-    "arcana-login": "/home/shrinath/newfang/login-sdk/arcana_login",
     "buffer": "^6.0.3",
     "bytes": "^3.1.0",
     "ethers": "^5.5.1",
