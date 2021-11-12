@@ -2,24 +2,20 @@ import { AuthProvider } from "@arcana/auth";
 import { Arcana as ArcanaSDK } from "@arcana/storage/dist/standalone/storage.umd";
 import store from "../store";
 
-// Use this until Login SDK is polyfilled
-// const { AuthProvider } = window.arcana_login;
-// const ArcanaSDK = window.arcana.Arcana;
-
-console.log({ ArcanaSDK });
-
-const address = import.meta.env.VITE_ARCANA_APP_ADDRESS;
 const appId = import.meta.env.VITE_ARCANA_APP_ID;
+const gateway = import.meta.env.VITE_GATEWAY_URL;
+const googleClientId = import.meta.env.VITE_GOOGLE_CLIENT_ID;
+const redirectUri = import.meta.env.VITE_REDIRECT_URL;
 
 const arcanaAuth = new AuthProvider({
-  appID: address,
+  appID: appId,
   oauthCreds: [
     {
       type: "google",
-      clientId: import.meta.env.VITE_GOOGLE_CLIENT_ID,
+      clientId: googleClientId,
     },
   ],
-  redirectUri: import.meta.env.VITE_REDIRECT_URL,
+  redirectUri,
 });
 
 export function getArcanaAuthProvider() {
@@ -32,7 +28,7 @@ export function getArcanaAuth() {
 
 export function getArcanaStorage() {
   const Arcana = new ArcanaSDK({
-    gateway: "https://gateway02.arcana.network/",
+    gateway,
     appId,
     privateKey: store.getters.privateKey,
     email: store.getters.email,

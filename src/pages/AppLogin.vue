@@ -112,7 +112,7 @@ export default {
       try {
         store.dispatch("showLoader", "Fetching keys and wallet address...");
         if (!arcanaAuth.isLoggedIn()) {
-          await arcanaAuth.login("google");
+          await arcanaAuth.loginWithSocial("google");
         }
         const userInfo = arcanaAuth.getUserInfo();
         const publicKey = await arcanaAuth.getPublicKey({
