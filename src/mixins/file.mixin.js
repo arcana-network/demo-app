@@ -114,6 +114,38 @@ export function useFileMixin(toast) {
     }
   }
 
+  async function getSharedUsers(did) {
+    const arcanaStorage = getArcanaStorage();
+    try {
+      const access = await arcanaStorage.getAccess();
+      const fileId = did.substring(0, 2) !== "0x" ? "0x" + did : did;
+      const users = await access.getSharedUsers(fileId);
+      return users;
+    } catch (e) {
+      console.error(e);
+      toast(
+        "Something went wrong while fetching shared users list",
+        errorToast
+      );
+    }
+  }
+
+  async function revoke(did, address) {
+    store.dispatch("showLoader", "Revoking file access...");
+    const arcanaStorage = getArcanaStorage();
+    try {
+      const access = await arcanaStorage.getAccess();
+      const fileId = did.substring(0, 2) !== "0x" ? "0x" + did : did;
+      await access.revoke(fileId, address);
+      toast(`File Access Revoked`, successToast);
+      store.dispatch("hideLoader");
+    } catch (e) {
+      console.error(e);
+      toast("Something went wrong. Try again", errorToast);
+      store.dispatch("hideLoader");
+    }
+  }
+
   async function remove(fileToDelete) {
     store.dispatch("showLoader", "Deleting file...");
     const arcanaStorage = getArcanaStorage();
@@ -209,6 +241,8 @@ export function useFileMixin(toast) {
     remove,
     upload,
     share,
+    getSharedUsers,
+    revoke,
     updateLimits,
   };
 }

@@ -355,7 +355,9 @@ export default {
       label: "Revoke",
       icon: PencilAltIcon,
       command: () => {
-        console.log("Revoke");
+        fileMixin
+          .getSharedUsers(selectedFile.fileId)
+          .then((res) => console.log(res));
       },
     };
 
