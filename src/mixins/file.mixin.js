@@ -44,6 +44,7 @@ export function useFileMixin(toast) {
   }
 
   async function download(file) {
+    const downloadStart = Date.now();
     store.dispatch(
       "showLoader",
       "Downloading chunks from distributed storage..."
@@ -79,6 +80,11 @@ export function useFileMixin(toast) {
         successToast
       );
       store.dispatch("hideLoader");
+      const downloadEnd = Date.now();
+      console.log(
+        "DOWNLOAD COMPLETED",
+        `${(downloadEnd - downloadStart) / 1000}s`
+      );
     };
     downloder.onProgress = (a, b) => {
       store.dispatch("showLoader", `Completed ${bytes(a)} out of ${bytes(b)}`);
@@ -86,6 +92,7 @@ export function useFileMixin(toast) {
   }
 
   async function share(fileToShare, email) {
+    const shareStart = Date.now();
     store.dispatch("showLoader", "Sharing file...");
     try {
       const arcanaAuth = getArcanaAuth();
@@ -107,6 +114,43 @@ export function useFileMixin(toast) {
       await access.share([did], [actualPublicKey], [1000000]);
       toast(`Shared file successfully with ${email}`, successToast);
       store.dispatch("hideLoader");
+      const shareEnd = Date.now();
+      console.log("SHARE COMPLETED", `${(shareEnd - shareStart) / 1000}s`);
+    } catch (e) {
+      console.error(e);
+      toast("Something went wrong. Try again", errorToast);
+      store.dispatch("hideLoader");
+    }
+  }
+
+  async function getSharedUsers(did) {
+    const arcanaStorage = getArcanaStorage();
+    try {
+      const access = await arcanaStorage.getAccess();
+      const fileId = did.substring(0, 2) !== "0x" ? "0x" + did : did;
+      const users = await access.getSharedUsers(fileId);
+      return users;
+    } catch (e) {
+      console.error(e);
+      toast(
+        "Something went wrong while fetching shared users list",
+        errorToast
+      );
+    }
+  }
+
+  async function revoke(did, address) {
+    const revokeStart = Date.now();
+    store.dispatch("showLoader", "Revoking file access...");
+    const arcanaStorage = getArcanaStorage();
+    try {
+      const access = await arcanaStorage.getAccess();
+      const fileId = did.substring(0, 2) !== "0x" ? "0x" + did : did;
+      await access.revoke(fileId, address);
+      toast(`File Access Revoked`, successToast);
+      store.dispatch("hideLoader");
+      const revokeEnd = Date.now();
+      console.log("REVOKE COMPLETED", `${(revokeEnd - revokeStart) / 1000}s`);
     } catch (e) {
       console.error(e);
       toast("Something went wrong. Try again", errorToast);
@@ -115,6 +159,7 @@ export function useFileMixin(toast) {
   }
 
   async function remove(fileToDelete) {
+    const deleteStart = Date.now();
     store.dispatch("showLoader", "Deleting file...");
     const arcanaStorage = getArcanaStorage();
     const access = await arcanaStorage.getAccess();
@@ -128,6 +173,8 @@ export function useFileMixin(toast) {
       store.dispatch("updateMyFiles", myFiles);
       toast(`File Deleted`, successToast);
       store.dispatch("hideLoader");
+      const deleteEnd = Date.now();
+      console.log("DELETE COMPLETED", `${(deleteEnd - deleteStart) / 1000}s`);
     } catch (e) {
       console.error(e);
       toast("Something went wrong. Try again", errorToast);
@@ -136,6 +183,7 @@ export function useFileMixin(toast) {
   }
 
   async function upload(fileToUpload) {
+    const uploadStart = Date.now();
     try {
       store.dispatch("showLoader", "Encrypting file...");
       const arcanaStorage = getArcanaStorage();
@@ -189,6 +237,8 @@ export function useFileMixin(toast) {
         });
         store.dispatch("updateMyFiles", myFiles);
         store.dispatch("hideLoader");
+        const uploadEnd = Date.now();
+        console.log("UPLOAD COMPLETED", `${(uploadEnd - uploadStart) / 1000}s`);
       };
       uploader.onError = (err) => {
         console.error("Error caught", err);
@@ -207,6 +257,8 @@ export function useFileMixin(toast) {
     remove,
     upload,
     share,
+    getSharedUsers,
+    revoke,
     updateLimits,
   };
 }

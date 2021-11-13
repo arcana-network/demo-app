@@ -103,7 +103,7 @@ export default {
     onBeforeMount(() => {
       document.title = "Login | Arcana Demo";
       arcanaAuth = getArcanaAuth();
-      if (arcanaAuth.isLoggedIn("google")) {
+      if (arcanaAuth.isLoggedIn()) {
         onSignInClick();
       }
     });
@@ -111,26 +111,28 @@ export default {
     async function onSignInClick() {
       try {
         store.dispatch("showLoader", "Fetching keys and wallet address...");
-        const pk = await arcanaAuth.signIn("google");
-        const userInfo = await arcanaAuth.getUserInfo("google");
+        if (!arcanaAuth.isLoggedIn()) {
+          await arcanaAuth.loginWithSocial("google");
+        }
+        const userInfo = arcanaAuth.getUserInfo();
         const publicKey = await arcanaAuth.getPublicKey({
           verifier: "google",
-          id: userInfo.id,
+          id: userInfo.userInfo.id,
         });
         const actualPublicKey =
           "0x04" +
           publicKey.X.padStart(64, "0") +
           publicKey.Y.padStart(64, "0");
-        const wallet = new Wallet(pk.privateKey);
+        const wallet = new Wallet(userInfo.privateKey);
         store.dispatch("addBasicDetails", {
-          email: userInfo.id,
-          profileImage: userInfo.picture,
-          givenName: userInfo.name,
+          email: userInfo.userInfo.id,
+          profileImage: userInfo.userInfo.picture,
+          givenName: userInfo.userInfo.name,
         });
         store
           .dispatch("addCryptoDetails", {
             walletAddress: wallet.address,
-            privateKey: pk.privateKey,
+            privateKey: userInfo.privateKey,
             publicKey: actualPublicKey,
           })
           .then(async () => {

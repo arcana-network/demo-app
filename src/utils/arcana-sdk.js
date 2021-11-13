@@ -2,21 +2,21 @@ import { AuthProvider } from "@arcana/auth";
 import { Arcana as ArcanaSDK } from "@arcana/storage/dist/standalone/storage.umd";
 import store from "../store";
 
-// const { AuthProvider } = window.arcana_login;
-// const ArcanaSDK = window.arcana.Arcana;
+const appId = import.meta.env.VITE_ARCANA_APP_ID;
+const gateway = import.meta.env.VITE_GATEWAY_URL;
+const googleClientId = import.meta.env.VITE_GOOGLE_CLIENT_ID;
+const redirectUri = window.location.origin + "/auth/redirect";
 
 const arcanaAuth = new AuthProvider({
-  appID: import.meta.env.VITE_ARCANA_APP_ID,
+  appID: appId,
   oauthCreds: [
     {
       type: "google",
-      clientId: import.meta.env.VITE_GOOGLE_CLIENT_ID,
-      redirectUri: import.meta.env.VITE_REDIRECT_URL,
+      clientId: googleClientId,
     },
   ],
+  redirectUri,
 });
-
-const address = import.meta.env.VITE_ARCANA_APP_ID;
 
 export function getArcanaAuthProvider() {
   return AuthProvider;
@@ -27,15 +27,16 @@ export function getArcanaAuth() {
 }
 
 export function getArcanaStorage() {
-  const Arcana = new ArcanaSDK(
-    address,
-    store.getters.privateKey,
-    store.getters.email
-  );
+  const Arcana = new ArcanaSDK({
+    gateway,
+    appId,
+    privateKey: store.getters.privateKey,
+    email: store.getters.email,
+  });
   return Arcana;
 }
 
 export function logout() {
-  arcanaAuth.clearSession();
+  arcanaAuth.logout();
   sessionStorage.clear();
 }
