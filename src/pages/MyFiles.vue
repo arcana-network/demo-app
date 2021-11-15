@@ -42,20 +42,14 @@ export default {
       document.title = "My Files | Arcana Demo";
       let user = {
         myFiles: [],
-        sharedWithMe: [],
+        sharedWithMe: [...store.getters.sharedWithMe],
         trash: [],
       };
       await fileMixin.updateLimits();
       const arcanaStorage = getArcanaStorage();
       let myfiles = await arcanaStorage.myFiles();
       myfiles = myfiles ? myfiles : [];
-      let sharedFiles = await arcanaStorage.sharedFiles();
-      sharedFiles = sharedFiles ? sharedFiles : [];
       user.myFiles = myfiles.map((d) => {
-        d["fileId"] = d["did"];
-        return d;
-      });
-      user.sharedWithMe = sharedFiles.map((d) => {
         d["fileId"] = d["did"];
         return d;
       });
