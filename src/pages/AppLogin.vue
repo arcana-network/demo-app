@@ -110,10 +110,14 @@ export default {
 
     async function onSignInClick() {
       try {
-        store.dispatch("showLoader", "Fetching keys and wallet address...");
         if (!arcanaAuth.isLoggedIn()) {
+          store.dispatch("showLoader", "Logging in...");
           await arcanaAuth.loginWithSocial("google");
         }
+        store.dispatch(
+          "showLoader",
+          "Fetching keys and generating wallet address..."
+        );
         const userInfo = arcanaAuth.getUserInfo();
         const publicKey = await arcanaAuth.getPublicKey({
           verifier: "google",
@@ -129,6 +133,7 @@ export default {
           profileImage: userInfo.userInfo.picture,
           givenName: userInfo.userInfo.name,
         });
+
         store
           .dispatch("addCryptoDetails", {
             walletAddress: wallet.address,
@@ -142,6 +147,13 @@ export default {
               sharedWithMe: [],
               trash: [],
             };
+            toast("Login Success", {
+              styles: {
+                backgroundColor: "green",
+              },
+              type: "success",
+            });
+            store.dispatch("showLoader", "Fetching files...");
             await fileMixin.updateLimits();
             const arcanaStorage = getArcanaStorage();
             let myfiles = await arcanaStorage.myFiles();
@@ -163,6 +175,12 @@ export default {
           });
       } catch (e) {
         console.error("error", e);
+        toast("Something went wrong. Try again", {
+          styles: {
+            backgroundColor: "red",
+          },
+          type: "error",
+        });
         store.dispatch("hideLoader");
       }
     }

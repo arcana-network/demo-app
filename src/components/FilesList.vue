@@ -304,13 +304,24 @@ import moment from "moment";
 import { useFileMixin } from "../mixins/file.mixin";
 
 export default {
+  name: "FilesList",
+  props: ["files", "pageTitle"],
+  components: {
+    ViewGridIcon,
+    ViewListIcon,
+    DotsVerticalIcon,
+    SearchIcon,
+    DropdownMenu,
+    NTooltip,
+    DialogBox,
+  },
   setup(props) {
     let listType = ref("table");
     let menuPosition = ref({});
     let showMenu = ref(false);
     let shareDialog = ref(false);
     let shareEmail = ref("");
-    let shareEmailInvalid = ref(false);
+    let shareEmailInvalid = ref(true);
     const toast = inject("$toast");
     const fileMixin = useFileMixin(toast);
     let selectedFile;
@@ -375,7 +386,12 @@ export default {
 
     let menuItemsArr = [];
     if (props.pageTitle === "My Files") {
-      menuItemsArr = [menuItem.download, menuItem.share, menuItem.remove];
+      menuItemsArr = [
+        menuItem.download,
+        menuItem.share,
+        menuItem.revoke,
+        menuItem.remove,
+      ];
     } else if (props.pageTitle === "Shared With Me") {
       menuItemsArr = [menuItem.download];
     } else {
@@ -432,8 +448,11 @@ export default {
       shareDialog.value = false;
     }
 
-    function shareFile() {
-      fileMixin.share(selectedFile, shareEmail.value);
+    async function shareFile() {
+      const emails = shareEmail.value.split(",");
+      for (let i = 0; i < emails.length; i++) {
+        await fileMixin.share(selectedFile, emails[i]?.trim());
+      }
       closeDialog();
     }
 
@@ -444,8 +463,16 @@ export default {
     watch(
       () => shareEmail.value,
       () => {
-        if (isValidEmail(shareEmail.value)) {
-          shareEmailInvalid.value = false;
+        const emails = shareEmail.value.split(",");
+        shareEmailInvalid.value = false;
+        if (emails.length > 0) {
+          for (let i = 0; i < emails.length; i++) {
+            const email = emails[i]?.trim();
+            if (email && !isValidEmail(email)) {
+              shareEmailInvalid.value = true;
+              break;
+            }
+          }
         } else {
           shareEmailInvalid.value = true;
         }
@@ -468,16 +495,6 @@ export default {
       shareFile,
       closeDialog,
     };
-  },
-  props: ["files", "pageTitle"],
-  components: {
-    ViewGridIcon,
-    ViewListIcon,
-    DotsVerticalIcon,
-    SearchIcon,
-    DropdownMenu,
-    NTooltip,
-    DialogBox,
   },
 };
 </script>
