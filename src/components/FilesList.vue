@@ -32,9 +32,9 @@
         />
         <br />
         <span v-if="pageTitle === 'My Files'">Upload a file to begin</span>
-        <span v-else-if="pageTitle === 'Shared With Me'"
-          >No files shared with you</span
-        >
+        <span v-else-if="pageTitle === 'Shared With Me'">
+          No files shared with you
+        </span>
         <span v-else>No files added to Bin</span>
       </div>
     </div>
@@ -46,6 +46,7 @@
         @close="closeDropdown"
       >
       </DropdownMenu>
+
       <div
         v-if="listType === 'table'"
         class="overflow-x-auto transition-fade lg:mb-20 mb-20"
@@ -54,12 +55,12 @@
         <table style="width: 100%" class="font-bold">
           <thead style="color: #b9b8b8">
             <tr>
-              <th class="uppercase" style="text-align: left">Name</th>
-              <th class="uppercase" style="text-align: left; width: auto">
-                Last Modified
+              <th class="uppercase" style="text-align: left">File ID</th>
+              <th class="uppercase" style="width: 140px">Last Modified</th>
+              <th class="uppercase mb-6" style="text-align: left; width: 80px">
+                Size
               </th>
-              <th class="uppercase mb-6" style="text-align: left">Size</th>
-              <th class="uppercase mb-6" style="width: 20px"></th>
+              <th class="uppercase mb-6" style="width: 160px">Actions</th>
             </tr>
           </thead>
           <tbody style="color: #707070">
@@ -84,18 +85,35 @@
               >
                 {{ file.fileId }}
               </td>
-              <td class="pt-6 pb-3" style="vertical-align: middle">
+              <td
+                class="pt-6 pb-3"
+                style="vertical-align: middle; text-align: center"
+              >
                 {{ getReadableDate(file.uploaded_on) }}
               </td>
               <td class="pt-6 pb-3" style="vertical-align: middle">
                 {{ getReadableSize(file.size) }}
               </td>
               <td>
-                <div
-                  class="mt-2 py-2 file-menu"
-                  @click.stop="fileMenu(file, $event)"
-                >
-                  <DotsVerticalIcon class="h-5 w-5" />
+                <div class="mt-2 py-2">
+                  <n-tooltip
+                    trigger="hover"
+                    v-for="item in menuItems"
+                    :key="item.label + '-action'"
+                  >
+                    <template #trigger>
+                      <span
+                        class="file-menu inline-block"
+                        @click.stop="item.command(file)"
+                      >
+                        <component
+                          :is="item.icon"
+                          class="w-5 inline-block m-2"
+                        ></component>
+                      </span>
+                    </template>
+                    {{ item.label }}
+                  </n-tooltip>
                 </div>
               </td>
             </tr>
@@ -293,6 +311,8 @@ import {
   XCircleIcon,
   RefreshIcon,
   SearchIcon,
+  BackspaceIcon,
+  InformationCircleIcon,
 } from "@heroicons/vue/outline";
 import { NTooltip } from "naive-ui";
 import DropdownMenu from "./DropdownMenu.vue";
@@ -324,13 +344,13 @@ export default {
     let shareEmailInvalid = ref(true);
     const toast = inject("$toast");
     const fileMixin = useFileMixin(toast);
-    let selectedFile;
 
     let menuItem = {};
+    let fileToShare;
     menuItem.verify = {
       label: "Verify",
       icon: PencilAltIcon,
-      command: () => {
+      command: (selectedFile) => {
         window.open(
           "https://explorer.arcana.network/did/" + selectedFile.did,
           "__blank"
@@ -341,7 +361,7 @@ export default {
     menuItem.download = {
       label: "Download",
       icon: DownloadIcon,
-      command: () => {
+      command: (selectedFile) => {
         fileMixin.download(selectedFile);
       },
     };
@@ -349,7 +369,8 @@ export default {
     menuItem.share = {
       label: "Share",
       icon: ShareIcon,
-      command: () => {
+      command: (selectedFile) => {
+        fileToShare = selectedFile;
         shareDialog.value = true;
       },
     };
@@ -357,18 +378,18 @@ export default {
     menuItem.remove = {
       label: "Delete",
       icon: TrashIcon,
-      command: () => {
+      command: (selectedFile) => {
         fileMixin.remove(selectedFile);
       },
     };
 
     menuItem.revoke = {
       label: "Revoke",
-      icon: PencilAltIcon,
-      command: () => {
+      icon: BackspaceIcon,
+      command: (selectedFile) => {
         fileMixin
           .getSharedUsers(selectedFile.fileId)
-          .then((res) => console.log(res));
+          .then((res) => console.log(selectedFile.fileId, res));
       },
     };
 
@@ -451,7 +472,7 @@ export default {
     async function shareFile() {
       const emails = shareEmail.value.split(",");
       for (let i = 0; i < emails.length; i++) {
-        await fileMixin.share(selectedFile, emails[i]?.trim());
+        await fileMixin.share(fileToShare, emails[i]?.trim());
       }
       closeDialog();
     }
@@ -494,6 +515,7 @@ export default {
       getReadableSize,
       shareFile,
       closeDialog,
+      InformationCircleIcon,
     };
   },
 };
