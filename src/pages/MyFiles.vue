@@ -40,20 +40,17 @@ export default {
 
     onMounted(async () => {
       document.title = "My Files | Arcana Demo";
-      let user = {
-        myFiles: [],
-        sharedWithMe: [...store.getters.sharedWithMe],
-        trash: [],
-      };
       await fileMixin.updateLimits();
       const arcanaStorage = getArcanaStorage();
       let myfiles = await arcanaStorage.myFiles();
       myfiles = myfiles ? myfiles : [];
-      user.myFiles = myfiles.map((d) => {
-        d["fileId"] = d["did"];
-        return d;
-      });
-      store.dispatch("updateFiles", user);
+      store.dispatch(
+        "updateMyFiles",
+        myfiles.map((d) => {
+          d["fileId"] = d["did"];
+          return d;
+        })
+      );
     });
     return {
       files,
