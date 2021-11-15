@@ -121,6 +121,7 @@ export function useFileMixin(toast) {
       toast("Something went wrong. Try again", errorToast);
       store.dispatch("hideLoader");
     }
+    return;
   }
 
   async function getSharedUsers(did) {

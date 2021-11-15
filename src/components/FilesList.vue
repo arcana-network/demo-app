@@ -32,20 +32,13 @@
         />
         <br />
         <span v-if="pageTitle === 'My Files'">Upload a file to begin</span>
-        <span v-else-if="pageTitle === 'Shared With Me'"
-          >No files shared with you</span
-        >
+        <span v-else-if="pageTitle === 'Shared With Me'">
+          No files shared with you
+        </span>
         <span v-else>No files added to Bin</span>
       </div>
     </div>
     <div v-else class="mt-6 lg:ml-4 mr-6 lg:mr-16">
-      <DropdownMenu
-        :position="menuPosition"
-        :show="showMenu"
-        :items="menuItems"
-        @close="closeDropdown"
-      >
-      </DropdownMenu>
       <div
         v-if="listType === 'table'"
         class="overflow-x-auto transition-fade lg:mb-20 mb-20"
@@ -54,12 +47,12 @@
         <table style="width: 100%" class="font-bold">
           <thead style="color: #b9b8b8">
             <tr>
-              <th class="uppercase" style="text-align: left">Name</th>
-              <th class="uppercase" style="text-align: left; width: auto">
-                Last Modified
+              <th class="uppercase" style="text-align: left">File ID</th>
+              <th class="uppercase" style="width: 140px">Last Modified</th>
+              <th class="uppercase mb-6" style="text-align: left; width: 80px">
+                Size
               </th>
-              <th class="uppercase mb-6" style="text-align: left">Size</th>
-              <th class="uppercase mb-6" style="width: 20px"></th>
+              <th class="uppercase mb-6" style="width: 160px">Actions</th>
             </tr>
           </thead>
           <tbody style="color: #707070">
@@ -68,41 +61,69 @@
               :key="file.fileId"
               style="border-bottom: 2px solid #a1cdf8"
             >
-              <td
-                class="
-                  overflow-ellipsis overflow-hidden
-                  whitespace-nowrap
-                  pt-6
-                  pb-3
-                "
-                style="
-                  max-width: 260px;
-                  min-width: 40px;
-                  padding-right: 20px;
-                  vertical-align: middle;
-                "
-              >
-                {{ file.fileId }}
+              <td class="pt-6 pb-3">
+                <span
+                  class="
+                    inline-block
+                    overflow-ellipsis overflow-hidden
+                    whitespace-nowrap
+                    pr-3
+                  "
+                  style="
+                    max-width: 256px;
+                    min-width: 64px;
+                    vertical-align: middle;
+                  "
+                >
+                  {{ file.fileId }}
+                </span>
+                <n-tooltip trigger="hover">
+                  <template #trigger>
+                    <InformationCircleIcon
+                      class="h-5 w-5 inline-block cursor-pointer"
+                    />
+                  </template>
+                  Pseudonymous file id
+                </n-tooltip>
               </td>
-              <td class="pt-6 pb-3" style="vertical-align: middle">
+              <td
+                class="pt-6 pb-3"
+                style="vertical-align: middle; text-align: center"
+              >
                 {{ getReadableDate(file.uploaded_on) }}
               </td>
               <td class="pt-6 pb-3" style="vertical-align: middle">
                 {{ getReadableSize(file.size) }}
               </td>
               <td>
-                <div
-                  class="mt-2 py-2 file-menu"
-                  @click.stop="fileMenu(file, $event)"
-                >
-                  <DotsVerticalIcon class="h-5 w-5" />
+                <div class="mt-2 py-2">
+                  <n-tooltip
+                    trigger="hover"
+                    v-for="item in menuItems"
+                    :key="item.label + '-action'"
+                  >
+                    <template #trigger>
+                      <span
+                        class="file-menu inline-block"
+                        @click.stop="item.command(file)"
+                      >
+                        <component
+                          :is="item.icon"
+                          class="w-5 inline-block m-2"
+                        ></component>
+                      </span>
+                    </template>
+                    {{ item.label }}
+                  </n-tooltip>
                 </div>
               </td>
             </tr>
           </tbody>
         </table>
       </div>
-      <div
+
+      <!-- Grid view, not needed for now. -->
+      <!-- <div
         v-else-if="listType === 'grid'"
         class="
           flex flex-row flex-wrap
@@ -166,9 +187,11 @@
             </span>
           </div>
         </div>
-      </div>
+      </div> -->
     </div>
   </div>
+
+  <!-- Switch for changing view to list view, grid view -->
   <!-- <div class="absolute top-7 right-6 lg:top-16 lg:right-16">
     <div class="inline-block mr-5">
       <div
@@ -293,9 +316,10 @@ import {
   XCircleIcon,
   RefreshIcon,
   SearchIcon,
+  BackspaceIcon,
+  InformationCircleIcon,
 } from "@heroicons/vue/outline";
 import { NTooltip } from "naive-ui";
-import DropdownMenu from "./DropdownMenu.vue";
 import DialogBox from "./DialogBox.vue";
 import isValidEmail from "pragmatic-email-regex";
 
@@ -304,22 +328,33 @@ import moment from "moment";
 import { useFileMixin } from "../mixins/file.mixin";
 
 export default {
+  name: "FilesList",
+  props: ["files", "pageTitle"],
+  components: {
+    ViewGridIcon,
+    ViewListIcon,
+    DotsVerticalIcon,
+    SearchIcon,
+    InformationCircleIcon,
+    NTooltip,
+    DialogBox,
+  },
   setup(props) {
     let listType = ref("table");
     let menuPosition = ref({});
     let showMenu = ref(false);
     let shareDialog = ref(false);
     let shareEmail = ref("");
-    let shareEmailInvalid = ref(false);
+    let shareEmailInvalid = ref(true);
     const toast = inject("$toast");
     const fileMixin = useFileMixin(toast);
-    let selectedFile;
 
     let menuItem = {};
+    let fileToShare;
     menuItem.verify = {
       label: "Verify",
       icon: PencilAltIcon,
-      command: () => {
+      command: (selectedFile) => {
         window.open(
           "https://explorer.arcana.network/did/" + selectedFile.did,
           "__blank"
@@ -330,7 +365,7 @@ export default {
     menuItem.download = {
       label: "Download",
       icon: DownloadIcon,
-      command: () => {
+      command: (selectedFile) => {
         fileMixin.download(selectedFile);
       },
     };
@@ -338,7 +373,8 @@ export default {
     menuItem.share = {
       label: "Share",
       icon: ShareIcon,
-      command: () => {
+      command: (selectedFile) => {
+        fileToShare = selectedFile;
         shareDialog.value = true;
       },
     };
@@ -346,18 +382,18 @@ export default {
     menuItem.remove = {
       label: "Delete",
       icon: TrashIcon,
-      command: () => {
+      command: (selectedFile) => {
         fileMixin.remove(selectedFile);
       },
     };
 
     menuItem.revoke = {
       label: "Revoke",
-      icon: PencilAltIcon,
-      command: () => {
+      icon: BackspaceIcon,
+      command: (selectedFile) => {
         fileMixin
           .getSharedUsers(selectedFile.fileId)
-          .then((res) => console.log(res));
+          .then((res) => console.log(selectedFile.fileId, res));
       },
     };
 
@@ -375,7 +411,12 @@ export default {
 
     let menuItemsArr = [];
     if (props.pageTitle === "My Files") {
-      menuItemsArr = [menuItem.download, menuItem.share, menuItem.remove];
+      menuItemsArr = [
+        menuItem.download,
+        menuItem.share,
+        menuItem.revoke,
+        menuItem.remove,
+      ];
     } else if (props.pageTitle === "Shared With Me") {
       menuItemsArr = [menuItem.download];
     } else {
@@ -432,8 +473,11 @@ export default {
       shareDialog.value = false;
     }
 
-    function shareFile() {
-      fileMixin.share(selectedFile, shareEmail.value);
+    async function shareFile() {
+      const emails = shareEmail.value.split(",");
+      for (let i = 0; i < emails.length; i++) {
+        await fileMixin.share(fileToShare, emails[i]?.trim());
+      }
       closeDialog();
     }
 
@@ -444,8 +488,16 @@ export default {
     watch(
       () => shareEmail.value,
       () => {
-        if (isValidEmail(shareEmail.value)) {
-          shareEmailInvalid.value = false;
+        const emails = shareEmail.value.split(",");
+        shareEmailInvalid.value = false;
+        if (emails.length > 0) {
+          for (let i = 0; i < emails.length; i++) {
+            const email = emails[i]?.trim();
+            if (email && !isValidEmail(email)) {
+              shareEmailInvalid.value = true;
+              break;
+            }
+          }
         } else {
           shareEmailInvalid.value = true;
         }
@@ -468,16 +520,6 @@ export default {
       shareFile,
       closeDialog,
     };
-  },
-  props: ["files", "pageTitle"],
-  components: {
-    ViewGridIcon,
-    ViewListIcon,
-    DotsVerticalIcon,
-    SearchIcon,
-    DropdownMenu,
-    NTooltip,
-    DialogBox,
   },
 };
 </script>
