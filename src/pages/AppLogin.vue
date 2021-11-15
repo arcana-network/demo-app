@@ -83,14 +83,11 @@
 </style>
 
 <script>
-import { onBeforeMount, onMounted, inject } from "@vue/runtime-core";
+import { onBeforeMount, inject } from "@vue/runtime-core";
 import { useStore } from "vuex";
 import { useRouter } from "vue-router";
-import bytes from "bytes";
-import { getArcanaAuth, getArcanaStorage } from "../utils/arcana-sdk";
+import { getArcanaAuth } from "../utils/arcana-sdk";
 import { Wallet } from "ethers";
-// import { Arcana as ArcanaSDK } from "@arcana_tech/storage-sdk";
-import { useFileMixin } from "../mixins/file.mixin";
 
 export default {
   setup() {
@@ -98,7 +95,6 @@ export default {
     const router = useRouter();
     let arcanaAuth;
     const toast = inject("$toast");
-    const fileMixin = useFileMixin(toast);
 
     onBeforeMount(() => {
       document.title = "Login | Arcana Demo";
@@ -141,34 +137,12 @@ export default {
             publicKey: actualPublicKey,
           })
           .then(async () => {
-            let user = {
-              address: actualPublicKey,
-              myFiles: [],
-              sharedWithMe: [],
-              trash: [],
-            };
             toast("Login Success", {
               styles: {
                 backgroundColor: "green",
               },
               type: "success",
             });
-            store.dispatch("showLoader", "Fetching files...");
-            await fileMixin.updateLimits();
-            const arcanaStorage = getArcanaStorage();
-            let myfiles = await arcanaStorage.myFiles();
-            myfiles = myfiles ? myfiles : [];
-            let sharedFiles = await arcanaStorage.sharedFiles();
-            sharedFiles = sharedFiles ? sharedFiles : [];
-            user.myFiles = myfiles.map((d) => {
-              d["fileId"] = d["did"];
-              return d;
-            });
-            user.sharedWithMe = sharedFiles.map((d) => {
-              d["fileId"] = d["did"];
-              return d;
-            });
-            store.dispatch("updateFiles", user);
             router
               .replace({ name: "My Files" })
               .then(() => store.dispatch("hideLoader"));

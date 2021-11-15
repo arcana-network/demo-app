@@ -39,14 +39,6 @@
       </div>
     </div>
     <div v-else class="mt-6 lg:ml-4 mr-6 lg:mr-16">
-      <DropdownMenu
-        :position="menuPosition"
-        :show="showMenu"
-        :items="menuItems"
-        @close="closeDropdown"
-      >
-      </DropdownMenu>
-
       <div
         v-if="listType === 'table'"
         class="overflow-x-auto transition-fade lg:mb-20 mb-20"
@@ -69,21 +61,30 @@
               :key="file.fileId"
               style="border-bottom: 2px solid #a1cdf8"
             >
-              <td
-                class="
-                  overflow-ellipsis overflow-hidden
-                  whitespace-nowrap
-                  pt-6
-                  pb-3
-                "
-                style="
-                  max-width: 260px;
-                  min-width: 40px;
-                  padding-right: 20px;
-                  vertical-align: middle;
-                "
-              >
-                {{ file.fileId }}
+              <td class="pt-6 pb-3">
+                <span
+                  class="
+                    inline-block
+                    overflow-ellipsis overflow-hidden
+                    whitespace-nowrap
+                    pr-3
+                  "
+                  style="
+                    max-width: 256px;
+                    min-width: 64px;
+                    vertical-align: middle;
+                  "
+                >
+                  {{ file.fileId }}
+                </span>
+                <n-tooltip trigger="hover">
+                  <template #trigger>
+                    <InformationCircleIcon
+                      class="h-5 w-5 inline-block cursor-pointer"
+                    />
+                  </template>
+                  Pseudonymous file id
+                </n-tooltip>
               </td>
               <td
                 class="pt-6 pb-3"
@@ -120,7 +121,9 @@
           </tbody>
         </table>
       </div>
-      <div
+
+      <!-- Grid view, not needed for now. -->
+      <!-- <div
         v-else-if="listType === 'grid'"
         class="
           flex flex-row flex-wrap
@@ -184,9 +187,11 @@
             </span>
           </div>
         </div>
-      </div>
+      </div> -->
     </div>
   </div>
+
+  <!-- Switch for changing view to list view, grid view -->
   <!-- <div class="absolute top-7 right-6 lg:top-16 lg:right-16">
     <div class="inline-block mr-5">
       <div
@@ -315,7 +320,6 @@ import {
   InformationCircleIcon,
 } from "@heroicons/vue/outline";
 import { NTooltip } from "naive-ui";
-import DropdownMenu from "./DropdownMenu.vue";
 import DialogBox from "./DialogBox.vue";
 import isValidEmail from "pragmatic-email-regex";
 
@@ -331,7 +335,7 @@ export default {
     ViewListIcon,
     DotsVerticalIcon,
     SearchIcon,
-    DropdownMenu,
+    InformationCircleIcon,
     NTooltip,
     DialogBox,
   },
@@ -515,7 +519,6 @@ export default {
       getReadableSize,
       shareFile,
       closeDialog,
-      InformationCircleIcon,
     };
   },
 };

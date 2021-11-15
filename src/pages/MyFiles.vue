@@ -20,21 +20,46 @@
 </template>
 
 <script>
-import { computed, onMounted } from "@vue/runtime-core";
+import { computed, onMounted, inject } from "@vue/runtime-core";
 import UploadFab from "../components/UploadFab.vue";
 import UserProfile from "../components/UserProfile.vue";
 import FilesList from "../components/FilesList.vue";
 import { useStore } from "vuex";
+import { useFileMixin } from "../mixins/file.mixin";
+import { getArcanaStorage } from "../utils/arcana-sdk";
 
 export default {
   name: "",
   setup() {
     const store = useStore();
+    const toast = inject("$toast");
+    const fileMixin = useFileMixin(toast);
     let files = computed(() => {
       return store.getters.myFiles;
     });
-    onMounted(() => {
+
+    onMounted(async () => {
       document.title = "My Files | Arcana Demo";
+      let user = {
+        myFiles: [],
+        sharedWithMe: [],
+        trash: [],
+      };
+      await fileMixin.updateLimits();
+      const arcanaStorage = getArcanaStorage();
+      let myfiles = await arcanaStorage.myFiles();
+      myfiles = myfiles ? myfiles : [];
+      let sharedFiles = await arcanaStorage.sharedFiles();
+      sharedFiles = sharedFiles ? sharedFiles : [];
+      user.myFiles = myfiles.map((d) => {
+        d["fileId"] = d["did"];
+        return d;
+      });
+      user.sharedWithMe = sharedFiles.map((d) => {
+        d["fileId"] = d["did"];
+        return d;
+      });
+      store.dispatch("updateFiles", user);
     });
     return {
       files,
