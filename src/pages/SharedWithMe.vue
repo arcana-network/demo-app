@@ -5,7 +5,7 @@
       files-container
       fixed
       right-3
-      top-16
+      top-20
       lg:top-4
       overflow-y-auto
     "
@@ -34,6 +34,7 @@ export default {
     });
     onMounted(async () => {
       document.title = "Shared With Me | Arcana Demo";
+      store.dispatch("showLoader", "Fetching files shared with me...");
       const Arcana = getArcanaStorage();
       let sharedFiles = await Arcana.sharedFiles();
       store.dispatch(
@@ -43,6 +44,7 @@ export default {
           return d;
         })
       );
+      store.dispatch("hideLoader");
     });
 
     return {

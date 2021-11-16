@@ -83,7 +83,7 @@
                       class="h-5 w-5 inline-block cursor-pointer outline-none"
                     />
                   </template>
-                  Pseudonymous file id
+                  Pseudonymous File ID
                 </n-tooltip>
               </td>
               <td class="pt-6 pb-3 align-middle text-center">
@@ -432,8 +432,7 @@ export default {
       for (let email of emails) {
         await fileMixin.share(fileToShare, email);
       }
-      shareEmail.value = "";
-      isShareEmailInvalid.value = false;
+      closeDialog();
     }
 
     async function revokeAccess(fileToRevoke, address) {

@@ -146,9 +146,8 @@ export default {
             });
             const loginEnd = Date.now();
             console.log("LOGIN COMPLETED", (loginEnd - loginStart) / 1000);
-            router
-              .replace({ name: "My Files" })
-              .then(() => store.dispatch("hideLoader"));
+            router.replace({ name: "My Files" });
+            store.dispatch("hideLoader");
           });
       } catch (e) {
         console.error("error", e);
