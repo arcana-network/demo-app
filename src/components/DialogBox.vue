@@ -3,8 +3,8 @@
   <div
     class="fixed top-1/2 left-1/2 h-auto p-8 pb-4 bg-white"
     style="
-      min-width: 210px;
-      max-width: 420px;
+      min-width: 240px;
+      max-width: 480px;
       width: 50%;
       min-height: 20px;
       z-index: 10001;

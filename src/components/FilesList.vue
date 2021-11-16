@@ -60,18 +60,23 @@
               style="border-bottom: 2px solid #a1cdf8"
             >
               <td class="pt-6 pb-3" style="width: calc(30vw + 3em)">
-                <span
-                  class="
-                    inline-block
-                    overflow-ellipsis overflow-hidden
-                    whitespace-nowrap
-                    pr-3
-                    align-middle
-                  "
-                  style="width: 30vw; max-width: max-content"
-                >
+                <n-tooltip trigger="hover">
+                  <template #trigger>
+                    <span
+                      class="
+                        inline-block
+                        overflow-ellipsis overflow-hidden
+                        whitespace-nowrap
+                        pr-3
+                        align-middle
+                      "
+                      style="width: 30vw; max-width: max-content"
+                    >
+                      {{ file.fileId }}
+                    </span>
+                  </template>
                   {{ file.fileId }}
-                </span>
+                </n-tooltip>
                 <n-tooltip trigger="hover">
                   <template #trigger>
                     <InformationCircleIcon
@@ -149,38 +154,55 @@
     </div>
   </dialog-box>
 
-  <!-- <dialog-box v-if="revokeDialog" @close="closeDialog">
+  <dialog-box v-if="revokeDialog" @close="closeDialog">
     <h3 class="font-ubuntu font-bold" style="color: #253d52; font-size: 1.5em">
-      Share file
+      List of user addresses
     </h3>
-    <label
-      class="block mt-4 mb-2 font-semibold"
-      for="recipient-email"
-      style="color: #707070; font-size: 1.2em"
+    <ul
+      v-if="sharedUsers.users?.length"
+      class="my-3 overflow-y-auto overflow-hidden"
+      style="max-height: 60vh"
     >
-      Recipient Email
-    </label>
-    <input
-      type="email"
-      id="recipient-email"
-      v-model="shareEmail"
-      class="focus:outline-none rounded-full px-4 py-2 w-full"
-    />
-    <div class="text-center mt-5 mb-3">
-      <button
-        class="focus:outline-none py-2 px-5 rounded-full font-bold shadow-2xl"
-        :class="!isShareEmailInvalid ? 'cursor-pointer' : 'cursor-not-allowed'"
-        :style="{
-          background: !isShareEmailInvalid ? '#058aff' : '#a1cdf8',
-          color: 'white',
-        }"
-        :disabled="isShareEmailInvalid"
-        @click.stop="shareFile"
+      <li
+        v-for="user in sharedUsers.users"
+        :key="user"
+        class="py-3"
+        style="border-bottom: 2px solid #a1cdf8"
       >
-        Share
-      </button>
+        <n-tooltip trigger="hover">
+          <template #trigger>
+            <span
+              class="
+                inline-block
+                overflow-hidden overflow-ellipsis
+                align-middle
+                font-black
+                text-base
+              "
+              style="width: calc(100% - 2em); color: #707070"
+            >
+              {{ user }}
+            </span>
+          </template>
+          {{ user }}
+        </n-tooltip>
+        <n-tooltip trigger="hover">
+          <template #trigger>
+            <BackspaceIcon
+              class="inline-block h-6 w-6 cursor-pointer ml-1 outline-none"
+              @click.stop="revokeAccess(sharedUsers.file, user)"
+            />
+          </template>
+          Revoke Access
+        </n-tooltip>
+      </li>
+    </ul>
+    <div v-else class="my-3">
+      <span class="font-black text-xl" style="color: #707070">
+        Not shared with anyone
+      </span>
     </div>
-  </dialog-box> -->
+  </dialog-box>
 </template>
 
 <style scoped>
@@ -257,6 +279,7 @@ export default {
     DotsVerticalIcon,
     SearchIcon,
     InformationCircleIcon,
+    BackspaceIcon,
     NTooltip,
     DialogBox,
   },
@@ -265,10 +288,16 @@ export default {
     let menuPosition = ref({});
     let showMenu = ref(false);
     let shareDialog = ref(false);
+    let revokeDialog = ref(false);
     let shareEmail = ref("");
+    let sharedUsers = ref({
+      file: {},
+      users: [],
+    });
     let isShareEmailInvalid = ref(true);
     const toast = inject("$toast");
     const fileMixin = useFileMixin(toast);
+    const GENESIS_ADDRESS = "0x0000000000000000000000000000000000000000";
 
     let menuItem = {};
     let fileToShare;
@@ -312,9 +341,8 @@ export default {
       label: "Revoke",
       icon: BackspaceIcon,
       command: (selectedFile) => {
-        fileMixin
-          .getSharedUsers(selectedFile.fileId)
-          .then((res) => console.log(selectedFile.fileId, res));
+        revokeDialog.value = true;
+        getSharedUsers(selectedFile);
       },
     };
 
@@ -392,6 +420,11 @@ export default {
       shareEmail.value = "";
       isShareEmailInvalid.value = false;
       shareDialog.value = false;
+      revokeDialog.value = false;
+      sharedUsers.value = {
+        file: {},
+        users: [],
+      };
     }
 
     async function shareFile() {
@@ -399,7 +432,24 @@ export default {
       for (let email of emails) {
         await fileMixin.share(fileToShare, email);
       }
-      closeDialog();
+      shareEmail.value = "";
+      isShareEmailInvalid.value = false;
+    }
+
+    async function revokeAccess(fileToRevoke, address) {
+      await fileMixin.revoke(fileToRevoke, address);
+      getSharedUsers(fileToRevoke);
+    }
+
+    function getSharedUsers(file) {
+      console.log({ file });
+      fileMixin.getSharedUsers(file.fileId).then((res) => {
+        const users = res?.filter((user) => user !== GENESIS_ADDRESS);
+        sharedUsers.value = {
+          file,
+          users: users || [],
+        };
+      });
     }
 
     onMounted(() => {
@@ -423,8 +473,11 @@ export default {
       showMenu,
       menuItems,
       shareDialog,
+      revokeDialog,
+      sharedUsers,
       shareEmail,
       isShareEmailInvalid,
+      revokeAccess,
       fileMenu,
       closeDropdown,
       getReadableDate,
