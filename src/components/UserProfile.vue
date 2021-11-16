@@ -2,21 +2,31 @@
   <div>
     <div class="flex flex-row mt-6 ml-6 lg:mt-16 lg:ml-16">
       <div
-        class="rounded-full h-12 w-20 cursor-pointer relative hover:w-24"
-        style="background: #eef1f6; transition: width 0.4s"
+        class="rounded-full h-12 cursor-pointer relative"
+        style="
+          background: #eef1f6;
+          transition: width 0.4s;
+          width: 6em;
+          transition: border 0.4s;
+        "
+        :style="
+          profileOptions
+            ? 'border: 2px solid #a1cdf8'
+            : 'border: 2px solid #eef1f6'
+        "
         @click.stop="toggleProfileOptions"
       >
         <img
           :src="profile.profileImage"
-          class="rounded-full h-12 w-12 inline"
+          class="rounded-full h-11 w-11 inline"
         />
         <img
           :src="ArrowDownIcon"
           class="h-4 w-4 right-2.5 top-4 absolute inline"
-          style="transition: transform 0.4s, margin-left 0.4s"
+          style="transition: transform 0.4s, margin 0.4s"
           :style="
             profileOptions
-              ? 'transform: rotate(-180deg)'
+              ? 'transform: rotate(-180deg); margin-top: -4px'
               : 'transform: rotate(0)'
           "
         />
