@@ -2,9 +2,9 @@
   <div class="header h-10 lg:hidden">
     <!-- <MenuIcon class="h-7 w-7 inline-block mr-2 text-white" /> -->
     <img
-      src="@/assets/horizontal-dark.svg"
-      class="inline-block cursor-pointer"
-      style="height: 32px"
+      src="@/assets/rocket-science.png"
+      class="inline-block cursor-pointer -mt-2"
+      width="280"
       @click.stop="openMenu"
     />
   </div>
@@ -20,14 +20,14 @@
     >
       <XIcon class="text-white h-7 w-7" />
     </div>
-    <div class="hero-image -ml-4">
+    <div class="hero-image -ml-2 mt-8">
       <img
-        src="@/assets/vertical-dark.svg"
-        width="120"
+        src="@/assets/rocket-science.png"
+        width="280"
         class="mt-4 lg:mt-8 inline"
       />
     </div>
-    <div class="menu mt-16" style="font-size: 1rem">
+    <div class="menu mt-24" style="font-size: 1rem">
       <router-link to="/my-files" class="inline-block mx-10 my-2 font-bold">
         <FolderOpenIcon class="h-6 w-6 inline -mt-1 mr-2" />
         My Files
@@ -225,11 +225,11 @@
 }
 
 .liquid-translate-my-files {
-  top: 200px;
+  top: 227px;
 }
 
 .liquid-translate-shared-with-me {
-  top: 257px;
+  top: 287px;
 }
 
 .liquid-translate-bin {
@@ -264,7 +264,7 @@ export default {
     let menu = ref(false);
     let storage = computed(() => {
       const storageState = store.getters.storage;
-      if (storageState.totalStorage === bytes(TEN_TB)) {
+      if (storageState.totalStorage >= bytes(TEN_TB)) {
         storageState.totalStorage = UNLIMITED;
         return {
           ...storageState,
@@ -281,7 +281,7 @@ export default {
 
     let bandwidth = computed(() => {
       const bandwidthState = store.getters.bandwidth;
-      if (bandwidthState.totalBandwidth === bytes(TEN_TB)) {
+      if (bandwidthState.totalBandwidth >= bytes(TEN_TB)) {
         bandwidthState.totalBandwidth = UNLIMITED;
         return {
           ...bandwidthState,

@@ -5,7 +5,7 @@
       files-container
       fixed
       right-3
-      top-16
+      top-20
       lg:top-4
       overflow-y-auto
     "
@@ -39,6 +39,7 @@ export default {
 
     onMounted(async () => {
       document.title = "My Files | Arcana Demo";
+      store.dispatch("showLoader", "Fetching uploaded files...");
       await fileMixin.updateLimits();
       const arcanaStorage = getArcanaStorage();
       let myfiles = await arcanaStorage.myFiles();
@@ -50,6 +51,7 @@ export default {
           return d;
         })
       );
+      store.dispatch("hideLoader");
     });
     return {
       files,

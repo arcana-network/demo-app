@@ -5,7 +5,7 @@
       files-container
       fixed
       right-3
-      top-16
+      top-20
       lg:top-4
       overflow-y-auto
     "
