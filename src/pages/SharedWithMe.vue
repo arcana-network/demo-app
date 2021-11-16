@@ -34,7 +34,7 @@ export default {
     });
     onMounted(async () => {
       document.title = "Shared With Me | Arcana Demo";
-      store.dispatch("showLoader", "Fetching files shared with me...");
+      store.dispatch("showLoader", "Fetching shared files...");
       const Arcana = getArcanaStorage();
       let sharedFiles = await Arcana.sharedFiles();
       store.dispatch(
