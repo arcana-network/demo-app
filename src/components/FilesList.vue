@@ -44,7 +44,7 @@
         class="overflow-x-auto transition-fade lg:mb-20 mb-20"
         style="min-width: 200px"
       >
-        <table style="width: 100%" class="font-bold">
+        <table style="min-width: 100%; width: max-content" class="font-bold">
           <thead style="color: #b9b8b8">
             <tr>
               <th class="uppercase text-left">File ID</th>
@@ -59,7 +59,7 @@
               :key="file.fileId"
               style="border-bottom: 2px solid #a1cdf8"
             >
-              <td class="pt-6 pb-3" style="width: calc(40vw + 8em)">
+              <td class="pt-6 pb-3" style="width: calc(30vw + 3em)">
                 <span
                   class="
                     inline-block
@@ -68,7 +68,7 @@
                     pr-3
                     align-middle
                   "
-                  style="width: 40vw; max-width: max-content"
+                  style="width: 30vw; max-width: max-content"
                 >
                   {{ file.fileId }}
                 </span>

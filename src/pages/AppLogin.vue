@@ -106,6 +106,7 @@ export default {
 
     async function onSignInClick() {
       try {
+        const loginStart = Date.now();
         if (!arcanaAuth.isLoggedIn()) {
           store.dispatch("showLoader", "Logging in...");
           await arcanaAuth.loginWithSocial("google");
@@ -143,6 +144,8 @@ export default {
               },
               type: "success",
             });
+            const loginEnd = Date.now();
+            console.log("LOGIN COMPLETED", (loginEnd - loginStart) / 1000);
             router
               .replace({ name: "My Files" })
               .then(() => store.dispatch("hideLoader"));
