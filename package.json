@@ -10,6 +10,8 @@
     "@arcana/auth": "^0.0.2",
     "@arcana/storage": "^0.0.3",
     "@heroicons/vue": "^1.0.1",
+    "@sentry/tracing": "^6.15.0",
+    "@sentry/vue": "^6.15.0",
     "bytes": "^3.1.0",
     "ethers": "^5.5.1",
     "file-saver": "^2.0.5",
