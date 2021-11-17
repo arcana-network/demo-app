@@ -9,6 +9,7 @@ const redirectUri = window.location.origin + "/auth/redirect";
 
 const arcanaAuth = new AuthProvider({
   appID: appId,
+  network: "testnet",
   oauthCreds: [
     {
       type: "google",
