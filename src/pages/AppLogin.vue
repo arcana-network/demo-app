@@ -1,7 +1,7 @@
 <template>
   <div class="bg-white absolute login-container p-10 text-center">
     <img
-      src="@/assets/vertical-light.svg"
+      src="@/assets/rocket-science.png"
       style="height: 120px; display: inline"
     />
     <div class="inline-block mt-12">
