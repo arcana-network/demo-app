@@ -5,6 +5,7 @@ import * as Sentry from "@sentry/vue";
 import { Integrations } from "@sentry/tracing";
 import store from "./store";
 import DKToast from "vue-dk-toast";
+import VueGtag from "vue-gtag";
 import "@/index.css";
 
 function getDSN() {
@@ -42,4 +43,11 @@ app.use(DKToast, {
   positionY: "top",
   disableClick: true,
 });
+
+if (import.meta.env.PROD) {
+  app.use(VueGtag, {
+    config: { id: import.meta.env.VITE_GOOGLE_ANALYTICS_ID },
+  });
+}
+
 app.mount("#app");
