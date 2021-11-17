@@ -29,7 +29,6 @@ export function getArcanaAuth() {
 
 export function getArcanaStorage() {
   const Arcana = new ArcanaSDK({
-    gateway,
     appId,
     privateKey: store.getters.privateKey,
     email: store.getters.email,
