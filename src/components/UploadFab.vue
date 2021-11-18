@@ -58,6 +58,7 @@ export default {
     function fileChangeHandler() {
       if (this.files[0]) {
         fileMixin.upload(this.files[0]);
+        file.value = "";
       }
     }
     return {
