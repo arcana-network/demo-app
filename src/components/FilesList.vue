@@ -441,7 +441,6 @@ export default {
     }
 
     function getSharedUsers(file) {
-      console.log({ file });
       fileMixin.getSharedUsers(file.fileId).then((res) => {
         const users = res?.filter((user) => user !== GENESIS_ADDRESS);
         sharedUsers.value = {

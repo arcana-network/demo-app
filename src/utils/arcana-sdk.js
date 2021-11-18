@@ -3,12 +3,12 @@ import { Arcana as ArcanaSDK } from "@arcana/storage/dist/standalone/storage.umd
 import store from "../store";
 
 const appId = import.meta.env.VITE_ARCANA_APP_ID;
-const gateway = import.meta.env.VITE_GATEWAY_URL;
 const googleClientId = import.meta.env.VITE_GOOGLE_CLIENT_ID;
 const redirectUri = window.location.origin + "/auth/redirect";
 
 const arcanaAuth = new AuthProvider({
   appID: appId,
+  network: "testnet",
   oauthCreds: [
     {
       type: "google",
@@ -28,7 +28,6 @@ export function getArcanaAuth() {
 
 export function getArcanaStorage() {
   const Arcana = new ArcanaSDK({
-    gateway,
     appId,
     privateKey: store.getters.privateKey,
     email: store.getters.email,
