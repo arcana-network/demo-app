@@ -211,7 +211,7 @@
 .progress-container {
   background-color: #eef1f6;
   width: 220px;
-  height: 10px;
+  height: 6px;
   border-radius: 30px;
   overflow: hidden;
 }
@@ -219,7 +219,7 @@
 .progress-success-container {
   background-color: #26de43;
   width: 0;
-  height: 10px;
+  height: 6px;
   border-radius: 30px;
   transition: width 1s;
 }
