@@ -141,7 +141,6 @@ export function useFileMixin(toast) {
   }
 
   async function revoke(fileToRevoke, address) {
-    console.log({ fileToRevoke, address });
     const did = fileToRevoke.fileId;
     const revokeStart = Date.now();
     store.dispatch("showLoader", "Revoking file access...");
