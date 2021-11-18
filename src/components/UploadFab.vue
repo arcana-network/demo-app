@@ -4,8 +4,7 @@
       fixed
       rounded-3xl
       right-8
-      lg:right-14
-      lg:bottom-12
+      lg:right-14 lg:bottom-12
       bottom-8
       px-6
       py-2
@@ -39,6 +38,7 @@ export default {
     let file;
     const toast = inject("$toast");
     const fileMixin = useFileMixin(toast);
+
     onMounted(() => {
       file = document.createElement("input");
       file.type = "file";
@@ -46,14 +46,19 @@ export default {
       file.multiple = false;
       file.onchange = fileChangeHandler;
     });
+
     onBeforeUnmount(() => {
       file.remove();
     });
+
     function openFileUploadView() {
       file.click();
     }
-    function fileChangeHandler(event) {
-      fileMixin.upload(this.files[0]);
+
+    function fileChangeHandler() {
+      if (this.files[0]) {
+        fileMixin.upload(this.files[0]);
+      }
     }
     return {
       openFileUploadView,
