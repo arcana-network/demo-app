@@ -23,13 +23,17 @@ import FilesList from "../components/FilesList.vue";
 import UploadFab from "../components/UploadFab.vue";
 import UserProfile from "../components/UserProfile.vue";
 import { onMounted } from "@vue/runtime-core";
+import { useStore } from "vuex";
 
 import useArcanaStorage from "../use/arcanaStorage";
 
 export default {
   name: "MyFiles",
   setup() {
+    const store = useStore();
     const { fetchStorageLimits, fetchMyFiles } = useArcanaStorage();
+
+    const files = computed(() => store.getters.myFiles);
 
     onMounted(async () => {
       document.title = "My Files | Arcana Demo";

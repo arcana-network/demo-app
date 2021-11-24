@@ -22,29 +22,21 @@ import { onMounted, computed } from "@vue/runtime-core";
 import UserProfile from "../components/UserProfile.vue";
 import FilesList from "../components/FilesList.vue";
 import { useStore } from "vuex";
-import { getArcanaStorage } from "../utils/arcana-sdk";
-// import { findUser } from "../services/user.service";
+
+import useArcanaStorage from "../use/arcanaStorage";
 
 export default {
-  name: "",
+  name: "SharedWithMe",
   setup() {
     const store = useStore();
-    let files = computed(() => {
-      return store.getters.sharedWithMe;
-    });
+    const { fetchStorageLimits, fetchSharedFiles } = useArcanaStorage();
+
+    const files = computed(() => store.getters.sharedWithMe);
+
     onMounted(async () => {
       document.title = "Shared With Me | Arcana Demo";
-      store.dispatch("showLoader", "Fetching shared files...");
-      const Arcana = getArcanaStorage();
-      let sharedFiles = await Arcana.sharedFiles();
-      store.dispatch(
-        "updateSharedWithMe",
-        sharedFiles.map((d) => {
-          d["fileId"] = d["did"];
-          return d;
-        })
-      );
-      store.dispatch("hideLoader");
+      await fetchStorageLimits();
+      await fetchSharedFiles();
     });
 
     return {
