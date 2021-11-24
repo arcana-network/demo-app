@@ -86,22 +86,20 @@
 import { onBeforeMount, inject } from "@vue/runtime-core";
 import { useRouter } from "vue-router";
 import { useStore } from "vuex";
-import { Wallet } from "ethers";
 
-import padPublicKey from "../utils/padPublicKey";
-import { getArcanaAuth } from "../utils/arcana-sdk";
+import useArcanaAuth from "../use/arcanaAuth";
 
 export default {
   setup() {
     const store = useStore();
     const router = useRouter();
-    let arcanaAuth;
     const toast = inject("$toast");
+
+    const { isLoggedIn, login } = useArcanaAuth();
 
     onBeforeMount(() => {
       document.title = "Login | Arcana Demo";
-      arcanaAuth = getArcanaAuth();
-      if (arcanaAuth.isLoggedIn()) {
+      if (isLoggedIn()) {
         onSignInClick();
       }
     });
@@ -109,45 +107,19 @@ export default {
     async function onSignInClick() {
       try {
         const loginStart = Date.now();
-        if (!arcanaAuth.isLoggedIn()) {
-          store.dispatch("showLoader", "Logging in...");
-          await arcanaAuth.loginWithSocial("google");
-        }
-        store.dispatch(
-          "showLoader",
-          "Fetching keys and generating wallet address..."
-        );
-        const userInfo = arcanaAuth.getUserInfo();
-        const publicKey = await arcanaAuth.getPublicKey({
-          verifier: "google",
-          id: userInfo.userInfo.id,
-        });
-        const actualPublicKey = padPublicKey(publicKey);
-        const wallet = new Wallet(userInfo.privateKey);
-        store.dispatch("addBasicDetails", {
-          email: userInfo.userInfo.id,
-          profileImage: userInfo.userInfo.picture,
-          givenName: userInfo.userInfo.name,
-        });
+        await login();
+        const loginEnd = Date.now();
+        console.log("LOGIN COMPLETED", (loginEnd - loginStart) / 1000);
 
-        store
-          .dispatch("addCryptoDetails", {
-            walletAddress: wallet.address,
-            privateKey: userInfo.privateKey,
-            publicKey: actualPublicKey,
-          })
-          .then(async () => {
-            toast("Login Success", {
-              styles: {
-                backgroundColor: "green",
-              },
-              type: "success",
-            });
-            const loginEnd = Date.now();
-            console.log("LOGIN COMPLETED", (loginEnd - loginStart) / 1000);
-            router.replace({ name: "My Files" });
-            store.dispatch("hideLoader");
-          });
+        store.dispatch("showLoader");
+        await router.push({ name: "My Files" });
+        store.dispatch("hideLoader");
+        toast("Login Success", {
+          styles: {
+            backgroundColor: "green",
+          },
+          type: "success",
+        });
       } catch (e) {
         console.error("error", e);
         toast("Something went wrong. Try again", {
@@ -156,7 +128,6 @@ export default {
           },
           type: "error",
         });
-        store.dispatch("hideLoader");
       }
     }
 
