@@ -13,19 +13,17 @@ function useArcanaAuth() {
   const authInstanceRef = ref(null);
 
   onBeforeMount(() => {
-    if (!authInstanceRef.value) {
-      authInstanceRef.value = new AuthProvider({
-        appID: ARCANA_APP_ID,
-        network: "testnet",
-        oauthCreds: [
-          {
-            type: "google",
-            clientId: GOOGLE_CLIENT_ID,
-          },
-        ],
-        redirectUri: `${window.location.origin}/auth/redirect`,
-      });
-    }
+    authInstanceRef.value = new AuthProvider({
+      appID: ARCANA_APP_ID,
+      network: "testnet",
+      oauthCreds: [
+        {
+          type: "google",
+          clientId: GOOGLE_CLIENT_ID,
+        },
+      ],
+      redirectUri: `${window.location.origin}/auth/redirect`,
+    });
   });
 
   function isLoggedIn() {
