@@ -1,6 +1,8 @@
-import { useStore } from "vuex";
-import { getArcanaAuth, getArcanaStorage } from "../utils/arcana-sdk";
 import bytes from "bytes";
+import { useStore } from "vuex";
+
+import padPublicKey from "../utils/padPublicKey";
+import { getArcanaAuth, getArcanaStorage } from "../utils/arcana-sdk";
 
 const successToast = {
   styles: {
@@ -104,8 +106,7 @@ export function useFileMixin(toast) {
         "showLoader",
         "Encrypting file data with recipient's public key......"
       );
-      const actualPublicKey =
-        "0x04" + publicKey.X.padStart(64, "0") + publicKey.Y.padStart(64, "0");
+      const actualPublicKey = padPublicKey(publicKey);
       const arcanaStorage = getArcanaStorage();
       const access = await arcanaStorage.getAccess();
       let did = fileToShare.fileId;

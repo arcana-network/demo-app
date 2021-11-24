@@ -84,10 +84,12 @@
 
 <script>
 import { onBeforeMount, inject } from "@vue/runtime-core";
-import { useStore } from "vuex";
 import { useRouter } from "vue-router";
-import { getArcanaAuth } from "../utils/arcana-sdk";
+import { useStore } from "vuex";
 import { Wallet } from "ethers";
+
+import padPublicKey from "../utils/padPublicKey";
+import { getArcanaAuth } from "../utils/arcana-sdk";
 
 export default {
   setup() {
@@ -120,10 +122,7 @@ export default {
           verifier: "google",
           id: userInfo.userInfo.id,
         });
-        const actualPublicKey =
-          "0x04" +
-          publicKey.X.padStart(64, "0") +
-          publicKey.Y.padStart(64, "0");
+        const actualPublicKey = padPublicKey(publicKey);
         const wallet = new Wallet(userInfo.privateKey);
         store.dispatch("addBasicDetails", {
           email: userInfo.userInfo.id,
