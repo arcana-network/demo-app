@@ -37,7 +37,7 @@ function useArcanaAuth() {
       "Fetching keys and generating wallet address..."
     );
 
-    const { userInfo, privateKey } = await authInstance.getUserInfo();
+    const { userInfo, privateKey } = authInstance.getUserInfo();
     store.dispatch("addBasicDetails", {
       email: userInfo.id,
       profileImage: userInfo.picture,
@@ -63,8 +63,8 @@ function useArcanaAuth() {
     AuthProvider.handleRedirectPage(window.location);
   }
 
-  async function logout() {
-    await authInstance.logout();
+  function logout() {
+    authInstance.logout();
     store.dispatch("clearStore");
   }
 

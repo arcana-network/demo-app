@@ -239,8 +239,8 @@ export default {
       saveAs(blob, "arcana-demo-app-keys.json");
     }
 
-    async function handleLogout() {
-      await logout();
+    function handleLogout() {
+      logout();
       router.push("/login");
     }
 
