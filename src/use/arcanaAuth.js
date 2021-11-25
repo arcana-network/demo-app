@@ -1,39 +1,35 @@
 import { AuthProvider } from "@arcana/auth";
 import { useStore } from "vuex";
 import { Wallet } from "ethers";
-import { ref, onBeforeMount } from "vue";
 
 import padPublicKey from "../utils/padPublicKey";
 
 const ARCANA_APP_ID = import.meta.env.VITE_ARCANA_APP_ID;
 const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID;
 
+const authInstance = new AuthProvider({
+  appID: ARCANA_APP_ID,
+  network: "testnet",
+  oauthCreds: [
+    {
+      type: "google",
+      clientId: GOOGLE_CLIENT_ID,
+    },
+  ],
+  redirectUri: `${window.location.origin}/auth/redirect`,
+});
+
 function useArcanaAuth() {
   const store = useStore();
-  const authInstanceRef = ref(null);
-
-  onBeforeMount(() => {
-    authInstanceRef.value = new AuthProvider({
-      appID: ARCANA_APP_ID,
-      network: "testnet",
-      oauthCreds: [
-        {
-          type: "google",
-          clientId: GOOGLE_CLIENT_ID,
-        },
-      ],
-      redirectUri: `${window.location.origin}/auth/redirect`,
-    });
-  });
 
   function isLoggedIn() {
-    return authInstanceRef.value.isLoggedIn();
+    return authInstance.isLoggedIn();
   }
 
   async function login() {
     if (!isLoggedIn()) {
       store.dispatch("showLoader", "Logging in...");
-      await authInstanceRef.value.loginWithSocial("google");
+      await authInstance.loginWithSocial("google");
     }
 
     store.dispatch(
@@ -41,14 +37,14 @@ function useArcanaAuth() {
       "Fetching keys and generating wallet address..."
     );
 
-    const { userInfo, privateKey } = await authInstanceRef.value.getUserInfo();
+    const { userInfo, privateKey } = await authInstance.getUserInfo();
     store.dispatch("addBasicDetails", {
       email: userInfo.id,
       profileImage: userInfo.picture,
       givenName: userInfo.name,
     });
 
-    const publicKey = await authInstanceRef.value.getPublicKey({
+    const publicKey = await authInstance.getPublicKey({
       verifier: "google",
       id: userInfo.id,
     });
@@ -68,7 +64,7 @@ function useArcanaAuth() {
   }
 
   async function logout() {
-    await authInstanceRef.value.logout();
+    await authInstance.logout();
     store.dispatch("clearStore");
   }
 
