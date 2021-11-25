@@ -18,12 +18,12 @@
 </template>
 
 <script>
-import { onMounted, computed } from "@vue/runtime-core";
-import UserProfile from "../components/UserProfile.vue";
-import FilesList from "../components/FilesList.vue";
+import { computed, onMounted } from "vue";
 import { useStore } from "vuex";
 
+import FilesList from "../components/FilesList.vue";
 import useArcanaStorage from "../use/arcanaStorage";
+import UserProfile from "../components/UserProfile.vue";
 
 export default {
   name: "SharedWithMe",

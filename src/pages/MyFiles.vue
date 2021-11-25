@@ -19,13 +19,13 @@
 </template>
 
 <script>
-import FilesList from "../components/FilesList.vue";
-import UploadFab from "../components/UploadFab.vue";
-import UserProfile from "../components/UserProfile.vue";
-import { onMounted } from "@vue/runtime-core";
+import { computed, onMounted } from "vue";
 import { useStore } from "vuex";
 
+import FilesList from "../components/FilesList.vue";
+import UploadFab from "../components/UploadFab.vue";
 import useArcanaStorage from "../use/arcanaStorage";
+import UserProfile from "../components/UserProfile.vue";
 
 export default {
   name: "MyFiles",
