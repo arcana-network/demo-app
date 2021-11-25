@@ -1,6 +1,6 @@
 import { Arcana as StorageProvider } from "@arcana/storage/dist/standalone/storage.umd";
-import { useStore } from "vuex";
 import { ref, onBeforeMount, inject } from "vue";
+import { useStore } from "vuex";
 
 const ARCANA_APP_ID = import.meta.env.VITE_ARCANA_APP_ID;
 
@@ -25,6 +25,8 @@ function useArcanaStorage() {
   const toast = inject("$toast");
   const storageInstanceRef = ref(null);
 
+  let storageInstance;
+
   onBeforeMount(() => {
     if (!storageInstanceRef.value) {
       storageInstanceRef.value = new StorageProvider({
@@ -33,10 +35,11 @@ function useArcanaStorage() {
         email: store.getters.email,
       });
     }
+    storageInstance = storageInstanceRef.value;
   });
 
   async function fetchStorageLimits() {
-    const access = await storageInstanceRef.value.getAccess();
+    const access = await storageInstance.getAccess();
     const [storageUsed, totalStorage] = await access.getUploadLimit();
     const [bandwidthUsed, totalBandwidth] = await access.getDownloadLimit();
 
@@ -52,12 +55,14 @@ function useArcanaStorage() {
 
   async function fetchMyFiles() {
     store.dispatch("showLoader", "Fetching uploaded files...");
+    const myFiles = await storageInstance.myFiles();
     store.dispatch("updateMyFiles", myFiles);
     store.dispatch("hideLoader");
   }
 
   async function fetchSharedFiles() {
     store.dispatch("showLoader", "Fetching shared files...");
+    const sharedFiles = await storageInstance.sharedFiles();
     store.dispatch("updateSharedWithMe", sharedFiles);
     store.dispatch("hideLoader");
   }
@@ -68,7 +73,7 @@ function useArcanaStorage() {
       "showLoader",
       "Downloading chunks from distributed storage..."
     );
-    const downloder = await storageInstanceRef.value.getDownloader();
+    const downloder = await storageInstance.getDownloader();
     let did = file.fileId;
     did = did.substring(0, 2) !== "0x" ? "0x" + did : did;
     downloder.download(did).catch((error) => {
@@ -119,7 +124,7 @@ function useArcanaStorage() {
         "Encrypting file data with recipient's public key......"
       );
       const actualPublicKey = padPublicKey(publicKey);
-      const access = await storageInstanceRef.value.getAccess();
+      const access = await storageInstance.getAccess();
       let did = fileToShare.fileId;
       did = did.substring(0, 2) != "0x" ? "0x" + did : did;
       store.dispatch("showLoader", `Sharing file with ${email}`);
@@ -138,7 +143,7 @@ function useArcanaStorage() {
 
   async function getSharedUsers(did) {
     try {
-      const access = await storageInstanceRef.value.getAccess();
+      const access = await storageInstance.getAccess();
       const fileId = did.substring(0, 2) !== "0x" ? "0x" + did : did;
       const users = await access.getSharedUsers(fileId);
       return users;
@@ -156,7 +161,7 @@ function useArcanaStorage() {
     const revokeStart = Date.now();
     store.dispatch("showLoader", "Revoking file access...");
     try {
-      const access = await storageInstanceRef.value.getAccess();
+      const access = await storageInstance.getAccess();
       const fileId = did.substring(0, 2) !== "0x" ? "0x" + did : did;
       await access.revoke(fileId, address);
       toast(`File Access Revoked`, successToast);
@@ -173,7 +178,7 @@ function useArcanaStorage() {
   async function remove(fileToDelete) {
     const deleteStart = Date.now();
     store.dispatch("showLoader", "Deleting file...");
-    const access = await storageInstanceRef.value.getAccess();
+    const access = await storageInstance.getAccess();
     try {
       let did = fileToDelete.fileId;
       did = did.substring(0, 2) != "0x" ? "0x" + did : did;
@@ -197,7 +202,7 @@ function useArcanaStorage() {
     const uploadStart = Date.now();
     try {
       store.dispatch("showLoader", "Encrypting file...");
-      const uploader = await storageInstanceRef.value.getUploader();
+      const uploader = await storageInstance.getUploader();
       store.dispatch("showLoader", "Uploading file to distributed storage...");
       let uploadDate, totalSize, did;
 
