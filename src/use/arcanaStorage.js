@@ -52,27 +52,13 @@ function useArcanaStorage() {
 
   async function fetchMyFiles() {
     store.dispatch("showLoader", "Fetching uploaded files...");
-    const myFiles = (await storageInstanceRef.value.myFiles()) || [];
-    store.dispatch(
-      "updateMyFiles",
-      myFiles.map((d) => {
-        d["fileId"] = d["did"];
-        return d;
-      })
-    );
+    store.dispatch("updateMyFiles", myFiles);
     store.dispatch("hideLoader");
   }
 
   async function fetchSharedFiles() {
     store.dispatch("showLoader", "Fetching shared files...");
-    const sharedFiles = (await storageInstanceRef.value.sharedFiles()) || [];
-    store.dispatch(
-      "updateSharedWithMe",
-      sharedFiles.map((d) => {
-        d["fileId"] = d["did"];
-        return d;
-      })
-    );
+    store.dispatch("updateSharedWithMe", sharedFiles);
     store.dispatch("hideLoader");
   }
 

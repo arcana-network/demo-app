@@ -18,10 +18,16 @@ const getters = {
 
 const mutations = {
   updateMyFiles(state, myFiles) {
-    state.myFiles = myFiles;
+    state.myFiles = myFiles.map((file) => {
+      file.fileId = file.did;
+      return file;
+    });
   },
   updateSharedWithMe(state, sharedWithMe) {
-    state.sharedWithMe = sharedWithMe;
+    state.sharedWithMe = sharedWithMe.map((file) => {
+      file.fileId = file.did;
+      return file;
+    });
   },
   updateTrash(state, trash) {
     state.trash = trash;
