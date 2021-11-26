@@ -4,14 +4,15 @@
 
 <script>
 import { onMounted } from "@vue/runtime-core";
-import { getArcanaAuthProvider } from "../utils/arcana-sdk";
+
+import useArcanaAuth from "../use/arcanaAuth";
 
 export default {
   setup() {
+    const { handleRedirect } = useArcanaAuth();
+
     onMounted(() => {
-      // window.onload = () => {
-      getArcanaAuthProvider().handleRedirectPage(window.location);
-      // };
+      handleRedirect();
     });
   },
 };

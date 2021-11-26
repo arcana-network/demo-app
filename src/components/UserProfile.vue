@@ -142,7 +142,7 @@
           cursor-pointer
           px-5
         "
-        @click.stop="logout"
+        @click.stop="handleLogout"
       >
         <span class="font-medium">Logout</span>
       </div>
@@ -189,24 +189,30 @@
 </style>
 
 <script>
-import { ref } from "@vue/reactivity";
-import { useStore } from "vuex";
-import { useRouter } from "vue-router";
-import { inject, onMounted } from "@vue/runtime-core";
-import { saveAs } from "file-saver";
 import { ClipboardCopyIcon } from "@heroicons/vue/outline";
-import copyToClipboard from "../utils/copyToClipboard";
+import { inject, onMounted } from "@vue/runtime-core";
 import { NTooltip } from "naive-ui";
-import * as arcanaAuth from "../utils/arcana-sdk";
+import { ref } from "@vue/reactivity";
+import { saveAs } from "file-saver";
+import { useRouter } from "vue-router";
+import { useStore } from "vuex";
+
+import copyToClipboard from "../utils/copyToClipboard";
+import useArcanaAuth from "../use/arcanaAuth";
+
 import ArrowDownIcon from "../assets/triangle-down.svg";
 
 export default {
   setup() {
     const store = useStore();
     const router = useRouter();
+    const toast = inject("$toast");
+
+    const { logout } = useArcanaAuth();
+
     let profile = ref({});
     let profileOptions = ref(false);
-    const toast = inject("$toast");
+
     onMounted(() => {
       profile.value = store.getters.basicProfile;
       document.addEventListener("click", handleMenuCollapse);
@@ -233,11 +239,9 @@ export default {
       saveAs(blob, "arcana-demo-app-keys.json");
     }
 
-    function logout() {
-      arcanaAuth.logout();
-      store.dispatch("clearStore").then(() => {
-        router.replace("/login");
-      });
+    function handleLogout() {
+      logout();
+      router.push("/login");
     }
 
     function copy(value) {
@@ -265,7 +269,7 @@ export default {
       profileOptions,
       downloadKeys,
       toggleProfileOptions,
-      logout,
+      handleLogout,
       copy,
       ArrowDownIcon,
     };

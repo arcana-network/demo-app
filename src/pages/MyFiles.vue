@@ -19,40 +19,28 @@
 </template>
 
 <script>
-import { computed, onMounted, inject } from "@vue/runtime-core";
-import UploadFab from "../components/UploadFab.vue";
-import UserProfile from "../components/UserProfile.vue";
-import FilesList from "../components/FilesList.vue";
+import { computed, onMounted } from "vue";
 import { useStore } from "vuex";
-import { useFileMixin } from "../mixins/file.mixin";
-import { getArcanaStorage } from "../utils/arcana-sdk";
+
+import FilesList from "../components/FilesList.vue";
+import UploadFab from "../components/UploadFab.vue";
+import useArcanaStorage from "../use/arcanaStorage";
+import UserProfile from "../components/UserProfile.vue";
 
 export default {
-  name: "",
+  name: "MyFiles",
   setup() {
     const store = useStore();
-    const toast = inject("$toast");
-    const fileMixin = useFileMixin(toast);
-    let files = computed(() => {
-      return store.getters.myFiles;
-    });
+    const { fetchStorageLimits, fetchMyFiles } = useArcanaStorage();
+
+    const files = computed(() => store.getters.myFiles);
 
     onMounted(async () => {
       document.title = "My Files | Arcana Demo";
-      store.dispatch("showLoader", "Fetching uploaded files...");
-      await fileMixin.updateLimits();
-      const arcanaStorage = getArcanaStorage();
-      let myfiles = await arcanaStorage.myFiles();
-      myfiles = myfiles ? myfiles : [];
-      store.dispatch(
-        "updateMyFiles",
-        myfiles.map((d) => {
-          d["fileId"] = d["did"];
-          return d;
-        })
-      );
-      store.dispatch("hideLoader");
+      await fetchStorageLimits();
+      await fetchMyFiles();
     });
+
     return {
       files,
     };
@@ -60,5 +48,3 @@ export default {
   components: { UploadFab, UserProfile, FilesList },
 };
 </script>
-
-
