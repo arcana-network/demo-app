@@ -1,6 +1,10 @@
+import bytes from "bytes";
 import { Arcana as StorageProvider } from "@arcana/storage/dist/standalone/storage.umd";
 import { ref, onBeforeMount, inject } from "vue";
 import { useStore } from "vuex";
+
+import padPublicKey from "../utils/padPublicKey";
+import { authInstance } from "./arcanaAuth";
 
 const ARCANA_APP_ID = import.meta.env.VITE_ARCANA_APP_ID;
 
@@ -67,6 +71,75 @@ function useArcanaStorage() {
     store.dispatch("hideLoader");
   }
 
+  async function upload(fileToUpload) {
+    const uploadStart = Date.now();
+    try {
+      store.dispatch("showLoader", "Encrypting file...");
+      const uploader = await storageInstance.getUploader();
+
+      store.dispatch("showLoader", "Uploading file to distributed storage...");
+      let uploadDate = new Date(),
+        totalSize,
+        did;
+
+      uploader
+        .upload(fileToUpload)
+        .then((fileDid) => {
+          did = fileDid;
+        })
+        .catch((error) => {
+          console.error(error);
+          if (error.message === NO_SPACE) {
+            toast(
+              "Upload failed. Storage limit exceeded. Upgrade your account to continue",
+              errorToast
+            );
+            store.dispatch("hideLoader");
+          } else if (error.code === UNAUTHORIZED) {
+            toast("Upload failed. Kindly login and try again", errorToast);
+            store.dispatch("hideLoader");
+          } else {
+            toast("Something went wrong. Try again", errorToast);
+            store.dispatch("hideLoader");
+          }
+        });
+      uploader.onProgress = (uploaded, total) => {
+        store.dispatch(
+          "showLoader",
+          `Uploaded ${bytes(uploaded)} out of ${bytes(total)}`
+        );
+        totalSize = total;
+      };
+      uploader.onSuccess = () => {
+        fetchStorageLimits();
+        toast("Upload Success", successToast);
+        toast(
+          "Transaction successfully updated in arcana network's blockchain",
+          successToast
+        );
+        let myFiles = [...store.getters.myFiles];
+        myFiles.push({
+          did,
+          createdAt: uploadDate,
+          size: totalSize,
+        });
+        store.dispatch("updateMyFiles", myFiles);
+        store.dispatch("hideLoader");
+        const uploadEnd = Date.now();
+        console.log("UPLOAD COMPLETED", `${(uploadEnd - uploadStart) / 1000}s`);
+      };
+      uploader.onError = (err) => {
+        console.error("Error caught", err);
+        toast("Something went wrong. Try again", errorToast);
+        store.dispatch("hideLoader");
+      };
+    } catch (e) {
+      console.error(e);
+      toast("Something went wrong. Try again", errorToast);
+      store.dispatch("hideLoader");
+    }
+  }
+
   async function download(file) {
     const downloadStart = Date.now();
     store.dispatch(
@@ -118,11 +191,14 @@ function useArcanaStorage() {
     const shareStart = Date.now();
     store.dispatch("showLoader", "Sharing file...");
     try {
-      const publicKey = store.getters.publicKey;
       store.dispatch(
         "showLoader",
         "Encrypting file data with recipient's public key......"
       );
+      const publicKey = await authInstance.getPublicKey({
+        verifier: "google",
+        id: email,
+      });
       const actualPublicKey = padPublicKey(publicKey);
       const access = await storageInstance.getAccess();
       let did = fileToShare.fileId;
@@ -191,75 +267,6 @@ function useArcanaStorage() {
       store.dispatch("hideLoader");
       const deleteEnd = Date.now();
       console.log("DELETE COMPLETED", `${(deleteEnd - deleteStart) / 1000}s`);
-    } catch (e) {
-      console.error(e);
-      toast("Something went wrong. Try again", errorToast);
-      store.dispatch("hideLoader");
-    }
-  }
-
-  async function upload(fileToUpload) {
-    const uploadStart = Date.now();
-    try {
-      store.dispatch("showLoader", "Encrypting file...");
-      const uploader = await storageInstance.getUploader();
-      store.dispatch("showLoader", "Uploading file to distributed storage...");
-      let uploadDate, totalSize, did;
-
-      uploadDate = new Date();
-
-      uploader
-        .upload(fileToUpload)
-        .then((fileDid) => {
-          did = fileDid;
-        })
-        .catch((error) => {
-          console.error(error);
-          if (error.message === NO_SPACE) {
-            toast(
-              "Upload failed. Storage limit exceeded. Upgrade your account to continue",
-              errorToast
-            );
-            store.dispatch("hideLoader");
-          } else if (error.code === UNAUTHORIZED) {
-            toast("Upload failed. Kindly login and try again", errorToast);
-            store.dispatch("hideLoader");
-          } else {
-            toast("Something went wrong. Try again", errorToast);
-            store.dispatch("hideLoader");
-          }
-        });
-      uploader.onProgress = (uploaded, total) => {
-        store.dispatch(
-          "showLoader",
-          `Uploaded ${bytes(uploaded)} out of ${bytes(total)}`
-        );
-        totalSize = total;
-      };
-      uploader.onSuccess = () => {
-        fetchStorageLimits();
-        toast("Upload Success", successToast);
-        toast(
-          "Transaction successfully updated in arcana network's blockchain",
-          successToast
-        );
-        let myFiles = [...store.getters.myFiles];
-        myFiles.push({
-          fileId: did,
-          did,
-          createdAt: uploadDate,
-          size: totalSize,
-        });
-        store.dispatch("updateMyFiles", myFiles);
-        store.dispatch("hideLoader");
-        const uploadEnd = Date.now();
-        console.log("UPLOAD COMPLETED", `${(uploadEnd - uploadStart) / 1000}s`);
-      };
-      uploader.onError = (err) => {
-        console.error("Error caught", err);
-        toast("Something went wrong. Try again", errorToast);
-        store.dispatch("hideLoader");
-      };
     } catch (e) {
       console.error(e);
       toast("Something went wrong. Try again", errorToast);
