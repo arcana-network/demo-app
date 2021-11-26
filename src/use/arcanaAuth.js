@@ -76,4 +76,6 @@ function useArcanaAuth() {
   };
 }
 
+export { authInstance };
+
 export default useArcanaAuth;
