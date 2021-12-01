@@ -11,5 +11,6 @@ export default defineConfig({
   plugins: [vue()],
   build: {
     chunkSizeWarningLimit: 1024,
+    sourcemap: true,
   },
 });
