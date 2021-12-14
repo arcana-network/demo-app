@@ -24,6 +24,8 @@ const errorToast = {
   type: "error",
 };
 
+const FILE_SIZE_LIMIT = bytes('100MB')
+
 function useArcanaStorage() {
   const store = useStore();
   const toast = inject("$toast");
@@ -72,6 +74,13 @@ function useArcanaStorage() {
   }
 
   async function upload(fileToUpload) {
+    if (fileToUpload.size > FILE_SIZE_LIMIT) {
+      toast(
+        "You are not allowed to upload files bigger than 100MiB.",
+        errorToast
+      )
+      throw new Error("File size exceeded maximum")
+    }
     const uploadStart = Date.now();
     try {
       store.dispatch("showLoader", "Encrypting file...");
