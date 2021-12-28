@@ -1,11 +1,10 @@
 <template>
-  <div class="header h-10 lg:hidden">
-    <!-- <MenuIcon class="h-7 w-7 inline-block mr-2 text-white" /> -->
+  <div class="header h-10 cursor-pointer lg:hidden" @click.stop="openMenu">
+    <MenuIcon class="h-7 w-7 inline-block mr-2 text-white" />
     <img
       src="@/assets/rocket-science.png"
-      class="inline-block cursor-pointer -mt-2"
+      class="inline-block -mt-2"
       width="280"
-      @click.stop="openMenu"
     />
   </div>
   <full-screen-overlay v-if="menu" />
