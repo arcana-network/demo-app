@@ -1,13 +1,14 @@
 <template>
   <div>
-    <div class="flex flex-row mt-6 ml-6 lg:mt-16 lg:ml-16">
+    <div class="flex flex-row mt-6 ml-6 lg:mt-16 lg:ml-16" style="align-items: center">
       <div
-        class="rounded-full h-12 cursor-pointer relative"
+        class="rounded-full flex h-14 cursor-pointer relative"
         style="
           background: #eef1f6;
           transition: width 0.4s;
           width: 6em;
           transition: border 0.4s;
+          align-items: center;
         "
         :style="
           profileOptions
@@ -22,7 +23,7 @@
         />
         <img
           :src="ArrowDownIcon"
-          class="h-4 w-4 right-2.5 top-4 absolute inline"
+          class="h-4 w-4 right-2.5 absolute inline"
           style="transition: transform 0.4s, margin 0.4s"
           :style="
             profileOptions
@@ -32,13 +33,13 @@
         />
       </div>
       <span
-        class="mt-2 ml-4 font-ubuntu font-light"
+        class="ml-4 font-ubuntu font-light"
         style="color: #253d52; font-size: 1.3rem"
       >
         Hello,
       </span>
       <span
-        class="mt-2 ml-1 font-ubuntu font-bold"
+        class="ml-1 font-ubuntu font-bold"
         style="color: #253d52; font-size: 1.3rem"
       >
         {{ profile.givenName }}!
