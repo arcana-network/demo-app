@@ -1,14 +1,13 @@
 <template>
   <div>
-    <div class="flex flex-row mt-6 ml-6 lg:mt-16 lg:ml-16" style="align-items: center">
+    <div class="flex flex-row mt-6 ml-6 lg:mt-16 lg:ml-16 items-center">
       <div
-        class="rounded-full flex h-14 cursor-pointer relative"
+        class="rounded-full flex h-14 cursor-pointer relative items-center"
         style="
           background: #eef1f6;
           transition: width 0.4s;
           width: 6em;
           transition: border 0.4s;
-          align-items: center;
         "
         :style="
           profileOptions
