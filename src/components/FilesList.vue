@@ -5,7 +5,7 @@
       style="
         background: #eef1f6;
         font-size: 0.9rem;
-        border-radius: 20px;
+        border-radius: 12px;
         color: #4b4b4b;
       "
     >

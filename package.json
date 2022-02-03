@@ -1,6 +1,6 @@
 {
   "name": "arcana-demo",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
@@ -10,8 +10,8 @@
     "@arcana/auth": "0.0.6",
     "@arcana/storage": "^0.1.0",
     "@heroicons/vue": "^1.0.1",
-    "@sentry/tracing": "^6.15.0",
-    "@sentry/vue": "^6.15.0",
+    "@sentry/tracing": "^6.16.1",
+    "@sentry/vue": "^6.16.1",
     "bytes": "^3.1.0",
     "ethers": "^5.5.1",
     "file-saver": "^2.0.5",
