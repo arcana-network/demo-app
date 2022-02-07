@@ -4,7 +4,7 @@ import { ref, onBeforeMount, inject } from "vue";
 import { useStore } from "vuex";
 
 import padPublicKey from "../utils/padPublicKey";
-import { authInstance } from "./arcanaAuth";
+import useArcanaAuth from "./arcanaAuth";
 
 const ARCANA_APP_ID = import.meta.env.VITE_ARCANA_APP_ID;
 
@@ -24,7 +24,7 @@ const errorToast = {
   type: "error",
 };
 
-const FILE_SIZE_LIMIT = bytes('100MB')
+const FILE_SIZE_LIMIT = bytes("100MB");
 
 function useArcanaStorage() {
   const store = useStore();
@@ -39,6 +39,7 @@ function useArcanaStorage() {
         appId: ARCANA_APP_ID,
         privateKey: store.getters.privateKey,
         email: store.getters.email,
+        gateway: "https://gateway02.arcana.network/",
       });
     }
     storageInstance = storageInstanceRef.value;
@@ -78,8 +79,8 @@ function useArcanaStorage() {
       toast(
         "You are not allowed to upload files bigger than 100MiB.",
         errorToast
-      )
-      throw new Error("File size exceeded maximum")
+      );
+      throw new Error("File size exceeded maximum");
     }
     const uploadStart = Date.now();
     try {
@@ -204,10 +205,8 @@ function useArcanaStorage() {
         "showLoader",
         "Encrypting file data with recipient's public key......"
       );
-      const publicKey = await authInstance.getPublicKey({
-        verifier: "google",
-        id: email,
-      });
+      const { getPublicKey } = await useArcanaAuth(store);
+      const publicKey = getPublicKey(email);
       const actualPublicKey = padPublicKey(publicKey);
       const access = await storageInstance.getAccess();
       let did = fileToShare.fileId;

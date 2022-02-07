@@ -95,10 +95,10 @@ export default {
     const router = useRouter();
     const toast = inject("$toast");
 
-    const { isLoggedIn, login } = useArcanaAuth();
-
-    onBeforeMount(() => {
+    onBeforeMount(async () => {
       document.title = "Login | Arcana Demo";
+      const { isLoggedIn } = await useArcanaAuth(store);
+      console.log({ isLoggedIn: isLoggedIn() });
       if (isLoggedIn()) {
         onSignInClick();
       }
@@ -107,19 +107,20 @@ export default {
     async function onSignInClick() {
       try {
         const loginStart = Date.now();
+        const { login, fetchUserDetails } = await useArcanaAuth(store);
+        // await fetchUserDetails();
+        // store.dispatch("showLoader");
+        // await router.push({ name: "My Files" });
+        // store.dispatch("hideLoader");
+        // toast("Login Success", {
+        //   styles: {
+        //     backgroundColor: "green",
+        //   },
+        //   type: "success",
+        // });
         await login();
         const loginEnd = Date.now();
         console.log("LOGIN COMPLETED", (loginEnd - loginStart) / 1000);
-
-        store.dispatch("showLoader");
-        await router.push({ name: "My Files" });
-        store.dispatch("hideLoader");
-        toast("Login Success", {
-          styles: {
-            backgroundColor: "green",
-          },
-          type: "success",
-        });
       } catch (e) {
         console.error("error", e);
         toast("Something went wrong. Try again", {
