@@ -1,13 +1,10 @@
-// import { AuthProvider, SocialLoginType } from "@arcana/auth";
+import { AuthProvider, SocialLoginType } from "@arcana/auth";
 import { Wallet } from "ethers";
 import { useStore } from "vuex";
 
 import padPublicKey from "../utils/padPublicKey";
 
-const { AuthProvider, SocialLoginType } = window.arcana.auth;
-
 const ARCANA_APP_ID = import.meta.env.VITE_ARCANA_APP_ID;
-const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID;
 
 async function useArcanaAuth() {
   const store = useStore();
