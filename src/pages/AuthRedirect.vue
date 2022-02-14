@@ -1,5 +1,5 @@
 <template>
-  <div class="body-1">Redirecting...</div>
+  <div class="text-white m-2">Redirecting...</div>
 </template>
 
 <script>
@@ -14,7 +14,7 @@ export default {
     const store = useStore();
     const router = useRouter();
     onMounted(async () => {
-      const { fetchUserDetails } = await useArcanaAuth(store);
+      const { fetchUserDetails } = await useArcanaAuth();
       await fetchUserDetails();
       store.dispatch("showLoader");
       await router.push({ name: "My Files" });

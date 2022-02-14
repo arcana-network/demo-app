@@ -205,8 +205,8 @@ function useArcanaStorage() {
         "showLoader",
         "Encrypting file data with recipient's public key......"
       );
-      const { getPublicKey } = await useArcanaAuth(store);
-      const publicKey = getPublicKey(email);
+      const { getPublicKey } = await useArcanaAuth();
+      const publicKey = await getPublicKey(email);
       const actualPublicKey = padPublicKey(publicKey);
       const access = await storageInstance.getAccess();
       let did = fileToShare.fileId;

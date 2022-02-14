@@ -208,8 +208,6 @@ export default {
     const router = useRouter();
     const toast = inject("$toast");
 
-    const { logout } = useArcanaAuth();
-
     let profile = ref({});
     let profileOptions = ref(false);
 
@@ -239,7 +237,8 @@ export default {
       saveAs(blob, "arcana-demo-app-keys.json");
     }
 
-    function handleLogout() {
+    async function handleLogout() {
+      const { logout } = await useArcanaAuth();
       logout();
       router.push("/login");
     }

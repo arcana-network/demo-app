@@ -97,8 +97,7 @@ export default {
 
     onBeforeMount(async () => {
       document.title = "Login | Arcana Demo";
-      const { isLoggedIn } = await useArcanaAuth(store);
-      console.log({ isLoggedIn: isLoggedIn() });
+      const { isLoggedIn } = await useArcanaAuth();
       if (isLoggedIn()) {
         onSignInClick();
       }
@@ -107,17 +106,7 @@ export default {
     async function onSignInClick() {
       try {
         const loginStart = Date.now();
-        const { login, fetchUserDetails } = await useArcanaAuth(store);
-        // await fetchUserDetails();
-        // store.dispatch("showLoader");
-        // await router.push({ name: "My Files" });
-        // store.dispatch("hideLoader");
-        // toast("Login Success", {
-        //   styles: {
-        //     backgroundColor: "green",
-        //   },
-        //   type: "success",
-        // });
+        const { login } = await useArcanaAuth();
         await login();
         const loginEnd = Date.now();
         console.log("LOGIN COMPLETED", (loginEnd - loginStart) / 1000);
