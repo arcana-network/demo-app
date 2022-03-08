@@ -8,8 +8,8 @@ const ARCANA_APP_ID = import.meta.env.VITE_ARCANA_APP_ID;
 const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID;
 
 const authInstance = new AuthProvider({
-  appID: ARCANA_APP_ID,
-  network: "testnet",
+  appId: ARCANA_APP_ID,
+  network: "dev",
   oauthCreds: [
     {
       type: "google",
