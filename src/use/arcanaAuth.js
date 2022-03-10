@@ -19,6 +19,10 @@ const authInstance = new AuthProvider({
   redirectUri: `${window.location.origin}/auth/redirect`,
 });
 
+console.log("Initialised auth with:", {
+  appId: ARCANA_APP_ID,
+});
+
 function useArcanaAuth() {
   const store = useStore();
 

@@ -42,6 +42,11 @@ function useArcanaStorage() {
         email: store.getters.email,
         gateway: GATEWAY_URL,
       });
+
+      console.log("Initialised storage with:", {
+        appId: ARCANA_APP_ID,
+        gateway: GATEWAY_URL,
+      });
     }
     storageInstance = storageInstanceRef.value;
   });
