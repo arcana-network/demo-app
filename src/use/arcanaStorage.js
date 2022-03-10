@@ -7,6 +7,7 @@ import padPublicKey from "../utils/padPublicKey";
 import { authInstance } from "./arcanaAuth";
 
 const ARCANA_APP_ID = import.meta.env.VITE_ARCANA_APP_ID;
+const GATEWAY_URL = import.meta.env.VITE_GATEWAY_URL;
 
 const NO_SPACE = "No space left for user";
 const UNAUTHORIZED = "UNAUTHORIZED";
@@ -24,7 +25,7 @@ const errorToast = {
   type: "error",
 };
 
-const FILE_SIZE_LIMIT = bytes('100MB')
+const FILE_SIZE_LIMIT = bytes("100MB");
 
 function useArcanaStorage() {
   const store = useStore();
@@ -39,6 +40,7 @@ function useArcanaStorage() {
         appId: ARCANA_APP_ID,
         privateKey: store.getters.privateKey,
         email: store.getters.email,
+        gateway: GATEWAY_URL,
       });
     }
     storageInstance = storageInstanceRef.value;
@@ -78,8 +80,8 @@ function useArcanaStorage() {
       toast(
         "You are not allowed to upload files bigger than 100MiB.",
         errorToast
-      )
-      throw new Error("File size exceeded maximum")
+      );
+      throw new Error("File size exceeded maximum");
     }
     const uploadStart = Date.now();
     try {
