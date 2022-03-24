@@ -1,6 +1,6 @@
 import bytes from "bytes";
-import { Arcana as StorageProvider } from "@arcana/storage/dist/standalone/storage.umd";
-import { ref, onBeforeMount, inject } from "vue";
+import { StorageProvider } from "@arcana/storage/dist/standalone/storage.umd";
+import { inject } from "vue";
 import { useStore } from "vuex";
 
 import padPublicKey from "../utils/padPublicKey";
@@ -29,20 +29,12 @@ const FILE_SIZE_LIMIT = bytes("100MB");
 function useArcanaStorage() {
   const store = useStore();
   const toast = inject("$toast");
-  const storageInstanceRef = ref(null);
 
-  let storageInstance;
-
-  onBeforeMount(() => {
-    if (!storageInstanceRef.value) {
-      storageInstanceRef.value = new StorageProvider({
-        appId: ARCANA_APP_ID,
-        privateKey: store.getters.privateKey,
-        email: store.getters.email,
-        gateway: "https://gateway02.arcana.network/",
-      });
-    }
-    storageInstance = storageInstanceRef.value;
+  let storageInstance = new StorageProvider({
+    appId: ARCANA_APP_ID,
+    privateKey: store.getters.privateKey,
+    email: store.getters.email,
+    gateway: "https://gateway02.arcana.network/",
   });
 
   async function fetchStorageLimits() {
