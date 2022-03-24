@@ -11,8 +11,8 @@ async function useArcanaAuth() {
 
   const authInstance = await AuthProvider.init({
     appId: ARCANA_APP_ID,
-    network: "test",
-    flow: "popup",
+    network: "dev",
+    flow: "redirect",
     redirectUri: `${window.location.origin}/auth/redirect`,
   });
 

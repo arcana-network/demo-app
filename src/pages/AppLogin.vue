@@ -85,21 +85,26 @@
 <script>
 import { onBeforeMount, inject } from "@vue/runtime-core";
 import { useRouter } from "vue-router";
-import { useStore } from "vuex";
 
 import useArcanaAuth from "../use/arcanaAuth";
 
 export default {
   setup() {
-    const store = useStore();
     const router = useRouter();
     const toast = inject("$toast");
 
     onBeforeMount(async () => {
       document.title = "Login | Arcana Demo";
-      const { isLoggedIn } = await useArcanaAuth();
+      const { isLoggedIn, fetchUserDetails } = await useArcanaAuth();
       if (isLoggedIn()) {
-        onSignInClick();
+        await fetchUserDetails();
+        await router.push({ name: "My Files" });
+        toast("Login Success", {
+          styles: {
+            backgroundColor: "green",
+          },
+          type: "success",
+        });
       }
     });
 
