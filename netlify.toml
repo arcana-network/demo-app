@@ -1,0 +1,19 @@
+[[headers]]
+  for = "/*"
+  [headers.values]
+    SameSite = "STRICT"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+    X-Frame-Options = "DENY"
+    X-Content-Type-Options = "nosniff"
+    Content-Security-Policy-Report-Only = '''
+    default-src 'self';
+
+    font-src 'self' fonts.gstatic.com gstatic.com *.gstatic.com;
+    img-src 'self' data:;
+    script-src 'self' googletagmanager.com *.googletagmanager.com;
+    style-src 'self' fonts.googleapis.com;
+
+    connect-src 'self' arcana.network *.arcana.network google-analytics.com *.google-analytics.com list-manage.com *.list-manage.com sentry.io *.sentry.io;
+
+    object-src 'none';'''
+
