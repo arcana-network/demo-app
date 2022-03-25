@@ -5,11 +5,11 @@
     Referrer-Policy = "strict-origin-when-cross-origin"
     X-Frame-Options = "DENY"
     X-Content-Type-Options = "nosniff"
-    Content-Security-Policy-Report-Only = '''
+    Content-Security-Policy = '''
     default-src 'self';
 
     font-src 'self' fonts.gstatic.com gstatic.com *.gstatic.com;
-    img-src 'self' data:;
+    img-src 'self' data: *.googleusercontent.com;
     script-src 'self' 'unsafe-inline' 'unsafe-eval' googletagmanager.com *.googletagmanager.com apis.google.com;
     style-src 'self' 'unsafe-inline' fonts.googleapis.com;
 
