@@ -11,9 +11,9 @@
     font-src 'self' fonts.gstatic.com gstatic.com *.gstatic.com;
     img-src 'self' data:;
     script-src 'self' 'unsafe-inline' googletagmanager.com *.googletagmanager.com apis.google.com;
-    style-src 'self' 'unsafe-inline' fonts.googleapis.com;
+    style-src 'self' 'unsafe-inline' 'unsafe-eval' fonts.googleapis.com;
 
-    connect-src 'self' arcana.network *.arcana.network google-analytics.com *.google-analytics.com list-manage.com *.list-manage.com sentry.io *.sentry.io;
+    connect-src 'self' arcana.network *.arcana.network google-analytics.com *.google-analytics.com googleapis.com *.googleapis.com list-manage.com *.list-manage.com sentry.io *.sentry.io;
 
     object-src 'none';'''
 
