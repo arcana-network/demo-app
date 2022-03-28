@@ -83,7 +83,7 @@
 </style>
 
 <script>
-import { onBeforeMount, inject } from "@vue/runtime-core";
+import { onMounted, inject } from "@vue/runtime-core";
 import { useRouter } from "vue-router";
 
 import useArcanaAuth from "../use/arcanaAuth";
@@ -92,10 +92,10 @@ export default {
   setup() {
     const router = useRouter();
     const toast = inject("$toast");
+    const { login, isLoggedIn, fetchUserDetails } = useArcanaAuth();
 
-    onBeforeMount(async () => {
+    onMounted(async () => {
       document.title = "Login | Arcana Demo";
-      const { isLoggedIn, fetchUserDetails } = await useArcanaAuth();
       if (isLoggedIn()) {
         await fetchUserDetails();
         await router.push({ name: "My Files" });
@@ -111,7 +111,6 @@ export default {
     async function onSignInClick() {
       try {
         const loginStart = Date.now();
-        const { login } = await useArcanaAuth();
         await login();
         const loginEnd = Date.now();
         console.log("LOGIN COMPLETED", (loginEnd - loginStart) / 1000);

@@ -1,5 +1,5 @@
 import bytes from "bytes";
-import { StorageProvider } from "@arcana/storage/dist/standalone/storage.umd";
+import { Arcana as StorageProvider } from "@arcana/storage/dist/standalone/storage.umd";
 import { inject } from "vue";
 import { useStore } from "vuex";
 

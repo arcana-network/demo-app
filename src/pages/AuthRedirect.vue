@@ -11,8 +11,10 @@ import { useRouter } from "vue-router";
 export default {
   setup() {
     const router = useRouter();
+
+    const { fetchUserDetails } = useArcanaAuth();
+
     onMounted(async () => {
-      const { fetchUserDetails } = await useArcanaAuth();
       await fetchUserDetails();
       await router.push({ name: "My Files" });
       toast("Login Success", {

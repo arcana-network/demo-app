@@ -1,20 +1,29 @@
 import { AuthProvider, SocialLoginType } from "@arcana/auth";
+import { init } from "@sentry/browser";
 import { Wallet } from "ethers";
+import { ref, onBeforeMount } from "vue";
 import { useStore } from "vuex";
 
 import padPublicKey from "../utils/padPublicKey";
 
 const ARCANA_APP_ID = import.meta.env.VITE_ARCANA_APP_ID;
 
-async function useArcanaAuth() {
+let authInstance = null;
+
+function useArcanaAuth() {
   const store = useStore();
 
-  const authInstance = await AuthProvider.init({
-    appId: ARCANA_APP_ID,
-    network: "dev",
-    flow: "redirect",
-    redirectUri: `${window.location.origin}/auth/redirect`,
-  });
+  async function init() {
+    if (!authInstance) {
+      authInstance = await AuthProvider.init({
+        appId: ARCANA_APP_ID,
+        network: "dev",
+        flow: "redirect",
+        redirectUri: `${window.location.origin}/auth/redirect`,
+        debug: true,
+      });
+    }
+  }
 
   function isLoggedIn() {
     return authInstance.isLoggedIn();
@@ -71,6 +80,7 @@ async function useArcanaAuth() {
   }
 
   return {
+    init,
     handleRedirect,
     isLoggedIn,
     login,
