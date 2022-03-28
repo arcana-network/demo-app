@@ -26,16 +26,21 @@ const errorToast = {
 
 const FILE_SIZE_LIMIT = bytes("100MB");
 
+let storageInstance = null;
+
 function useArcanaStorage() {
   const store = useStore();
   const toast = inject("$toast");
+  const { getPublicKey } = useArcanaAuth();
 
-  let storageInstance = new StorageProvider({
-    appId: ARCANA_APP_ID,
-    privateKey: store.getters.privateKey,
-    email: store.getters.email,
-    gateway: "https://gateway02.arcana.network/",
-  });
+  if (!storageInstance) {
+    storageInstance = new StorageProvider({
+      appId: ARCANA_APP_ID,
+      privateKey: store.getters.privateKey,
+      email: store.getters.email,
+      gateway: "https://gateway02.arcana.network/",
+    });
+  }
 
   async function fetchStorageLimits() {
     const access = await storageInstance.getAccess();
@@ -197,7 +202,6 @@ function useArcanaStorage() {
         "showLoader",
         "Encrypting file data with recipient's public key......"
       );
-      const { getPublicKey } = await useArcanaAuth();
       const publicKey = await getPublicKey(email);
       const actualPublicKey = padPublicKey(publicKey);
       const access = await storageInstance.getAccess();

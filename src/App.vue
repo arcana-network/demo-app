@@ -17,7 +17,7 @@ import FullsizeBackground from "./components/FullsizeBackground.vue";
 import AppSidebar from "./components/AppSidebar.vue";
 import FullScreenLoader from "./components/FullScreenLoader.vue";
 import { useStore } from "vuex";
-import { computed, onBeforeMount, ref } from "@vue/runtime-core";
+import { computed, onBeforeMount, ref } from "vue";
 import useArcanaAuth from "./use/arcanaAuth";
 
 export default {

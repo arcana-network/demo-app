@@ -83,7 +83,7 @@
 </style>
 
 <script>
-import { onMounted, inject } from "@vue/runtime-core";
+import { onMounted, inject } from "vue";
 import { useRouter } from "vue-router";
 
 import useArcanaAuth from "../use/arcanaAuth";

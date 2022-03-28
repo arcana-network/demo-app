@@ -1,7 +1,5 @@
 import { AuthProvider, SocialLoginType } from "@arcana/auth";
-import { init } from "@sentry/browser";
 import { Wallet } from "ethers";
-import { ref, onBeforeMount } from "vue";
 import { useStore } from "vuex";
 
 import padPublicKey from "../utils/padPublicKey";
