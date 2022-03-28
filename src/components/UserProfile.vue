@@ -240,7 +240,7 @@ export default {
     }
 
     async function handleLogout() {
-      logout();
+      await logout();
       router.push("/login");
     }
 
