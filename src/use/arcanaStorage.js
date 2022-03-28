@@ -7,6 +7,7 @@ import padPublicKey from "../utils/padPublicKey";
 import useArcanaAuth from "./arcanaAuth";
 
 const ARCANA_APP_ID = import.meta.env.VITE_ARCANA_APP_ID;
+const GATEWAY_URL = import.meta.env.VITE_GATEWAY_URL;
 
 const NO_SPACE = "No space left for user";
 const UNAUTHORIZED = "UNAUTHORIZED";
@@ -38,7 +39,7 @@ function useArcanaStorage() {
       appId: ARCANA_APP_ID,
       privateKey: store.getters.privateKey,
       email: store.getters.email,
-      gateway: "https://gateway02.arcana.network/",
+      gateway: GATEWAY_URL,
     });
   }
 

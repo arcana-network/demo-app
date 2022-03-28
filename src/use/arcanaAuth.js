@@ -5,6 +5,8 @@ import { useStore } from "vuex";
 import padPublicKey from "../utils/padPublicKey";
 
 const ARCANA_APP_ID = import.meta.env.VITE_ARCANA_APP_ID;
+const ARCANA_AUTH_NETWORK = import.meta.env.VITE_ARCANA_AUTH_NETWORK;
+const ARCANA_AUTH_FLOW = import.meta.env.VITE_ARCANA_AUTH_FLOW;
 
 let authInstance = null;
 
@@ -15,10 +17,9 @@ function useArcanaAuth() {
     if (!authInstance) {
       authInstance = await AuthProvider.init({
         appId: ARCANA_APP_ID,
-        network: "dev",
-        flow: "redirect",
+        network: ARCANA_AUTH_NETWORK,
+        flow: ARCANA_AUTH_FLOW,
         redirectUri: `${window.location.origin}/auth/redirect`,
-        debug: true,
       });
     }
   }
@@ -72,7 +73,7 @@ function useArcanaAuth() {
 
   async function getPublicKey(email) {
     return await authInstance.getPublicKey({
-      verifier: "google",
+      verifier: SocialLoginType.google,
       id: email,
     });
   }
