@@ -1,12 +1,13 @@
 import bytes from "bytes";
 import { Arcana as StorageProvider } from "@arcana/storage/dist/standalone/storage.umd";
-import { ref, onBeforeMount, inject } from "vue";
+import { inject } from "vue";
 import { useStore } from "vuex";
 
 import padPublicKey from "../utils/padPublicKey";
-import { authInstance } from "./arcanaAuth";
+import useArcanaAuth from "./arcanaAuth";
 
 const ARCANA_APP_ID = import.meta.env.VITE_ARCANA_APP_ID;
+const GATEWAY_URL = import.meta.env.VITE_GATEWAY_URL;
 
 const NO_SPACE = "No space left for user";
 const UNAUTHORIZED = "UNAUTHORIZED";
@@ -24,25 +25,23 @@ const errorToast = {
   type: "error",
 };
 
-const FILE_SIZE_LIMIT = bytes('100MB')
+const FILE_SIZE_LIMIT = bytes("100MB");
+
+let storageInstance = null;
 
 function useArcanaStorage() {
   const store = useStore();
   const toast = inject("$toast");
-  const storageInstanceRef = ref(null);
+  const { getPublicKey } = useArcanaAuth();
 
-  let storageInstance;
-
-  onBeforeMount(() => {
-    if (!storageInstanceRef.value) {
-      storageInstanceRef.value = new StorageProvider({
-        appId: ARCANA_APP_ID,
-        privateKey: store.getters.privateKey,
-        email: store.getters.email,
-      });
-    }
-    storageInstance = storageInstanceRef.value;
-  });
+  if (!storageInstance) {
+    storageInstance = new StorageProvider({
+      appId: ARCANA_APP_ID,
+      privateKey: store.getters.privateKey,
+      email: store.getters.email,
+      gateway: GATEWAY_URL,
+    });
+  }
 
   async function fetchStorageLimits() {
     const access = await storageInstance.getAccess();
@@ -78,8 +77,8 @@ function useArcanaStorage() {
       toast(
         "You are not allowed to upload files bigger than 100MiB.",
         errorToast
-      )
-      throw new Error("File size exceeded maximum")
+      );
+      throw new Error("File size exceeded maximum");
     }
     const uploadStart = Date.now();
     try {
@@ -204,10 +203,7 @@ function useArcanaStorage() {
         "showLoader",
         "Encrypting file data with recipient's public key......"
       );
-      const publicKey = await authInstance.getPublicKey({
-        verifier: "google",
-        id: email,
-      });
+      const publicKey = await getPublicKey(email);
       const actualPublicKey = padPublicKey(publicKey);
       const access = await storageInstance.getAccess();
       let did = fileToShare.fileId;

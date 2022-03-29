@@ -83,24 +83,28 @@
 </style>
 
 <script>
-import { onBeforeMount, inject } from "@vue/runtime-core";
+import { onMounted, inject } from "vue";
 import { useRouter } from "vue-router";
-import { useStore } from "vuex";
 
 import useArcanaAuth from "../use/arcanaAuth";
 
 export default {
   setup() {
-    const store = useStore();
     const router = useRouter();
     const toast = inject("$toast");
+    const { login, isLoggedIn, fetchUserDetails } = useArcanaAuth();
 
-    const { isLoggedIn, login } = useArcanaAuth();
-
-    onBeforeMount(() => {
+    onMounted(async () => {
       document.title = "Login | Arcana Demo";
       if (isLoggedIn()) {
-        onSignInClick();
+        await fetchUserDetails();
+        await router.push({ name: "My Files" });
+        toast("Login Success", {
+          styles: {
+            backgroundColor: "green",
+          },
+          type: "success",
+        });
       }
     });
 
@@ -110,16 +114,6 @@ export default {
         await login();
         const loginEnd = Date.now();
         console.log("LOGIN COMPLETED", (loginEnd - loginStart) / 1000);
-
-        store.dispatch("showLoader");
-        await router.push({ name: "My Files" });
-        store.dispatch("hideLoader");
-        toast("Login Success", {
-          styles: {
-            backgroundColor: "green",
-          },
-          type: "success",
-        });
       } catch (e) {
         console.error("error", e);
         toast("Something went wrong. Try again", {
