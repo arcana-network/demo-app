@@ -8,7 +8,7 @@
   },
   "dependencies": {
     "@arcana/auth": "https://testnet-dev.s3.ap-south-1.amazonaws.com/arcana-auth-dev.tgz",
-    "@arcana/storage": "^0.1.0",
+    "@arcana/storage": "https://testnet-dev.s3.ap-south-1.amazonaws.com/arcana-storage-dev.tar",
     "@heroicons/vue": "^1.0.1",
     "@sentry/tracing": "^6.16.1",
     "@sentry/vue": "^6.16.1",
