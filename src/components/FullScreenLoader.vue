@@ -145,7 +145,7 @@
 }
 </style>
 
-<script>
+<script lang="ts">
 import FullScreenOverlay from "./FullScreenOverlay.vue";
 export default {
   components: { FullScreenOverlay },

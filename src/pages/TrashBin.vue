@@ -17,7 +17,7 @@
   </div>
 </template>
 
-<script>
+<script lang="ts">
 import { onMounted, computed } from "@vue/runtime-core";
 import UserProfile from "../components/UserProfile.vue";
 import FilesList from "../components/FilesList.vue";

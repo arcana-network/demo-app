@@ -82,7 +82,7 @@
 }
 </style>
 
-<script>
+<script lang="ts">
 import { onMounted, inject } from "vue";
 import { useRouter } from "vue-router";
 
