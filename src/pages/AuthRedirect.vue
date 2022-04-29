@@ -2,7 +2,7 @@
   <div class="text-white m-2">Redirecting...</div>
 </template>
 
-<script>
+<script lang="ts">
 import { onMounted } from "@vue/runtime-core";
 
 import useArcanaAuth from "../use/arcanaAuth";

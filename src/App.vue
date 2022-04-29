@@ -12,7 +12,7 @@
   </fullsize-background>
 </template>
 
-<script>
+<script lang="ts">
 import FullsizeBackground from "./components/FullsizeBackground.vue";
 import AppSidebar from "./components/AppSidebar.vue";
 import FullScreenLoader from "./components/FullScreenLoader.vue";
