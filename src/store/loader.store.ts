@@ -1,42 +1,42 @@
 const state = {
   loader: false,
-  loadingMessage: "",
-};
+  loadingMessage: '',
+}
 
 const getters = {
   loader: (state) => {
-    return state.loader;
+    return state.loader
   },
   loadingMessage: (state) => {
-    return state.loadingMessage;
+    return state.loadingMessage
   },
-};
+}
 
 const mutations = {
   updateLoader(state, loader) {
-    state.loader = loader;
+    state.loader = loader
   },
   updateLoadingMessage(state, loadingMessage) {
-    state.loadingMessage = loadingMessage;
+    state.loadingMessage = loadingMessage
   },
-};
+}
 
 const actions = {
   showLoader({ commit }, loadingMessage) {
-    commit("updateLoader", true);
-    commit("updateLoadingMessage", loadingMessage);
+    commit('updateLoader', true)
+    commit('updateLoadingMessage', loadingMessage)
   },
   hideLoader({ commit }) {
-    commit("updateLoader", false);
-    commit("updateLoadingMessage", "");
+    commit('updateLoader', false)
+    commit('updateLoadingMessage', '')
   },
-};
+}
 
 const loaderState = {
   state: () => state,
   getters,
   mutations,
   actions,
-};
+}
 
-export default loaderState;
+export default loaderState

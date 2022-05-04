@@ -1,3 +1,123 @@
+<script lang="ts">
+import {
+  FolderOpenIcon,
+  UsersIcon,
+  TrashIcon,
+  MenuIcon,
+  XIcon,
+} from '@heroicons/vue/outline'
+import { watch, ref, onMounted, computed } from '@vue/runtime-core'
+import bytes from 'bytes'
+import { useRoute } from 'vue-router'
+import { useStore } from 'vuex'
+
+import FullScreenOverlay from './FullScreenOverlay.vue'
+
+const UNLIMITED = 'Unlimited'
+const TEN_TB = '10 TB'
+
+export default {
+  components: {
+    FolderOpenIcon,
+    UsersIcon,
+    TrashIcon,
+    MenuIcon,
+    XIcon,
+    FullScreenOverlay,
+  },
+  setup() {
+    const route = useRoute()
+    const store = useStore()
+    let liquidMenuTranslate = ref('')
+    let menu = ref(false)
+    let storage = computed(() => {
+      const storageState = store.getters.storage
+      if (storageState.totalStorage >= bytes(TEN_TB)) {
+        storageState.totalStorage = UNLIMITED
+        return {
+          ...storageState,
+          percentage: storageState.storageUsed === 0 ? 0 : 1,
+        }
+      }
+      const percentage =
+        (storageState.storageUsed / storageState.totalStorage) * 100
+      return {
+        ...storageState,
+        percentage,
+      }
+    })
+
+    let bandwidth = computed(() => {
+      const bandwidthState = store.getters.bandwidth
+      if (bandwidthState.totalBandwidth >= bytes(TEN_TB)) {
+        bandwidthState.totalBandwidth = UNLIMITED
+        return {
+          ...bandwidthState,
+          percentage: bandwidthState.bandwidthUsed === 0 ? 0 : 1,
+        }
+      }
+      const percentage =
+        (bandwidthState.bandwidthUsed / bandwidthState.totalBandwidth) * 100
+      return {
+        ...bandwidthState,
+        percentage,
+      }
+    })
+
+    onMounted(() => {
+      window.onresize = function () {
+        menu.value = false
+      }
+      document.addEventListener('click', (event) => {
+        const menuContainer = event.path.find(
+          (el) =>
+            typeof el.className === 'string' && el.className.includes('sidebar')
+        )
+        if (!menuContainer) {
+          menu.value = false
+        }
+      })
+    })
+
+    liquidMenuTransition()
+    watch(route, () => {
+      liquidMenuTransition()
+    })
+
+    function openMenu() {
+      menu.value = true
+    }
+
+    function liquidMenuTransition() {
+      menu.value = false
+      if (route.name === 'My Files') {
+        liquidMenuTranslate.value = 'liquid-translate-my-files'
+      } else if (route.name === 'Shared With Me') {
+        liquidMenuTranslate.value = 'liquid-translate-shared-with-me'
+      } else {
+        liquidMenuTranslate.value = 'liquid-translate-bin'
+      }
+    }
+
+    function readableBytes(value) {
+      if (value === UNLIMITED) {
+        return UNLIMITED
+      }
+      return bytes(value)
+    }
+
+    return {
+      liquidMenuTranslate,
+      menu,
+      openMenu,
+      storage,
+      bandwidth,
+      readableBytes,
+    }
+  },
+}
+</script>
+
 <template>
   <div class="header h-10 cursor-pointer lg:hidden" @click.stop="openMenu">
     <MenuIcon class="h-7 w-7 inline-block mr-2 text-white" />
@@ -235,124 +355,3 @@
   top: 318px;
 }
 </style>
-
-<script lang="ts">
-import { useRoute } from "vue-router";
-import { watch, ref, onMounted, computed } from "@vue/runtime-core";
-import { useStore } from "vuex";
-
-import {
-  FolderOpenIcon,
-  UsersIcon,
-  TrashIcon,
-  MenuIcon,
-  XIcon,
-} from "@heroicons/vue/outline";
-
-import bytes from "bytes";
-import FullScreenOverlay from "./FullScreenOverlay.vue";
-
-const UNLIMITED = "Unlimited";
-const TEN_TB = "10 TB";
-
-export default {
-  setup() {
-    const route = useRoute();
-    const store = useStore();
-    let liquidMenuTranslate = ref("");
-    let menu = ref(false);
-    let storage = computed(() => {
-      const storageState = store.getters.storage;
-      if (storageState.totalStorage >= bytes(TEN_TB)) {
-        storageState.totalStorage = UNLIMITED;
-        return {
-          ...storageState,
-          percentage: storageState.storageUsed === 0 ? 0 : 1,
-        };
-      }
-      const percentage =
-        (storageState.storageUsed / storageState.totalStorage) * 100;
-      return {
-        ...storageState,
-        percentage,
-      };
-    });
-
-    let bandwidth = computed(() => {
-      const bandwidthState = store.getters.bandwidth;
-      if (bandwidthState.totalBandwidth >= bytes(TEN_TB)) {
-        bandwidthState.totalBandwidth = UNLIMITED;
-        return {
-          ...bandwidthState,
-          percentage: bandwidthState.bandwidthUsed === 0 ? 0 : 1,
-        };
-      }
-      const percentage =
-        (bandwidthState.bandwidthUsed / bandwidthState.totalBandwidth) * 100;
-      return {
-        ...bandwidthState,
-        percentage,
-      };
-    });
-
-    onMounted(() => {
-      window.onresize = function () {
-        menu.value = false;
-      };
-      document.addEventListener("click", (event) => {
-        const menuContainer = event.path.find(
-          (el) =>
-            typeof el.className === "string" && el.className.includes("sidebar")
-        );
-        if (!menuContainer) {
-          menu.value = false;
-        }
-      });
-    });
-
-    liquidMenuTransition();
-    watch(route, () => {
-      liquidMenuTransition();
-    });
-
-    function openMenu() {
-      menu.value = true;
-    }
-
-    function liquidMenuTransition() {
-      menu.value = false;
-      if (route.name === "My Files") {
-        liquidMenuTranslate.value = "liquid-translate-my-files";
-      } else if (route.name === "Shared With Me") {
-        liquidMenuTranslate.value = "liquid-translate-shared-with-me";
-      } else {
-        liquidMenuTranslate.value = "liquid-translate-bin";
-      }
-    }
-
-    function readableBytes(value) {
-      if (value === UNLIMITED) {
-        return UNLIMITED;
-      }
-      return bytes(value);
-    }
-
-    return {
-      liquidMenuTranslate,
-      menu,
-      openMenu,
-      storage,
-      bandwidth,
-      readableBytes,
-    };
-  },
-  components: {
-    FolderOpenIcon,
-    UsersIcon,
-    TrashIcon,
-    MenuIcon,
-    XIcon,
-    FullScreenOverlay,
-  },
-};
-</script>

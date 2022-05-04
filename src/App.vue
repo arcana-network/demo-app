@@ -1,3 +1,44 @@
+<script lang="ts">
+import { computed, onBeforeMount, ref } from 'vue'
+import { useStore } from 'vuex'
+
+import AppSidebar from './components/AppSidebar.vue'
+import FullScreenLoader from './components/FullScreenLoader.vue'
+import FullsizeBackground from './components/FullsizeBackground.vue'
+import useArcanaAuth from './use/arcanaAuth'
+
+export default {
+  components: { FullsizeBackground, AppSidebar, FullScreenLoader },
+  setup() {
+    const store = useStore()
+    const isAuthLoaded = ref(false)
+    const { init } = useArcanaAuth()
+
+    onBeforeMount(async () => {
+      await init()
+      isAuthLoaded.value = true
+    })
+
+    let loader = computed(() => {
+      return store.getters.loader
+    })
+    let loadingMessage = computed(() => {
+      return store.getters.loadingMessage
+    })
+    let privateKey = computed(() => {
+      return store.getters.privateKey
+    })
+
+    return {
+      loader,
+      loadingMessage,
+      privateKey,
+      isAuthLoaded,
+    }
+  },
+}
+</script>
+
 <template>
   <fullsize-background>
     <full-screen-loader
@@ -12,45 +53,4 @@
   </fullsize-background>
 </template>
 
-<script lang="ts">
-import FullsizeBackground from "./components/FullsizeBackground.vue";
-import AppSidebar from "./components/AppSidebar.vue";
-import FullScreenLoader from "./components/FullScreenLoader.vue";
-import { useStore } from "vuex";
-import { computed, onBeforeMount, ref } from "vue";
-import useArcanaAuth from "./use/arcanaAuth";
-
-export default {
-  setup() {
-    const store = useStore();
-    const isAuthLoaded = ref(false);
-    const { init } = useArcanaAuth();
-
-    onBeforeMount(async () => {
-      await init();
-      isAuthLoaded.value = true;
-    });
-
-    let loader = computed(() => {
-      return store.getters.loader;
-    });
-    let loadingMessage = computed(() => {
-      return store.getters.loadingMessage;
-    });
-    let privateKey = computed(() => {
-      return store.getters.privateKey;
-    });
-
-    return {
-      loader,
-      loadingMessage,
-      privateKey,
-      isAuthLoaded,
-    };
-  },
-  components: { FullsizeBackground, AppSidebar, FullScreenLoader },
-};
-</script>
-
-<style>
-</style>
+<style></style>

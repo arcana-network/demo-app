@@ -1,3 +1,13 @@
+<script lang="ts">
+import FullScreenOverlay from './FullScreenOverlay.vue'
+
+export default {
+  components: { FullScreenOverlay },
+  props: ['message'],
+  setup() {},
+}
+</script>
+
 <template>
   <full-screen-overlay />
   <div
@@ -57,7 +67,7 @@
 
 .pure-material-progress-circular:indeterminate::before,
 .pure-material-progress-circular:indeterminate::-webkit-progress-value {
-  content: "";
+  content: '';
   display: block;
   box-sizing: border-box;
   margin-bottom: 0.25em;
@@ -144,12 +154,3 @@
   }
 }
 </style>
-
-<script lang="ts">
-import FullScreenOverlay from "./FullScreenOverlay.vue";
-export default {
-  components: { FullScreenOverlay },
-  props: ["message"],
-  setup() {},
-};
-</script>
