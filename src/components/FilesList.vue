@@ -1,3 +1,243 @@
+<script lang="ts">
+import {
+  ViewGridIcon,
+  ViewListIcon,
+  DotsVerticalIcon,
+  PencilAltIcon,
+  ShareIcon,
+  DownloadIcon,
+  TrashIcon,
+  XCircleIcon,
+  RefreshIcon,
+  SearchIcon,
+  BackspaceIcon,
+  InformationCircleIcon,
+} from '@heroicons/vue/outline'
+import { ref } from '@vue/reactivity'
+import { inject, onMounted, watch } from '@vue/runtime-core'
+import bytes from 'bytes'
+import moment from 'moment'
+import { NTooltip } from 'naive-ui'
+import isValidEmail from 'pragmatic-email-regex'
+
+import useArcanaStorage from '../use/arcanaStorage'
+import DialogBox from './DialogBox.vue'
+
+export default {
+  name: 'FilesList',
+  components: {
+    ViewGridIcon,
+    ViewListIcon,
+    DotsVerticalIcon,
+    SearchIcon,
+    InformationCircleIcon,
+    BackspaceIcon,
+    NTooltip,
+    DialogBox,
+  },
+  props: ['files', 'pageTitle'],
+  setup(props) {
+    let listType = ref('table')
+    let menuPosition = ref({})
+    let showMenu = ref(false)
+    let shareDialog = ref(false)
+    let revokeDialog = ref(false)
+    let shareEmail = ref('')
+    let sharedUsers = ref({
+      file: {},
+      users: [],
+    })
+    let isShareEmailInvalid = ref(true)
+    const { download, remove, share, revoke, getSharedUsers } =
+      useArcanaStorage()
+    const GENESIS_ADDRESS = '0x0000000000000000000000000000000000000000'
+
+    let menuItem = {}
+    let fileToShare
+    menuItem.verify = {
+      label: 'Verify',
+      icon: PencilAltIcon,
+      command: (selectedFile) => {
+        window.open(
+          'https://explorer.arcana.network/did/' + selectedFile.did,
+          '__blank'
+        )
+      },
+    }
+
+    menuItem.download = {
+      label: 'Download',
+      icon: DownloadIcon,
+      command: (selectedFile) => {
+        download(selectedFile)
+      },
+    }
+
+    menuItem.share = {
+      label: 'Share',
+      icon: ShareIcon,
+      command: (selectedFile) => {
+        fileToShare = selectedFile
+        shareDialog.value = true
+      },
+    }
+
+    menuItem.remove = {
+      label: 'Delete',
+      icon: TrashIcon,
+      command: (selectedFile) => {
+        remove(selectedFile)
+      },
+    }
+
+    menuItem.revoke = {
+      label: 'Revoke',
+      icon: BackspaceIcon,
+      command: (selectedFile) => {
+        revokeDialog.value = true
+        fetchSharedUsers(selectedFile)
+      },
+    }
+
+    menuItem.recover = {
+      label: 'Recover',
+      icon: RefreshIcon,
+      command: () => {},
+    }
+
+    menuItem.delete = {
+      label: 'Delete Forever',
+      icon: XCircleIcon,
+      command: () => {},
+    }
+
+    let menuItemsArr = []
+    if (props.pageTitle === 'My Files') {
+      menuItemsArr = [
+        menuItem.download,
+        menuItem.share,
+        menuItem.revoke,
+        menuItem.remove,
+      ]
+    } else if (props.pageTitle === 'Shared With Me') {
+      menuItemsArr = [menuItem.download]
+    } else {
+      menuItemsArr = [menuItem.recover, menuItem.delete]
+    }
+    let menuItems = ref(menuItemsArr)
+
+    function fileMenu(file, event) {
+      selectedFile = file
+      showMenu.value = false
+      setTimeout(() => {
+        showMenu.value = true
+        const menuEl = event.path.find(
+          (el) =>
+            typeof el.className === 'string' &&
+            el.className.includes('file-menu')
+        )
+        if (menuEl) {
+          const rect = menuEl.getBoundingClientRect()
+          menuPosition.value = {
+            x: rect.left,
+            y: rect.top,
+            el: {
+              w: rect.width,
+              h: rect.height,
+            },
+          }
+        }
+      }, 100)
+    }
+
+    function hideMenu() {
+      showMenu.value = false
+    }
+
+    function closeDropdown() {
+      showMenu.value = false
+    }
+
+    function getReadableDate(date) {
+      if (date) {
+        return moment(date).format('DD-MM-YYYY')
+      }
+      return moment().format('DD-MM-YYYY')
+    }
+
+    function getReadableSize(size) {
+      return bytes(size)
+    }
+
+    function closeDialog() {
+      shareEmail.value = ''
+      isShareEmailInvalid.value = false
+      shareDialog.value = false
+      revokeDialog.value = false
+      sharedUsers.value = {
+        file: {},
+        users: [],
+      }
+    }
+
+    async function shareFile() {
+      const emails = shareEmail.value.split(',').map((email) => email.trim())
+      for (let email of emails) {
+        await share(fileToShare, email)
+      }
+      closeDialog()
+    }
+
+    async function revokeAccess(fileToRevoke, address) {
+      await revoke(fileToRevoke, address)
+      fetchSharedUsers(fileToRevoke)
+    }
+
+    function fetchSharedUsers(file) {
+      getSharedUsers(file.fileId).then((res) => {
+        const users = res?.filter((user) => user !== GENESIS_ADDRESS)
+        sharedUsers.value = {
+          file,
+          users: users || [],
+        }
+      })
+    }
+
+    onMounted(() => {
+      document.querySelector('.files-container').onscroll = hideMenu
+    })
+
+    watch(
+      () => shareEmail.value,
+      () => {
+        const emails = shareEmail.value.split(',').map((email) => email.trim())
+        isShareEmailInvalid.value = emails.some((email) => !isValidEmail(email))
+      }
+    )
+
+    return {
+      listType,
+      bytes,
+      menuPosition,
+      showMenu,
+      menuItems,
+      shareDialog,
+      revokeDialog,
+      sharedUsers,
+      shareEmail,
+      isShareEmailInvalid,
+      revokeAccess,
+      fileMenu,
+      closeDropdown,
+      getReadableDate,
+      getReadableSize,
+      shareFile,
+      closeDialog,
+    }
+  },
+}
+</script>
+
 <template>
   <div class="mt-6 ml-6 lg:ml-16">
     <div
@@ -63,13 +303,7 @@
                 <n-tooltip trigger="hover">
                   <template #trigger>
                     <span
-                      class="
-                        inline-block
-                        overflow-ellipsis overflow-hidden
-                        whitespace-nowrap
-                        pr-3
-                        align-middle
-                      "
+                      class="inline-block overflow-ellipsis overflow-hidden whitespace-nowrap pr-3 align-middle"
                       style="width: 30vw; max-width: max-content"
                     >
                       {{ file.fileId }}
@@ -95,9 +329,9 @@
               <td>
                 <div class="mt-2 py-2 text-center">
                   <n-tooltip
-                    trigger="hover"
                     v-for="item in menuItems"
                     :key="item.label + '-action'"
+                    trigger="hover"
                   >
                     <template #trigger>
                       <span
@@ -133,9 +367,9 @@
       Recipient Email
     </label>
     <input
-      type="email"
       id="recipient-email"
       v-model="shareEmail"
+      type="email"
       class="focus:outline-none rounded-full px-4 py-2 w-full"
     />
     <div class="text-center mt-5 mb-3">
@@ -172,13 +406,7 @@
         <n-tooltip trigger="hover">
           <template #trigger>
             <span
-              class="
-                inline-block
-                overflow-hidden overflow-ellipsis
-                align-middle
-                font-black
-                text-base
-              "
+              class="inline-block overflow-hidden overflow-ellipsis align-middle font-black text-base"
               style="width: calc(100% - 2em); color: #707070"
             >
               {{ user }}
@@ -243,245 +471,3 @@
   color: white;
 }
 </style>
-
-<script lang="ts">
-import bytes from "bytes";
-import isValidEmail from "pragmatic-email-regex";
-import moment from "moment";
-import { ref } from "@vue/reactivity";
-import { inject, onMounted, watch } from "@vue/runtime-core";
-import { NTooltip } from "naive-ui";
-import {
-  ViewGridIcon,
-  ViewListIcon,
-  DotsVerticalIcon,
-  PencilAltIcon,
-  ShareIcon,
-  DownloadIcon,
-  TrashIcon,
-  XCircleIcon,
-  RefreshIcon,
-  SearchIcon,
-  BackspaceIcon,
-  InformationCircleIcon,
-} from "@heroicons/vue/outline";
-
-import DialogBox from "./DialogBox.vue";
-import useArcanaStorage from "../use/arcanaStorage";
-
-export default {
-  name: "FilesList",
-  props: ["files", "pageTitle"],
-  components: {
-    ViewGridIcon,
-    ViewListIcon,
-    DotsVerticalIcon,
-    SearchIcon,
-    InformationCircleIcon,
-    BackspaceIcon,
-    NTooltip,
-    DialogBox,
-  },
-  setup(props) {
-    let listType = ref("table");
-    let menuPosition = ref({});
-    let showMenu = ref(false);
-    let shareDialog = ref(false);
-    let revokeDialog = ref(false);
-    let shareEmail = ref("");
-    let sharedUsers = ref({
-      file: {},
-      users: [],
-    });
-    let isShareEmailInvalid = ref(true);
-    const { download, remove, share, revoke, getSharedUsers } =
-      useArcanaStorage();
-    const GENESIS_ADDRESS = "0x0000000000000000000000000000000000000000";
-
-    let menuItem = {};
-    let fileToShare;
-    menuItem.verify = {
-      label: "Verify",
-      icon: PencilAltIcon,
-      command: (selectedFile) => {
-        window.open(
-          "https://explorer.arcana.network/did/" + selectedFile.did,
-          "__blank"
-        );
-      },
-    };
-
-    menuItem.download = {
-      label: "Download",
-      icon: DownloadIcon,
-      command: (selectedFile) => {
-        download(selectedFile);
-      },
-    };
-
-    menuItem.share = {
-      label: "Share",
-      icon: ShareIcon,
-      command: (selectedFile) => {
-        fileToShare = selectedFile;
-        shareDialog.value = true;
-      },
-    };
-
-    menuItem.remove = {
-      label: "Delete",
-      icon: TrashIcon,
-      command: (selectedFile) => {
-        remove(selectedFile);
-      },
-    };
-
-    menuItem.revoke = {
-      label: "Revoke",
-      icon: BackspaceIcon,
-      command: (selectedFile) => {
-        revokeDialog.value = true;
-        fetchSharedUsers(selectedFile);
-      },
-    };
-
-    menuItem.recover = {
-      label: "Recover",
-      icon: RefreshIcon,
-      command: () => {},
-    };
-
-    menuItem.delete = {
-      label: "Delete Forever",
-      icon: XCircleIcon,
-      command: () => {},
-    };
-
-    let menuItemsArr = [];
-    if (props.pageTitle === "My Files") {
-      menuItemsArr = [
-        menuItem.download,
-        menuItem.share,
-        menuItem.revoke,
-        menuItem.remove,
-      ];
-    } else if (props.pageTitle === "Shared With Me") {
-      menuItemsArr = [menuItem.download];
-    } else {
-      menuItemsArr = [menuItem.recover, menuItem.delete];
-    }
-    let menuItems = ref(menuItemsArr);
-
-    function fileMenu(file, event) {
-      selectedFile = file;
-      showMenu.value = false;
-      setTimeout(() => {
-        showMenu.value = true;
-        const menuEl = event.path.find(
-          (el) =>
-            typeof el.className === "string" &&
-            el.className.includes("file-menu")
-        );
-        if (menuEl) {
-          const rect = menuEl.getBoundingClientRect();
-          menuPosition.value = {
-            x: rect.left,
-            y: rect.top,
-            el: {
-              w: rect.width,
-              h: rect.height,
-            },
-          };
-        }
-      }, 100);
-    }
-
-    function hideMenu() {
-      showMenu.value = false;
-    }
-
-    function closeDropdown() {
-      showMenu.value = false;
-    }
-
-    function getReadableDate(date) {
-      if (date) {
-        return moment(date).format("DD-MM-YYYY");
-      }
-      return moment().format("DD-MM-YYYY");
-    }
-
-    function getReadableSize(size) {
-      return bytes(size);
-    }
-
-    function closeDialog() {
-      shareEmail.value = "";
-      isShareEmailInvalid.value = false;
-      shareDialog.value = false;
-      revokeDialog.value = false;
-      sharedUsers.value = {
-        file: {},
-        users: [],
-      };
-    }
-
-    async function shareFile() {
-      const emails = shareEmail.value.split(",").map((email) => email.trim());
-      for (let email of emails) {
-        await share(fileToShare, email);
-      }
-      closeDialog();
-    }
-
-    async function revokeAccess(fileToRevoke, address) {
-      await revoke(fileToRevoke, address);
-      fetchSharedUsers(fileToRevoke);
-    }
-
-    function fetchSharedUsers(file) {
-      getSharedUsers(file.fileId).then((res) => {
-        const users = res?.filter((user) => user !== GENESIS_ADDRESS);
-        sharedUsers.value = {
-          file,
-          users: users || [],
-        };
-      });
-    }
-
-    onMounted(() => {
-      document.querySelector(".files-container").onscroll = hideMenu;
-    });
-
-    watch(
-      () => shareEmail.value,
-      () => {
-        const emails = shareEmail.value.split(",").map((email) => email.trim());
-        isShareEmailInvalid.value = emails.some(
-          (email) => !isValidEmail(email)
-        );
-      }
-    );
-
-    return {
-      listType,
-      bytes,
-      menuPosition,
-      showMenu,
-      menuItems,
-      shareDialog,
-      revokeDialog,
-      sharedUsers,
-      shareEmail,
-      isShareEmailInvalid,
-      revokeAccess,
-      fileMenu,
-      closeDropdown,
-      getReadableDate,
-      getReadableSize,
-      shareFile,
-      closeDialog,
-    };
-  },
-};
-</script>

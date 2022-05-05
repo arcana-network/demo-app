@@ -1,3 +1,92 @@
+<script lang="ts">
+import { ClipboardCopyIcon } from '@heroicons/vue/outline'
+import { ref } from '@vue/reactivity'
+import { inject, onMounted } from '@vue/runtime-core'
+import { saveAs } from 'file-saver'
+import { NTooltip } from 'naive-ui'
+import { useRouter } from 'vue-router'
+import { useStore } from 'vuex'
+
+import ArrowDownIcon from '../assets/triangle-down.svg'
+import useArcanaAuth from '../use/arcanaAuth'
+import copyToClipboard from '../utils/copyToClipboard'
+
+export default {
+  components: { ClipboardCopyIcon, NTooltip },
+  setup() {
+    const store = useStore()
+    const router = useRouter()
+    const toast = inject('$toast')
+
+    const { logout } = useArcanaAuth()
+
+    let profile = ref({})
+    let profileOptions = ref(false)
+
+    onMounted(() => {
+      profile.value = store.getters.basicProfile
+      document.addEventListener('click', handleMenuCollapse)
+    })
+
+    function handleMenuCollapse(event) {
+      const profileContainer = event.path.find(
+        (el) => el.id === 'profile-options-container'
+      )
+      if (!profileContainer) {
+        profileOptions.value = false
+      }
+    }
+
+    function toggleProfileOptions() {
+      profileOptions.value = !profileOptions.value
+    }
+
+    function downloadKeys() {
+      const keys = store.getters.cryptoDetails
+      const blob = new Blob([JSON.stringify(keys, null, '\t')], {
+        type: 'text/plain;charset=utf-8',
+      })
+      saveAs(blob, 'arcana-demo-app-keys.json')
+    }
+
+    async function handleLogout() {
+      await logout()
+      router.push('/login')
+    }
+
+    function copy(value) {
+      copyToClipboard(value)
+        .then(() => {
+          toast('Copied to clipboard', {
+            styles: {
+              backgroundColor: 'green',
+            },
+            type: 'success',
+          })
+        })
+        .catch(() => {
+          toast('Failed to copy', {
+            styles: {
+              backgroundColor: 'red',
+            },
+            type: 'error',
+          })
+        })
+    }
+
+    return {
+      profile,
+      profileOptions,
+      downloadKeys,
+      toggleProfileOptions,
+      handleLogout,
+      copy,
+      ArrowDownIcon,
+    }
+  },
+}
+</script>
+
 <template>
   <div>
     <div class="flex flex-row mt-6 ml-6 lg:mt-16 lg:ml-16 items-center">
@@ -45,27 +134,12 @@
       </span>
     </div>
     <div
-      class="
-        profile-options
-        text-center
-        ml-10
-        lg:ml-20
-        mt-2
-        z-50
-        overflow-hidden
-      "
-      :class="profileOptions ? 'profile-options-active' : ''"
       id="profile-options-container"
+      class="profile-options text-center ml-10 lg:ml-20 mt-2 z-50 overflow-hidden"
+      :class="profileOptions ? 'profile-options-active' : ''"
     >
       <div
-        class="
-          overflow-ellipsis
-          w-full
-          overflow-hidden
-          whitespace-nowrap
-          py-4
-          px-5
-        "
+        class="overflow-ellipsis w-full overflow-hidden whitespace-nowrap py-4 px-5"
       >
         <span class="font-medium">Email : </span>
         <span class="font-bold" style="color: #058aff">
@@ -74,25 +148,13 @@
       </div>
       <hr class="mx-3 p-0 m-0" style="border: 1px solid #e0e0e0" />
       <div
-        class="
-          w-full
-          overflow-ellipsis overflow-hidden
-          whitespace-nowrap
-          py-4
-          px-5
-        "
+        class="w-full overflow-ellipsis overflow-hidden whitespace-nowrap py-4 px-5"
       >
         <span class="font-medium"> Wallet Address : </span>
         <n-tooltip trigger="hover">
           <template #trigger>
             <a
-              class="
-                font-medium
-                overflow-ellipsis overflow-hidden
-                whitespace-nowrap
-                inline-block
-                w-24
-              "
+              class="font-medium overflow-ellipsis overflow-hidden whitespace-nowrap inline-block w-24"
               style="color: #058aff; vertical-align: middle"
               :href="
                 'https://explorer.arcana.network/address/' +
@@ -109,8 +171,8 @@
           <template #trigger>
             <ClipboardCopyIcon
               class="h-5 w-5 inline -mt-1 ml-2 cursor-pointer"
-              @click.stop="copy(profile.walletAddress)"
               title="Click to copy"
+              @click.stop="copy(profile.walletAddress)"
             />
           </template>
           Copy Address
@@ -118,44 +180,21 @@
       </div>
       <hr class="mx-3 p-0 m-0" style="border: 1px solid #e0e0e0" />
       <div
-        class="
-          overflow-ellipsis
-          w-full
-          overflow-hidden
-          whitespace-nowrap
-          py-4
-          cursor-pointer
-          px-5
-        "
+        class="overflow-ellipsis w-full overflow-hidden whitespace-nowrap py-4 cursor-pointer px-5"
         @click.stop="downloadKeys"
       >
         <span class="font-medium">Download Keys</span>
       </div>
       <hr class="mx-3 p-0 m-0" style="border: 1px solid #e0e0e0" />
       <div
-        class="
-          overflow-ellipsis
-          w-full
-          overflow-hidden
-          whitespace-nowrap
-          py-4
-          cursor-pointer
-          px-5
-        "
+        class="overflow-ellipsis w-full overflow-hidden whitespace-nowrap py-4 cursor-pointer px-5"
         @click.stop="handleLogout"
       >
         <span class="font-medium">Logout</span>
       </div>
       <hr class="mx-3 p-0 m-0" style="border: 1px solid #e0e0e0" />
       <div
-        class="
-          overflow-ellipsis
-          w-full
-          overflow-hidden
-          whitespace-nowrap
-          py-2
-          px-5
-        "
+        class="overflow-ellipsis w-full overflow-hidden whitespace-nowrap py-2 px-5"
       >
         <a
           href="https://arcana.network"
@@ -187,93 +226,3 @@
   opacity: 1 !important;
 }
 </style>
-
-<script lang="ts">
-import { ClipboardCopyIcon } from "@heroicons/vue/outline";
-import { inject, onMounted } from "@vue/runtime-core";
-import { NTooltip } from "naive-ui";
-import { ref } from "@vue/reactivity";
-import { saveAs } from "file-saver";
-import { useRouter } from "vue-router";
-import { useStore } from "vuex";
-
-import copyToClipboard from "../utils/copyToClipboard";
-import useArcanaAuth from "../use/arcanaAuth";
-
-import ArrowDownIcon from "../assets/triangle-down.svg";
-
-export default {
-  setup() {
-    const store = useStore();
-    const router = useRouter();
-    const toast = inject("$toast");
-
-    const { logout } = useArcanaAuth();
-
-    let profile = ref({});
-    let profileOptions = ref(false);
-
-    onMounted(() => {
-      profile.value = store.getters.basicProfile;
-      document.addEventListener("click", handleMenuCollapse);
-    });
-
-    function handleMenuCollapse(event) {
-      const profileContainer = event.path.find(
-        (el) => el.id === "profile-options-container"
-      );
-      if (!profileContainer) {
-        profileOptions.value = false;
-      }
-    }
-
-    function toggleProfileOptions() {
-      profileOptions.value = !profileOptions.value;
-    }
-
-    function downloadKeys() {
-      const keys = store.getters.cryptoDetails;
-      const blob = new Blob([JSON.stringify(keys, null, "\t")], {
-        type: "text/plain;charset=utf-8",
-      });
-      saveAs(blob, "arcana-demo-app-keys.json");
-    }
-
-    async function handleLogout() {
-      await logout();
-      router.push("/login");
-    }
-
-    function copy(value) {
-      copyToClipboard(value)
-        .then(() => {
-          toast("Copied to clipboard", {
-            styles: {
-              backgroundColor: "green",
-            },
-            type: "success",
-          });
-        })
-        .catch(() => {
-          toast("Failed to copy", {
-            styles: {
-              backgroundColor: "red",
-            },
-            type: "error",
-          });
-        });
-    }
-
-    return {
-      profile,
-      profileOptions,
-      downloadKeys,
-      toggleProfileOptions,
-      handleLogout,
-      copy,
-      ArrowDownIcon,
-    };
-  },
-  components: { ClipboardCopyIcon, NTooltip },
-};
-</script>
