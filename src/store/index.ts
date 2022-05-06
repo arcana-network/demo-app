@@ -1,10 +1,9 @@
-import { createStore, createLogger } from 'vuex'
+import { createStore, createLogger } from "vuex";
+import authState from "./auth.store";
+import loaderState from "./loader.store";
+import fileState from "./file.store";
 
-import authState from './auth.store'
-import fileState from './file.store'
-import loaderState from './loader.store'
-
-const debug = process.env.NODE_ENV !== 'production'
+const debug = process.env.NODE_ENV !== "production";
 
 const state = {
   redirectTo: {},
@@ -12,63 +11,63 @@ const state = {
   storageUsed: 0,
   totalBandwidth: 0,
   bandwidthUsed: 0,
-}
+};
 
 const getters = {
   redirectTo: (state) => {
-    return state.redirectTo
+    return state.redirectTo;
   },
   storage: (state) => {
     return {
       totalStorage: state.totalStorage,
       storageUsed: state.storageUsed,
-    }
+    };
   },
   bandwidth: (state) => {
     return {
       totalBandwidth: state.totalBandwidth,
       bandwidthUsed: state.bandwidthUsed,
-    }
+    };
   },
-}
+};
 
 const mutations = {
   updateRedirect(state, toRoute) {
-    state.redirectTo = toRoute
+    state.redirectTo = toRoute;
   },
   removeRedirect(state) {
-    state.redirectTo = {}
+    state.redirectTo = {};
   },
   updateTotalStorage(state, totalStorage) {
-    state.totalStorage = totalStorage
+    state.totalStorage = totalStorage;
   },
   updateStorageUsed(state, storageUsed) {
-    state.storageUsed = storageUsed
+    state.storageUsed = storageUsed;
   },
   updateTotalBandwidth(state, totalBandwidth) {
-    state.totalBandwidth = totalBandwidth
+    state.totalBandwidth = totalBandwidth;
   },
   updateBandwidthUsed(state, bandwidthUsed) {
-    state.bandwidthUsed = bandwidthUsed
+    state.bandwidthUsed = bandwidthUsed;
   },
-}
+};
 
 const actions = {
   updateRedirect({ commit }, payload) {
-    commit('updateRedirect', payload)
+    commit("updateRedirect", payload);
   },
   removeRedirect({ commit }) {
-    commit('removeRedirect')
+    commit("removeRedirect");
   },
   updateStorage({ commit }, payload) {
-    commit('updateTotalStorage', payload.totalStorage)
-    commit('updateStorageUsed', payload.storageUsed)
+    commit("updateTotalStorage", payload.totalStorage);
+    commit("updateStorageUsed", payload.storageUsed);
   },
   updateBandwidth({ commit }, payload) {
-    commit('updateTotalBandwidth', payload.totalBandwidth)
-    commit('updateBandwidthUsed', payload.bandwidthUsed)
+    commit("updateTotalBandwidth", payload.totalBandwidth);
+    commit("updateBandwidthUsed", payload.bandwidthUsed);
   },
-}
+};
 
 const store = createStore({
   modules: {
@@ -82,6 +81,6 @@ const store = createStore({
   getters,
   strict: debug,
   plugins: debug ? [createLogger()] : [],
-})
+});
 
-export default store
+export default store;

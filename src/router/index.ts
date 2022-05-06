@@ -1,61 +1,60 @@
-import { createWebHistory, createRouter } from 'vue-router'
+import { createWebHistory, createRouter } from "vue-router";
+import store from "../store";
 
-import store from '../store'
-
-const AppLogin = () => import('@/pages/AppLogin.vue')
-const MyFiles = () => import('@/pages/MyFiles.vue')
-const SharedWithMe = () => import('@/pages/SharedWithMe.vue')
-const TrashBin = () => import('@/pages/TrashBin.vue')
-const AuthRedirect = () => import('@/pages/AuthRedirect.vue')
+const AppLogin = () => import("@/pages/AppLogin.vue");
+const MyFiles = () => import("@/pages/MyFiles.vue");
+const SharedWithMe = () => import("@/pages/SharedWithMe.vue");
+const TrashBin = () => import("@/pages/TrashBin.vue");
+const AuthRedirect = () => import("@/pages/AuthRedirect.vue");
 
 const routes = [
   {
-    name: 'My Files',
-    path: '/my-files',
+    name: "My Files",
+    path: "/my-files",
     component: MyFiles,
   },
   {
-    name: 'Shared With Me',
-    path: '/shared-with-me',
+    name: "Shared With Me",
+    path: "/shared-with-me",
     component: SharedWithMe,
   },
   {
-    name: 'Bin',
-    path: '/bin',
+    name: "Bin",
+    path: "/bin",
     component: TrashBin,
   },
   {
-    name: 'Login',
-    path: '/login',
+    name: "Login",
+    path: "/login",
     component: AppLogin,
   },
   {
-    path: '/',
-    redirect: '/login',
+    path: "/",
+    redirect: "/login",
   },
   {
-    name: 'Auth Redirect',
-    path: '/auth/redirect',
+    name: "Auth Redirect",
+    path: "/auth/redirect",
     component: AuthRedirect,
   },
-]
+];
 
 const router = createRouter({
   history: createWebHistory(),
   routes,
   scrollBehavior() {
-    return { top: 0 }
+    return { top: 0 };
   },
-})
+});
 
 router.beforeEach((to, from, next) => {
-  if (to.name !== 'Login' && to.name !== 'Auth Redirect') {
+  if (to.name !== "Login" && to.name !== "Auth Redirect") {
     if (!store.getters.publicKey || !store.getters.privateKey) {
-      store.dispatch('updateRedirect', to)
-      router.replace({ name: 'Login' })
+      store.dispatch("updateRedirect", to);
+      router.replace({ name: "Login" });
     }
   }
-  return next()
-})
+  return next();
+});
 
-export default router
+export default router;

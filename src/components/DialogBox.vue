@@ -1,23 +1,3 @@
-<script lang="ts">
-import { XIcon } from '@heroicons/vue/outline'
-
-import FullScreenOverlay from './FullScreenOverlay.vue'
-
-export default {
-  components: { FullScreenOverlay, XIcon },
-  emits: ['close'],
-  setup(props, { emit }) {
-    function closeDialog() {
-      emit('close')
-    }
-
-    return {
-      closeDialog,
-    }
-  },
-}
-</script>
-
 <template>
   <full-screen-overlay @click.stop="closeDialog" />
   <div
@@ -41,3 +21,21 @@ export default {
     <slot></slot>
   </div>
 </template>
+
+<script lang="ts">
+import FullScreenOverlay from "./FullScreenOverlay.vue";
+import { XIcon } from "@heroicons/vue/outline";
+export default {
+  components: { FullScreenOverlay, XIcon },
+  emits: ["close"],
+  setup(props, { emit }) {
+    function closeDialog() {
+      emit("close");
+    }
+
+    return {
+      closeDialog,
+    };
+  },
+};
+</script>
