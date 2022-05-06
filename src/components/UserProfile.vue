@@ -188,7 +188,7 @@
 }
 </style>
 
-<script lang="ts">
+<script>
 import { ClipboardCopyIcon } from "@heroicons/vue/outline";
 import { inject, onMounted } from "@vue/runtime-core";
 import { NTooltip } from "naive-ui";

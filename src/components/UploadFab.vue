@@ -30,7 +30,7 @@
 }
 </style>
 
-<script lang="ts">
+<script>
 import { onBeforeUnmount, onMounted } from "@vue/runtime-core";
 
 import useArcanaStorage from "../use/arcanaStorage";

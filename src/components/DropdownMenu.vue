@@ -48,7 +48,7 @@
 }
 </style>
 
-<script lang="ts">
+<script>
 import { onMounted, ref, watch } from "@vue/runtime-core";
 export default {
   setup(props, { emit }) {

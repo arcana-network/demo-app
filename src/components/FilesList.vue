@@ -244,7 +244,7 @@
 }
 </style>
 
-<script lang="ts">
+<script>
 import bytes from "bytes";
 import isValidEmail from "pragmatic-email-regex";
 import moment from "moment";
