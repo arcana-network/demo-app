@@ -1,53 +1,3 @@
-<script lang="ts">
-import { onMounted, inject } from 'vue'
-import { useRouter } from 'vue-router'
-
-import useArcanaAuth from '../use/arcanaAuth'
-
-export default {
-  setup() {
-    const router = useRouter()
-    const toast = inject('$toast')
-    const { login, isLoggedIn, fetchUserDetails } = useArcanaAuth()
-
-    onMounted(async () => {
-      document.title = 'Login | Arcana Demo'
-      if (isLoggedIn()) {
-        await fetchUserDetails()
-        await router.push({ name: 'My Files' })
-        toast('Login Success', {
-          styles: {
-            backgroundColor: 'green',
-          },
-          type: 'success',
-        })
-      }
-    })
-
-    async function onSignInClick() {
-      try {
-        const loginStart = Date.now()
-        await login()
-        const loginEnd = Date.now()
-        console.log('LOGIN COMPLETED', (loginEnd - loginStart) / 1000)
-      } catch (e) {
-        console.error('error', e)
-        toast('Something went wrong. Try again', {
-          styles: {
-            backgroundColor: 'red',
-          },
-          type: 'error',
-        })
-      }
-    }
-
-    return {
-      onSignInClick,
-    }
-  },
-}
-</script>
-
 <template>
   <div class="bg-white absolute login-container p-10 text-center">
     <img
@@ -62,8 +12,8 @@ export default {
     </div>
     <div
       id="google-signin-button"
-      class="font-ubuntu"
       @click.stop="overrideClick"
+      class="font-ubuntu"
     ></div>
     <a class="google-button" @click.stop="onSignInClick">Sign In with Google</a>
   </div>
@@ -131,3 +81,53 @@ export default {
   font-size: 1.2em;
 }
 </style>
+
+<script lang="ts">
+import { onMounted, inject } from "vue";
+import { useRouter } from "vue-router";
+
+import useArcanaAuth from "../use/arcanaAuth";
+
+export default {
+  setup() {
+    const router = useRouter();
+    const toast = inject("$toast");
+    const { login, isLoggedIn, fetchUserDetails } = useArcanaAuth();
+
+    onMounted(async () => {
+      document.title = "Login | Arcana Demo";
+      if (isLoggedIn()) {
+        await fetchUserDetails();
+        await router.push({ name: "My Files" });
+        toast("Login Success", {
+          styles: {
+            backgroundColor: "green",
+          },
+          type: "success",
+        });
+      }
+    });
+
+    async function onSignInClick() {
+      try {
+        const loginStart = Date.now();
+        await login();
+        const loginEnd = Date.now();
+        console.log("LOGIN COMPLETED", (loginEnd - loginStart) / 1000);
+      } catch (e) {
+        console.error("error", e);
+        toast("Something went wrong. Try again", {
+          styles: {
+            backgroundColor: "red",
+          },
+          type: "error",
+        });
+      }
+    }
+
+    return {
+      onSignInClick,
+    };
+  },
+};
+</script>
