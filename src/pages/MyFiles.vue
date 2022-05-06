@@ -18,7 +18,7 @@
   </div>
 </template>
 
-<script lang="ts">
+<script>
 import { computed, onMounted } from "vue";
 import { useStore } from "vuex";
 

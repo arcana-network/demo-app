@@ -22,7 +22,7 @@
   </div>
 </template>
 
-<script lang="ts">
+<script>
 import FullScreenOverlay from "./FullScreenOverlay.vue";
 import { XIcon } from "@heroicons/vue/outline";
 export default {

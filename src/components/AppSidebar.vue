@@ -236,7 +236,7 @@
 }
 </style>
 
-<script lang="ts">
+<script>
 import { useRoute } from "vue-router";
 import { watch, ref, onMounted, computed } from "@vue/runtime-core";
 import { useStore } from "vuex";
