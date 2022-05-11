@@ -156,12 +156,11 @@ import { ClipboardCopyIcon } from "@heroicons/vue/outline";
 import { inject, onMounted, computed } from "@vue/runtime-core";
 import { NTooltip } from "naive-ui";
 import { ref } from "@vue/reactivity";
-import { saveAs } from "file-saver";
 import { useRouter } from "vue-router";
 import { useStore } from "vuex";
 
 import copyToClipboard from "../utils/copyToClipboard";
-import useArcanaAuth from "../use/arcanaAuth";
+import useArcanaWallet from "../use/arcanaWallet";
 
 import ArrowDownIcon from "../assets/triangle-down.svg";
 import UserProfileIcon from "../assets/user-profile.svg";
@@ -172,7 +171,7 @@ export default {
     const router = useRouter();
     const toast = inject("$toast");
 
-    const { logout } = useArcanaAuth();
+    const { logout } = useArcanaWallet();
 
     const profile = computed(() => ({ walletAddress: store.getters.walletAddress}))
     const isProfileMenuOpen = ref(false);
