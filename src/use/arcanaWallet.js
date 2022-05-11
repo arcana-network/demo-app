@@ -1,3 +1,6 @@
+import { useStore } from "vuex";
+import { useRouter } from 'vue-router';
+
 const ARCANA_APP_ID = import.meta.env.VITE_ARCANA_APP_ID;
 const ARCANA_AUTH_NETWORK = import.meta.env.VITE_ARCANA_AUTH_NETWORK;
 const ARCANA_WALLET_URL = import.meta.env.VITE_ARCANA_WALLET_URL;
@@ -27,12 +30,28 @@ const themeConfig = {
 };
 
 function useArcanaWallet() {
+  const store = useStore();
+  const router = useRouter();
+
   async function init() {
+    store.dispatch("showLoader", "Initialising web wallet...");
+
     await wallet.init(themeConfig);
+
+    const provider = wallet.getProvider();
+    provider.on("disconnect", async () => {
+      await logout();
+      router.push("/login");
+    });
+
+    store.dispatch("hideLoader");
   }
 
   async function isLoggedIn() {
-    return await wallet.isLoggedIn();
+    store.dispatch("showLoader", "Checking login status...");
+    const loginStatus = await wallet.isLoggedIn();
+    store.dispatch("hideLoader");
+    return loginStatus;
   }
 
   async function requestSocialLogin(type) {
@@ -40,12 +59,21 @@ function useArcanaWallet() {
   }
 
   async function fetchUserDetails() {
+    store.dispatch("showLoader", "Fetching account details...");
+
     const provider = wallet.getProvider();
-    const accounts = await provider.request({ method: "eth_accounts" });
-    console.log("accounts", accounts);
+    const [walletAddress] = await provider.request({ method: "eth_accounts" });
+    store.dispatch("addWalletAddress", walletAddress)
+
+    store.dispatch("hideLoader");
   }
 
-  return { init, isLoggedIn, requestSocialLogin, fetchUserDetails };
+  async function logout() {
+    await wallet.logout();
+    store.dispatch("clearStore");
+  }
+
+  return { init, isLoggedIn, requestSocialLogin, fetchUserDetails, logout };
 }
 
 export default useArcanaWallet;

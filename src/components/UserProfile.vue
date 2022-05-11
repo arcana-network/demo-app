@@ -10,38 +10,32 @@
           transition: border 0.4s;
         "
         :style="
-          profileOptions
+          isProfileMenuOpen 
             ? 'border: 2px solid #a1cdf8'
             : 'border: 2px solid #eef1f6'
         "
-        @click.stop="toggleProfileOptions"
+        @click.stop="toggleProfileMenu"
       >
         <img
-          :src="profile.profileImage"
-          class="rounded-full h-11 w-11 inline"
+          :src="UserProfileIcon"
+          class="rounded-full h-11 w-11 inline p-1"
         />
         <img
           :src="ArrowDownIcon"
           class="h-4 w-4 right-2.5 absolute inline"
           style="transition: transform 0.4s, margin 0.4s"
           :style="
-            profileOptions
+            isProfileMenuOpen 
               ? 'transform: rotate(-180deg); margin-top: -4px'
               : 'transform: rotate(0)'
           "
         />
       </div>
       <span
-        class="ml-4 font-ubuntu font-light"
+        class="ml-4 font-ubuntu font-bold"
         style="color: #253d52; font-size: 1.3rem"
       >
-        Hello,
-      </span>
-      <span
-        class="ml-1 font-ubuntu font-bold"
-        style="color: #253d52; font-size: 1.3rem"
-      >
-        {{ profile.givenName }}!
+        Hello, there!
       </span>
     </div>
     <div
@@ -54,25 +48,9 @@
         z-50
         overflow-hidden
       "
-      :class="profileOptions ? 'profile-options-active' : ''"
+      :class="isProfileMenuOpen ? 'profile-options-active' : ''"
       id="profile-options-container"
     >
-      <div
-        class="
-          overflow-ellipsis
-          w-full
-          overflow-hidden
-          whitespace-nowrap
-          py-4
-          px-5
-        "
-      >
-        <span class="font-medium">Email : </span>
-        <span class="font-bold" style="color: #058aff">
-          {{ profile.email }}
-        </span>
-      </div>
-      <hr class="mx-3 p-0 m-0" style="border: 1px solid #e0e0e0" />
       <div
         class="
           w-full
@@ -127,21 +105,6 @@
           cursor-pointer
           px-5
         "
-        @click.stop="downloadKeys"
-      >
-        <span class="font-medium">Download Keys</span>
-      </div>
-      <hr class="mx-3 p-0 m-0" style="border: 1px solid #e0e0e0" />
-      <div
-        class="
-          overflow-ellipsis
-          w-full
-          overflow-hidden
-          whitespace-nowrap
-          py-4
-          cursor-pointer
-          px-5
-        "
         @click.stop="handleLogout"
       >
         <span class="font-medium">Logout</span>
@@ -183,14 +146,14 @@
   background-color: white;
 }
 .profile-options.profile-options-active {
-  height: 248px !important;
+  height: 160px !important;
   opacity: 1 !important;
 }
 </style>
 
 <script>
 import { ClipboardCopyIcon } from "@heroicons/vue/outline";
-import { inject, onMounted } from "@vue/runtime-core";
+import { inject, onMounted, computed } from "@vue/runtime-core";
 import { NTooltip } from "naive-ui";
 import { ref } from "@vue/reactivity";
 import { saveAs } from "file-saver";
@@ -201,6 +164,7 @@ import copyToClipboard from "../utils/copyToClipboard";
 import useArcanaAuth from "../use/arcanaAuth";
 
 import ArrowDownIcon from "../assets/triangle-down.svg";
+import UserProfileIcon from "../assets/user-profile.svg";
 
 export default {
   setup() {
@@ -210,11 +174,10 @@ export default {
 
     const { logout } = useArcanaAuth();
 
-    let profile = ref({});
-    let profileOptions = ref(false);
+    const profile = computed(() => ({ walletAddress: store.getters.walletAddress}))
+    const isProfileMenuOpen = ref(false);
 
     onMounted(() => {
-      profile.value = store.getters.basicProfile;
       document.addEventListener("click", handleMenuCollapse);
     });
 
@@ -223,20 +186,12 @@ export default {
         (el) => el.id === "profile-options-container"
       );
       if (!profileContainer) {
-        profileOptions.value = false;
+        isProfileMenuOpen.value = false;
       }
     }
 
-    function toggleProfileOptions() {
-      profileOptions.value = !profileOptions.value;
-    }
-
-    function downloadKeys() {
-      const keys = store.getters.cryptoDetails;
-      const blob = new Blob([JSON.stringify(keys, null, "\t")], {
-        type: "text/plain;charset=utf-8",
-      });
-      saveAs(blob, "arcana-demo-app-keys.json");
+    function toggleProfileMenu() {
+      isProfileMenuOpen.value = !isProfileMenuOpen.value;
     }
 
     async function handleLogout() {
@@ -266,12 +221,12 @@ export default {
 
     return {
       profile,
-      profileOptions,
-      downloadKeys,
-      toggleProfileOptions,
+      isProfileMenuOpen,
+      toggleProfileMenu,
       handleLogout,
       copy,
       ArrowDownIcon,
+      UserProfileIcon,
     };
   },
   components: { ClipboardCopyIcon, NTooltip },

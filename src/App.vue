@@ -1,36 +1,60 @@
 <template>
   <fullsize-background>
     <full-screen-loader
-      v-if="loader || !isWalletLoaded"
+      v-if="loader"
       :key="'arcana-demo-app-loader'"
       :message="loadingMessage"
     />
-    <div v-if="isWalletLoaded">
-      <app-sidebar v-if="privateKey && $route.name !== 'Login'" />
-      <router-view></router-view>
+    <div v-else>
+      <app-sidebar v-if="$route.name !== 'Login'" />
+      <router-view />
     </div>
   </fullsize-background>
 </template>
 
 <script>
-import FullsizeBackground from "./components/FullsizeBackground.vue";
+import { computed, onBeforeMount, inject } from "vue";
+import { useRouter, useRoute } from "vue-router";
+import { useStore } from "vuex";
+
 import AppSidebar from "./components/AppSidebar.vue";
 import FullScreenLoader from "./components/FullScreenLoader.vue";
-import { useStore } from "vuex";
-import { computed, onBeforeMount, ref } from "vue";
+import FullsizeBackground from "./components/FullsizeBackground.vue";
 import useArcanaWallet from "./use/arcanaWallet";
 
 export default {
   setup() {
     const store = useStore();
-    const isWalletLoaded = ref(false);
-    const { init } = useArcanaWallet();
+    const route = useRoute();
+    const router = useRouter();
+
+    const toast = inject("$toast");
+
+    const { init, isLoggedIn, fetchUserDetails } = useArcanaWallet();
 
     onBeforeMount(async () => {
-      console.log("Start initialising the wallet");
       await init();
-      console.log("Stop initialising the wallet");
-      isWalletLoaded.value = true;
+      const hasLoggedIn = await isLoggedIn();
+      if (hasLoggedIn) {
+        await fetchUserDetails();
+
+        if (route.path === "/login") {
+          store.dispatch("showLoader");
+          await router.push("/my-files");
+          store.dispatch("hideLoader");
+
+          toast("Login Success", {
+            styles: {
+              backgroundColor: "green",
+            },
+            type: "success",
+          });
+        }
+      } else {
+        store.dispatch("showLoader");
+        await router.push("/login");
+        store.dispatch("hideLoader");
+      }
     });
 
     let loader = computed(() => {
@@ -39,15 +63,10 @@ export default {
     let loadingMessage = computed(() => {
       return store.getters.loadingMessage;
     });
-    let privateKey = computed(() => {
-      return store.getters.privateKey;
-    });
 
     return {
       loader,
       loadingMessage,
-      privateKey,
-      isWalletLoaded,
     };
   },
   components: { FullsizeBackground, AppSidebar, FullScreenLoader },

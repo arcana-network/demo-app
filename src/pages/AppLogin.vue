@@ -74,34 +74,16 @@
 
 <script>
 import { onMounted, inject } from "vue";
-import { useRouter } from "vue-router";
 
 import useArcanaWallet from "../use/arcanaWallet";
 
 export default {
   setup() {
-    const router = useRouter();
     const toast = inject("$toast");
-    const { fetchUserDetails, isLoggedIn, requestSocialLogin } =
-      useArcanaWallet();
+    const { requestSocialLogin } = useArcanaWallet();
 
     onMounted(async () => {
       document.title = "Login | Arcana Demo";
-      console.log("Start check if user is logged in");
-      const hasLoggedIn = await isLoggedIn();
-      console.log("Stop check if user is logged in", hasLoggedIn);
-      if (hasLoggedIn) {
-        console.log("Start fetching user details");
-        await fetchUserDetails();
-        console.log("Stop fetching user details");
-        await router.push({ name: "My Files" });
-        toast("Login Success", {
-          styles: {
-            backgroundColor: "green",
-          },
-          type: "success",
-        });
-      }
     });
 
     async function onSignInClick() {
