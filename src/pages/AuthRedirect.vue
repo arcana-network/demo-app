@@ -3,16 +3,16 @@
 </template>
 
 <script>
-import { onMounted } from "@vue/runtime-core";
-
-import useArcanaAuth from "../use/arcanaAuth";
+import { onMounted } from "vue";
 import { useRouter } from "vue-router";
+
+import useArcanaWallet from "../use/arcanaWallet";
 
 export default {
   setup() {
     const router = useRouter();
 
-    const { fetchUserDetails } = useArcanaAuth();
+    const { fetchUserDetails } = useArcanaWallet();
 
     onMounted(async () => {
       await fetchUserDetails();

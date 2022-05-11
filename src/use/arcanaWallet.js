@@ -4,7 +4,11 @@ const ARCANA_WALLET_URL = import.meta.env.VITE_ARCANA_WALLET_URL;
 
 const { WalletProvider } = window.arcana.wallet;
 
-let wallet = null;
+let wallet = new WalletProvider({
+  appId: ARCANA_APP_ID,
+  iframeUrl: ARCANA_WALLET_URL,
+  network: ARCANA_AUTH_NETWORK,
+});
 
 const themeConfig = {
   assets: {
@@ -19,20 +23,29 @@ const themeConfig = {
       },
     },
   },
-  theme: "light",
+  theme: "dark",
 };
 
 function useArcanaWallet() {
   async function init() {
-    wallet = new WalletProvider({
-      appId: ARCANA_APP_ID,
-      iframeUrl: ARCANA_WALLET_URL,
-      network: ARCANA_AUTH_NETWORK,
-    });
     await wallet.init(themeConfig);
   }
 
-  return { init };
+  async function isLoggedIn() {
+    return await wallet.isLoggedIn();
+  }
+
+  async function requestSocialLogin(type) {
+    await wallet.requestSocialLogin(type);
+  }
+
+  async function fetchUserDetails() {
+    const provider = wallet.getProvider();
+    const accounts = await provider.request({ method: "eth_accounts" });
+    console.log("accounts", accounts);
+  }
+
+  return { init, isLoggedIn, requestSocialLogin, fetchUserDetails };
 }
 
 export default useArcanaWallet;

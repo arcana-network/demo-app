@@ -27,7 +27,9 @@ export default {
     const { init } = useArcanaWallet();
 
     onBeforeMount(async () => {
+      console.log("Start initialising the wallet");
       await init();
+      console.log("Stop initialising the wallet");
       isWalletLoaded.value = true;
     });
 

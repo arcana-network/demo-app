@@ -76,18 +76,24 @@
 import { onMounted, inject } from "vue";
 import { useRouter } from "vue-router";
 
-import useArcanaAuth from "../use/arcanaAuth";
+import useArcanaWallet from "../use/arcanaWallet";
 
 export default {
   setup() {
     const router = useRouter();
     const toast = inject("$toast");
-    const { login, isLoggedIn, fetchUserDetails } = useArcanaAuth();
+    const { fetchUserDetails, isLoggedIn, requestSocialLogin } =
+      useArcanaWallet();
 
     onMounted(async () => {
       document.title = "Login | Arcana Demo";
-      if (isLoggedIn()) {
+      console.log("Start check if user is logged in");
+      const hasLoggedIn = await isLoggedIn();
+      console.log("Stop check if user is logged in", hasLoggedIn);
+      if (hasLoggedIn) {
+        console.log("Start fetching user details");
         await fetchUserDetails();
+        console.log("Stop fetching user details");
         await router.push({ name: "My Files" });
         toast("Login Success", {
           styles: {
@@ -100,10 +106,7 @@ export default {
 
     async function onSignInClick() {
       try {
-        const loginStart = Date.now();
-        await login();
-        const loginEnd = Date.now();
-        console.log("LOGIN COMPLETED", (loginEnd - loginStart) / 1000);
+        await requestSocialLogin("google");
       } catch (e) {
         console.error("error", e);
         toast("Something went wrong. Try again", {
