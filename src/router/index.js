@@ -4,7 +4,6 @@ const AppLogin = () => import("@/pages/AppLogin.vue");
 const MyFiles = () => import("@/pages/MyFiles.vue");
 const SharedWithMe = () => import("@/pages/SharedWithMe.vue");
 const TrashBin = () => import("@/pages/TrashBin.vue");
-const AuthRedirect = () => import("@/pages/AuthRedirect.vue");
 
 const routes = [
   {
@@ -30,11 +29,6 @@ const routes = [
   {
     path: "/",
     redirect: "/login",
-  },
-  {
-    name: "Auth Redirect",
-    path: "/auth/redirect",
-    component: AuthRedirect,
   },
 ];
 
