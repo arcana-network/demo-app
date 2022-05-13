@@ -72,5 +72,3 @@ export default {
   components: { FullsizeBackground, AppSidebar, FullScreenLoader },
 };
 </script>
-
-<style></style>
