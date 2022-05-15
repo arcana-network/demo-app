@@ -1,16 +1,16 @@
 import bytes from "bytes";
-import { Arcana as StorageProvider } from "@arcana/storage/dist/standalone/storage.umd";
-import { inject } from "vue";
+import { ref, inject } from "vue";
 import { useStore } from "vuex";
 
 import padPublicKey from "../utils/padPublicKey";
-import useArcanaAuth from "./arcanaAuth";
 
 const ARCANA_APP_ID = import.meta.env.VITE_ARCANA_APP_ID;
 const GATEWAY_URL = import.meta.env.VITE_GATEWAY_URL;
 
 const NO_SPACE = "No space left for user";
 const UNAUTHORIZED = "UNAUTHORIZED";
+
+const { StorageProvider } = window.arcana.storage;
 
 const successToast = {
   styles: {
@@ -27,35 +27,40 @@ const errorToast = {
 
 const FILE_SIZE_LIMIT = bytes("100MB");
 
-let storageInstance = null;
+const storageInstanceRef = ref(null);
 
 function useArcanaStorage() {
   const store = useStore();
   const toast = inject("$toast");
-  const { getPublicKey } = useArcanaAuth();
 
-  if (!storageInstance) {
-    storageInstance = new StorageProvider({
-      appId: ARCANA_APP_ID,
-      privateKey: store.getters.privateKey,
-      email: store.getters.email,
-      gateway: GATEWAY_URL,
-    });
+  function initStorage() {
+    if (!storageInstanceRef.value) {
+      console.log({ ARCANA_APP_ID, GATEWAY_URL })
+      storageInstanceRef.value = new StorageProvider({
+        appId: ARCANA_APP_ID,
+        gateway: GATEWAY_URL,
+        provider: window.ethereum,
+        debug: true,
+      });
+    }
   }
 
   async function fetchStorageLimits() {
-    const access = await storageInstance.getAccess();
-    const [storageUsed, totalStorage] = await access.getUploadLimit();
-    const [bandwidthUsed, totalBandwidth] = await access.getDownloadLimit();
-
-    store.dispatch("updateStorage", {
-      totalStorage,
-      storageUsed,
-    });
-    store.dispatch("updateBandwidth", {
-      totalBandwidth,
-      bandwidthUsed,
-    });
+    try {
+      const access = await storageInstanceRef.value.getAccess();
+      const [storageUsed, totalStorage] = await access.getUploadLimit();
+      const [bandwidthUsed, totalBandwidth] = await access.getDownloadLimit();
+      store.dispatch("updateStorage", {
+        totalStorage,
+        storageUsed,
+      });
+      store.dispatch("updateBandwidth", {
+        totalBandwidth,
+        bandwidthUsed,
+      });
+    } catch(error) {
+      console.log(error)
+    }
   }
 
   async function fetchMyFiles() {
@@ -203,7 +208,7 @@ function useArcanaStorage() {
         "showLoader",
         "Encrypting file data with recipient's public key......"
       );
-      const publicKey = await getPublicKey(email);
+      const publicKey = '000' // await getPublicKey(email);
       const actualPublicKey = padPublicKey(publicKey);
       const access = await storageInstance.getAccess();
       let did = fileToShare.fileId;
@@ -280,6 +285,7 @@ function useArcanaStorage() {
   }
 
   return {
+    initStorage,
     download,
     fetchMyFiles,
     fetchSharedFiles,

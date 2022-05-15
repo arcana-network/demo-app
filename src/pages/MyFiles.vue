@@ -31,14 +31,14 @@ export default {
   name: "MyFiles",
   setup() {
     const store = useStore();
-    const { fetchStorageLimits, fetchMyFiles } = useArcanaStorage();
+    const { fetchStorageLimits } = useArcanaStorage();
 
-    const files = computed(() => store.getters.myFiles);
+    // const files = computed(() => store.getters.myFiles);
 
     onMounted(async () => {
       document.title = "My Files | Arcana Demo";
       await fetchStorageLimits();
-      await fetchMyFiles();
+      // await fetchMyFiles();
     });
 
     return {

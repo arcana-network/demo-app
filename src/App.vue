@@ -1,11 +1,11 @@
 <template>
   <fullsize-background>
     <full-screen-loader
-      v-if="loader"
+      v-if="loader || !isAppInitialised"
       :key="'arcana-demo-app-loader'"
       :message="loadingMessage"
     />
-    <div v-else>
+    <div v-else="isAppInitialised">
       <app-sidebar v-if="$route.name !== 'Login'" />
       <router-view />
     </div>
@@ -13,7 +13,7 @@
 </template>
 
 <script>
-import { computed, onBeforeMount, inject } from "vue";
+import { computed, onBeforeMount, inject, ref } from "vue";
 import { useRouter, useRoute } from "vue-router";
 import { useStore } from "vuex";
 
@@ -21,6 +21,7 @@ import AppSidebar from "./components/AppSidebar.vue";
 import FullScreenLoader from "./components/FullScreenLoader.vue";
 import FullsizeBackground from "./components/FullsizeBackground.vue";
 import useArcanaWallet from "./use/arcanaWallet";
+import useArcanaStorage from "./use/arcanaStorage";
 
 export default {
   setup() {
@@ -30,18 +31,21 @@ export default {
 
     const toast = inject("$toast");
 
-    const { init, isLoggedIn, fetchUserDetails } = useArcanaWallet();
+    const isAppInitialised = ref(false)
+
+    const { initWallet, isLoggedIn, fetchUserDetails } = useArcanaWallet();
+    const { initStorage } = useArcanaStorage();
 
     onBeforeMount(async () => {
-      await init();
+      await initWallet();
       const hasLoggedIn = await isLoggedIn();
       if (hasLoggedIn) {
         await fetchUserDetails();
 
+        initStorage();
+
         if (route.path === "/login") {
-          store.dispatch("showLoader");
           await router.push("/my-files");
-          store.dispatch("hideLoader");
 
           toast("Login Success", {
             styles: {
@@ -51,10 +55,10 @@ export default {
           });
         }
       } else {
-        store.dispatch("showLoader");
         await router.push("/login");
-        store.dispatch("hideLoader");
       }
+
+      isAppInitialised.value = true
     });
 
     let loader = computed(() => {
@@ -65,6 +69,7 @@ export default {
     });
 
     return {
+      isAppInitialised,
       loader,
       loadingMessage,
     };

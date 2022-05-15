@@ -11,6 +11,7 @@ let wallet = new WalletProvider({
   appId: ARCANA_APP_ID,
   iframeUrl: ARCANA_WALLET_URL,
   network: ARCANA_AUTH_NETWORK,
+  inpageProvider: true,
 });
 
 const themeConfig = {
@@ -33,8 +34,8 @@ function useArcanaWallet() {
   const store = useStore();
   const router = useRouter();
 
-  async function init() {
-    store.dispatch("showLoader", "Initialising web wallet...");
+  async function initWallet() {
+    store.dispatch("showLoader", "Initialising Arcana wallet...");
 
     await wallet.init(themeConfig);
 
@@ -73,7 +74,7 @@ function useArcanaWallet() {
     store.dispatch("clearStore");
   }
 
-  return { init, isLoggedIn, requestSocialLogin, fetchUserDetails, logout };
+  return { initWallet, isLoggedIn, requestSocialLogin, fetchUserDetails, logout };
 }
 
 export default useArcanaWallet;
