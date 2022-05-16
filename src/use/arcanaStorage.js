@@ -35,7 +35,6 @@ function useArcanaStorage() {
 
   function initStorage() {
     if (!storageInstanceRef.value) {
-      console.log({ ARCANA_APP_ID, GATEWAY_URL })
       storageInstanceRef.value = new StorageProvider({
         appId: ARCANA_APP_ID,
         gateway: GATEWAY_URL,
