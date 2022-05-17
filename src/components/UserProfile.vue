@@ -17,7 +17,7 @@
         @click.stop="toggleProfileMenu"
       >
         <img
-          :src="UserProfileIcon"
+          :src="userInfo.picture || UserProfileIcon"
           class="rounded-full h-11 w-11 inline p-1"
         />
         <img
@@ -35,7 +35,7 @@
         class="ml-4 font-ubuntu font-bold"
         style="color: #253d52; font-size: 1.3rem"
       >
-        Hello, there!
+        Hello, {{ userInfo.name || 'there' }}!
       </span>
     </div>
     <div
@@ -51,6 +51,22 @@
       :class="isProfileMenuOpen ? 'profile-options-active' : ''"
       id="profile-options-container"
     >
+      <div
+        class="
+          overflow-ellipsis
+          w-full
+          overflow-hidden
+          whitespace-nowrap
+          py-4
+          px-5
+        "
+      >
+        <span class="font-medium">Email : </span>
+        <span class="font-bold" style="color: #058aff">
+          {{ userInfo.email }}
+        </span>
+      </div>
+      <hr class="mx-3 p-0 m-0" style="border: 1px solid #e0e0e0" />
       <div
         class="
           w-full
@@ -74,20 +90,20 @@
               style="color: #058aff; vertical-align: middle"
               :href="
                 'https://explorer.arcana.network/address/' +
-                profile.walletAddress
+                walletInfo.address
               "
               target="__blank"
             >
-              {{ profile.walletAddress }}
+              {{ walletInfo.address }}
             </a>
           </template>
-          {{ profile.walletAddress }}
+          {{ walletInfo.address }}
         </n-tooltip>
         <n-tooltip trigger="hover">
           <template #trigger>
             <ClipboardCopyIcon
               class="h-5 w-5 inline -mt-1 ml-2 cursor-pointer"
-              @click.stop="copy(profile.walletAddress)"
+              @click.stop="copy(walletInfo.address)"
               title="Click to copy"
             />
           </template>
@@ -146,7 +162,7 @@
   background-color: white;
 }
 .profile-options.profile-options-active {
-  height: 160px !important;
+  height: 215px !important;
   opacity: 1 !important;
 }
 </style>
@@ -173,7 +189,8 @@ export default {
 
     const { logout } = useArcanaWallet();
 
-    const profile = computed(() => ({ walletAddress: store.getters.walletAddress}))
+    const userInfo = computed(() => store.getters.userInfo)
+    const walletInfo = computed(() => store.getters.walletInfo)
     const isProfileMenuOpen = ref(false);
 
     onMounted(() => {
@@ -219,7 +236,8 @@ export default {
     }
 
     return {
-      profile,
+      userInfo,
+      walletInfo,
       isProfileMenuOpen,
       toggleProfileMenu,
       handleLogout,

@@ -39,7 +39,6 @@ function useArcanaStorage() {
         appId: ARCANA_APP_ID,
         gateway: GATEWAY_URL,
         provider: window.ethereum,
-        debug: true,
       });
     }
   }

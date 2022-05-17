@@ -46,9 +46,12 @@ function useArcanaWallet() {
   async function fetchUserDetails() {
     store.dispatch("showLoader", "Fetching account details...");
 
+    const userInfo = await wallet.requestUserInfo();
+    store.dispatch("addUserInfo", JSON.parse(userInfo));
+
     const provider = wallet.getProvider();
     const [walletAddress] = await provider.request({ method: "eth_accounts" });
-    store.dispatch("addWalletAddress", walletAddress)
+    store.dispatch("addWalletInfo", { address: walletAddress });
 
     store.dispatch("hideLoader");
   }

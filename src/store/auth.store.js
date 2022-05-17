@@ -1,25 +1,36 @@
 const state = {
-  walletAddress: "",
+  userInfo: {},
+  walletInfo: {},
 };
 
 const getters = {
-  walletAddress: (state) => {
-    return state.walletAddress
-  }
+  userInfo: (state) => {
+    return state.userInfo
+  },
+  walletInfo: (state) => {
+    return state.walletInfo
+  },
 };
 
 const mutations = {
-  addWalletAddress(state, walletAddress) {
-    state.walletAddress = walletAddress;
+  addUserInfo(state, userInfo) {
+    state.userInfo = userInfo;
+  },
+  addWalletInfo(state, walletInfo) {
+    state.walletInfo = walletInfo;
   },
 };
 
 const actions = {
-  addWalletAddress({ commit }, walletAddress) {
-    commit("addWalletAddress", walletAddress);
+  addUserInfo({ commit }, userInfo) {
+    commit("addUserInfo", userInfo);
+  },
+  addWalletInfo({ commit }, walletInfo) {
+    commit("addWalletInfo", walletInfo);
   },
   clearStore({ commit }) {
-    commit("addWalletAddress", "");
+    commit("userInfo", {});
+    commit("addWalletInfo", {});
   },
 };
 
