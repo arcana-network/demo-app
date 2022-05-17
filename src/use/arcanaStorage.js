@@ -48,11 +48,11 @@ function useArcanaStorage() {
       const access = await storageInstanceRef.value.getAccess();
       const [storageUsed, totalStorage] = await access.getUploadLimit();
       const [bandwidthUsed, totalBandwidth] = await access.getDownloadLimit();
-      store.dispatch("updateStorage", {
+      store.dispatch("updateStorageLimits", {
         totalStorage,
         storageUsed,
       });
-      store.dispatch("updateBandwidth", {
+      store.dispatch("updateBandwidthLimits", {
         totalBandwidth,
         bandwidthUsed,
       });

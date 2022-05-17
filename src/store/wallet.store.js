@@ -34,11 +34,11 @@ const actions = {
   },
 };
 
-const authState = {
+const walletState = {
   state: () => state,
   getters,
   mutations,
   actions,
 };
 
-export default authState;
+export default walletState;

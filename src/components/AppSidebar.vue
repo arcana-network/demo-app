@@ -40,10 +40,6 @@
         Shared With Me
       </router-link>
       <br />
-      <!-- <router-link to="/bin" class="inline-block mx-10 my-2 font-bold">
-        <TrashIcon class="h-6 w-6 inline -mt-1 mr-2" />
-        Bin
-      </router-link> -->
     </div>
     <div
       class="absolute menu-liquid-interaction hidden lg:block"
@@ -244,7 +240,6 @@ import { useStore } from "vuex";
 import {
   FolderOpenIcon,
   UsersIcon,
-  TrashIcon,
   MenuIcon,
   XIcon,
 } from "@heroicons/vue/outline";
@@ -262,35 +257,35 @@ export default {
     let liquidMenuTranslate = ref("");
     let menu = ref(false);
     let storage = computed(() => {
-      const storageState = store.getters.storage;
-      if (storageState.totalStorage >= bytes(TEN_TB)) {
-        storageState.totalStorage = UNLIMITED;
+      const storageLimits = store.getters.storageLimits;
+      if (storageLimits.totalStorage >= bytes(TEN_TB)) {
+        storageLimits.totalStorage = UNLIMITED;
         return {
-          ...storageState,
-          percentage: storageState.storageUsed === 0 ? 0 : 1,
+          ...storageLimits,
+          percentage: storageLimits.storageUsed === 0 ? 0 : 1,
         };
       }
       const percentage =
-        (storageState.storageUsed / storageState.totalStorage) * 100;
+        (storageLimits.storageUsed / storageLimits.totalStorage) * 100;
       return {
-        ...storageState,
+        ...storageLimits,
         percentage,
       };
     });
 
     let bandwidth = computed(() => {
-      const bandwidthState = store.getters.bandwidth;
-      if (bandwidthState.totalBandwidth >= bytes(TEN_TB)) {
-        bandwidthState.totalBandwidth = UNLIMITED;
+      const bandwidthLimits = store.getters.bandwidthLimits;
+      if (bandwidthLimits.totalBandwidth >= bytes(TEN_TB)) {
+        bandwidthLimits.totalBandwidth = UNLIMITED;
         return {
-          ...bandwidthState,
-          percentage: bandwidthState.bandwidthUsed === 0 ? 0 : 1,
+          ...bandwidthLimits,
+          percentage: bandwidthLimits.bandwidthUsed === 0 ? 0 : 1,
         };
       }
       const percentage =
-        (bandwidthState.bandwidthUsed / bandwidthState.totalBandwidth) * 100;
+        (bandwidthLimits.bandwidthUsed / bandwidthLimits.totalBandwidth) * 100;
       return {
-        ...bandwidthState,
+        ...bandwidthLimits,
         percentage,
       };
     });
@@ -349,7 +344,6 @@ export default {
   components: {
     FolderOpenIcon,
     UsersIcon,
-    TrashIcon,
     MenuIcon,
     XIcon,
     FullScreenOverlay,
