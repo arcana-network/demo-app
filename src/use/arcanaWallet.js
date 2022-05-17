@@ -1,18 +1,7 @@
 import { useStore } from "vuex";
 import { useRouter } from 'vue-router';
 
-const ARCANA_APP_ID = import.meta.env.VITE_ARCANA_APP_ID;
-const ARCANA_AUTH_NETWORK = import.meta.env.VITE_ARCANA_AUTH_NETWORK;
-const ARCANA_WALLET_URL = import.meta.env.VITE_ARCANA_WALLET_URL;
-
-const { WalletProvider } = window.arcana.wallet;
-
-let wallet = new WalletProvider({
-  appId: ARCANA_APP_ID,
-  iframeUrl: ARCANA_WALLET_URL,
-  network: ARCANA_AUTH_NETWORK,
-  inpageProvider: true,
-});
+import WalletService from "../services/wallet.service";
 
 function useArcanaWallet() {
   const store = useStore();
@@ -21,10 +10,9 @@ function useArcanaWallet() {
   async function initWallet() {
     store.dispatch("showLoader", "Initialising Arcana wallet...");
 
-    await wallet.init();
+    await WalletService.init();
 
-    const provider = wallet.getProvider();
-    provider.on("disconnect", async () => {
+    WalletService.setHook("disconnect", async () => {
       await logout();
       router.push("/login");
     });
@@ -34,30 +22,29 @@ function useArcanaWallet() {
 
   async function isLoggedIn() {
     store.dispatch("showLoader", "Checking login status...");
-    const loginStatus = await wallet.isLoggedIn();
+    const loginStatus = await WalletService.isLoggedIn();
     store.dispatch("hideLoader");
     return loginStatus;
   }
 
   async function requestSocialLogin(type) {
-    await wallet.requestSocialLogin(type);
+    await WalletService.requestSocialLogin(type);
   }
 
   async function fetchUserDetails() {
     store.dispatch("showLoader", "Fetching account details...");
 
-    const userInfo = await wallet.requestUserInfo();
+    const userInfo = await WalletService.requestUserInfo();
     store.dispatch("addUserInfo", JSON.parse(userInfo));
 
-    const provider = wallet.getProvider();
-    const [walletAddress] = await provider.request({ method: "eth_accounts" });
+    const [walletAddress] = await WalletService.requestWalletInfo();
     store.dispatch("addWalletInfo", { address: walletAddress });
 
     store.dispatch("hideLoader");
   }
 
   async function logout() {
-    await wallet.logout();
+    await WalletService.logout();
     store.dispatch("clearStore");
   }
 
