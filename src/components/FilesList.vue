@@ -1,15 +1,20 @@
 <template>
-  <div class="mt-6 ml-6 lg:ml-16">
-    <div
-      class="inline-block px-6 py-1 font-bold"
-      style="
-        background: #eef1f6;
-        font-size: 0.9rem;
-        border-radius: 12px;
-        color: #4b4b4b;
-      "
-    >
-      {{ pageTitle }}
+  <div class="mt-6 mx-6 lg:mx-16">
+    <div class="flex items-center justify-between">
+      <div
+        class="inline-block px-6 py-1 font-bold"
+        style="
+          background: #eef1f6;
+          font-size: 0.9rem;
+          border-radius: 12px;
+          color: #4b4b4b;
+        "
+      >
+        {{ pageTitle }}
+      </div>
+      <div>
+        <slot name="controls" />
+      </div>
     </div>
     <div v-if="!files.length">
       <div
