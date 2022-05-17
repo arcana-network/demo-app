@@ -14,22 +14,6 @@ let wallet = new WalletProvider({
   inpageProvider: true,
 });
 
-const themeConfig = {
-  assets: {
-    logo: {
-      dark: {
-        horizontal: "./logo-horizontal-dark.png",
-        vertical: "./logo-vertical-dark.png",
-      },
-      light: {
-        horizontal: "./logo-horizontal-light.png",
-        vertical: "./logo-vertical-light.png",
-      },
-    },
-  },
-  theme: "dark",
-};
-
 function useArcanaWallet() {
   const store = useStore();
   const router = useRouter();
@@ -37,7 +21,7 @@ function useArcanaWallet() {
   async function initWallet() {
     store.dispatch("showLoader", "Initialising Arcana wallet...");
 
-    await wallet.init(themeConfig);
+    await wallet.init();
 
     const provider = wallet.getProvider();
     provider.on("disconnect", async () => {
