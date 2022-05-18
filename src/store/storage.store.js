@@ -1,9 +1,11 @@
 const state = {
   storageLimits: {
+    hasApprovedRequest: false,
     totalStorage: 0,
     storageUsed: 0,
   },
   bandwidthLimits: {
+    hasApprovedRequest: false,
     totalBandwidth: 0,
     bandwidthUsed: 0,
   },
@@ -12,11 +14,17 @@ const state = {
 };
 
 const getters = {
+  hasApprovedStorageLimitsRequest: (state) => {
+    return state.storageLimits.hasApprovedRequest
+  },
   storageLimits: (state) => {
     return {
       totalStorage: state.storageLimits.totalStorage,
       storageUsed: state.storageLimits.storageUsed,
     };
+  },
+  hasApprovedBandwidthLimitsRequest: (state) => {
+    return state.bandwidthLimits.hasApprovedRequest
   },
   bandwidthLimits: (state) => {
     return {
@@ -33,9 +41,15 @@ const getters = {
 };
 
 const mutations = {
+  updateHasApprovedStorageLimitsRequest(state, hasApprovedRequest) {
+    state.storageLimits.hasApprovedRequest = hasApprovedRequest;
+  },
   updateStorageLimits(state, { totalStorage, storageUsed }) {
     state.storageLimits.totalStorage = totalStorage;
     state.storageLimits.storageUsed = storageUsed;
+  },
+  updateHasApprovedBandwidthLimitsRequest(state, hasApprovedRequest) {
+    state.bandwidthLimits.hasApprovedRequest = hasApprovedRequest;
   },
   updateBandwidthLimits(state, { totalBandwidth, bandwidthUsed }) {
     state.bandwidthLimits.totalBandwidth = totalBandwidth;
@@ -57,9 +71,11 @@ const mutations = {
 
 const actions = {
   updateStorageLimits({ commit }, { totalStorage, storageUsed }) {
+    commit("updateHasApprovedStorageLimitsRequest", true);
     commit("updateStorageLimits", { totalStorage, storageUsed });
   },
   updateBandwidthLimits({ commit }, { totalBandwidth, bandwidthUsed }) {
+    commit("updateHasApprovedBandwidthLimitsRequest", true);
     commit("updateBandwidthLimits", { totalBandwidth, bandwidthUsed });
   },
   updateSharedWithMe({ commit }, sharedWithMe) {

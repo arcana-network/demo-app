@@ -83,46 +83,50 @@
       </div>
     </div>
     <div class="absolute bottom-10 mx-auto footer">
-      <div class="mt-8 font-ubuntu font-bold" style="font-size: 1.5em">
-        Storage Status
-      </div>
-      <div class="my-2">
-        <div class="progress-container mx-auto">
-          <div
-            class="progress-success-container"
-            :style="{ width: storage.percentage + '%' }"
-          ></div>
+      <template v-if="hasApprovedStorageLimitsRequest">
+        <div class="mt-8 font-ubuntu font-bold" style="font-size: 1.5em">
+          Storage Status
         </div>
-      </div>
-      <div class="my-2 font-ubuntu" style="font-weight: 300">
-        <span style="font-weight: 800">{{
-          readableBytes(storage.storageUsed)
-        }}</span>
-        of
-        <span style="font-weight: 800">{{
-          readableBytes(storage.totalStorage)
-        }}</span>
-      </div>
-      <div class="mt-8 font-ubuntu font-bold" style="font-size: 1.5em">
-        Bandwidth Status
-      </div>
-      <div class="my-2">
-        <div class="progress-container mx-auto">
-          <div
-            class="progress-success-container"
-            :style="{ width: bandwidth.percentage + '%' }"
-          ></div>
+        <div class="my-2">
+          <div class="progress-container mx-auto">
+            <div
+              class="progress-success-container"
+              :style="{ width: storage.percentage + '%' }"
+            ></div>
+          </div>
         </div>
-      </div>
-      <div class="my-2 font-ubuntu" style="font-weight: 300">
-        <span style="font-weight: 800">{{
-          readableBytes(bandwidth.bandwidthUsed)
-        }}</span>
-        of
-        <span style="font-weight: 800">{{
-          readableBytes(bandwidth.totalBandwidth)
-        }}</span>
-      </div>
+        <div class="my-2 font-ubuntu" style="font-weight: 300">
+          <span style="font-weight: 800">{{
+            readableBytes(storage.storageUsed)
+          }}</span>
+          of
+          <span style="font-weight: 800">{{
+            readableBytes(storage.totalStorage)
+          }}</span>
+        </div>
+      </template>
+      <template v-if="hasApprovedBandwidthLimitsRequest">
+        <div class="mt-8 font-ubuntu font-bold" style="font-size: 1.5em">
+          Bandwidth Status
+        </div>
+        <div class="my-2">
+          <div class="progress-container mx-auto">
+            <div
+              class="progress-success-container"
+              :style="{ width: bandwidth.percentage + '%' }"
+            ></div>
+          </div>
+        </div>
+        <div class="my-2 font-ubuntu" style="font-weight: 300">
+          <span style="font-weight: 800">{{
+            readableBytes(bandwidth.bandwidthUsed)
+          }}</span>
+          of
+          <span style="font-weight: 800">{{
+            readableBytes(bandwidth.totalBandwidth)
+          }}</span>
+        </div>
+      </template>
     </div>
   </div>
 </template>
@@ -254,9 +258,11 @@ export default {
   setup() {
     const route = useRoute();
     const store = useStore();
-    let liquidMenuTranslate = ref("");
-    let menu = ref(false);
-    let storage = computed(() => {
+    const liquidMenuTranslate = ref("");
+    const menu = ref(false);
+
+    const hasApprovedStorageLimitsRequest = computed(() => store.getters.hasApprovedStorageLimitsRequest);
+    const storage = computed(() => {
       const storageLimits = store.getters.storageLimits;
       if (storageLimits.totalStorage >= bytes(TEN_TB)) {
         storageLimits.totalStorage = UNLIMITED;
@@ -273,7 +279,8 @@ export default {
       };
     });
 
-    let bandwidth = computed(() => {
+    const hasApprovedBandwidthLimitsRequest = computed(() => store.getters.hasApprovedBandwidthLimitsRequest)
+    const bandwidth = computed(() => {
       const bandwidthLimits = store.getters.bandwidthLimits;
       if (bandwidthLimits.totalBandwidth >= bytes(TEN_TB)) {
         bandwidthLimits.totalBandwidth = UNLIMITED;
@@ -339,6 +346,8 @@ export default {
       storage,
       bandwidth,
       readableBytes,
+      hasApprovedStorageLimitsRequest,
+      hasApprovedBandwidthLimitsRequest,
     };
   },
   components: {
