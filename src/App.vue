@@ -1,9 +1,9 @@
 <template>
   <fullsize-background>
     <full-screen-loader
-      v-if="loader || !isAppInitialised"
+      v-if="isLoadingFullScreen || !isAppInitialised"
       :key="'arcana-demo-app-loader'"
-      :message="loadingMessage"
+      :message="fullScreenLoadingMessage"
     />
     <div v-else="isAppInitialised">
       <app-sidebar v-if="$route.name !== 'Login'" />
@@ -56,17 +56,17 @@ export default {
       isAppInitialised.value = true;
     });
 
-    let loader = computed(() => {
-      return store.getters.loader;
+    let isLoadingFullScreen = computed(() => {
+      return store.getters.isLoadingFullScreen;
     });
-    let loadingMessage = computed(() => {
-      return store.getters.loadingMessage;
+    let fullScreenLoadingMessage = computed(() => {
+      return store.getters.fullScreenLoadingMessage;
     });
 
     return {
       isAppInitialised,
-      loader,
-      loadingMessage,
+      isLoadingFullScreen,
+      fullScreenLoadingMessage,
     };
   },
   components: { FullsizeBackground, AppSidebar, FullScreenLoader },

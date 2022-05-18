@@ -82,8 +82,13 @@
         ></div>
       </div>
     </div>
-    <div class="absolute bottom-10 mx-auto footer">
-      <template v-if="hasApprovedStorageLimitsRequest">
+    <div
+      class="absolute bottom-10 mx-auto footer flex flex-col items-center justify-end"
+    >
+      <div class="mt-8" v-if="isLoadingInline">
+        <inline-loader class="justify-center" :message="inlineLoadingMessage" />
+      </div>
+      <div v-if="hasApprovedStorageLimitsRequest">
         <div class="mt-8 font-ubuntu font-bold" style="font-size: 1.5em">
           Storage Status
         </div>
@@ -104,8 +109,8 @@
             readableBytes(storage.totalStorage)
           }}</span>
         </div>
-      </template>
-      <template v-if="hasApprovedBandwidthLimitsRequest">
+      </div>
+      <div v-if="hasApprovedBandwidthLimitsRequest">
         <div class="mt-8 font-ubuntu font-bold" style="font-size: 1.5em">
           Bandwidth Status
         </div>
@@ -126,7 +131,7 @@
             readableBytes(bandwidth.totalBandwidth)
           }}</span>
         </div>
-      </template>
+      </div>
     </div>
   </div>
 </template>
@@ -250,6 +255,7 @@ import {
 
 import bytes from "bytes";
 import FullScreenOverlay from "./FullScreenOverlay.vue";
+import InlineLoader from "./InlineLoader.vue";
 
 const UNLIMITED = "Unlimited";
 const TEN_TB = "10 TB";
@@ -261,7 +267,16 @@ export default {
     const liquidMenuTranslate = ref("");
     const menu = ref(false);
 
-    const hasApprovedStorageLimitsRequest = computed(() => store.getters.hasApprovedStorageLimitsRequest);
+    let isLoadingInline = computed(() => {
+      return store.getters.isLoadingInline;
+    });
+    let inlineLoadingMessage = computed(() => {
+      return store.getters.inlineLoadingMessage;
+    });
+
+    const hasApprovedStorageLimitsRequest = computed(
+      () => store.getters.hasApprovedStorageLimitsRequest
+    );
     const storage = computed(() => {
       const storageLimits = store.getters.storageLimits;
       if (storageLimits.totalStorage >= bytes(TEN_TB)) {
@@ -279,7 +294,9 @@ export default {
       };
     });
 
-    const hasApprovedBandwidthLimitsRequest = computed(() => store.getters.hasApprovedBandwidthLimitsRequest)
+    const hasApprovedBandwidthLimitsRequest = computed(
+      () => store.getters.hasApprovedBandwidthLimitsRequest
+    );
     const bandwidth = computed(() => {
       const bandwidthLimits = store.getters.bandwidthLimits;
       if (bandwidthLimits.totalBandwidth >= bytes(TEN_TB)) {
@@ -348,6 +365,8 @@ export default {
       readableBytes,
       hasApprovedStorageLimitsRequest,
       hasApprovedBandwidthLimitsRequest,
+      isLoadingInline,
+      inlineLoadingMessage,
     };
   },
   components: {
@@ -356,6 +375,7 @@ export default {
     MenuIcon,
     XIcon,
     FullScreenOverlay,
+    InlineLoader,
   },
 };
 </script>

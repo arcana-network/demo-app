@@ -1,14 +1,6 @@
 <template>
   <div
-    class="
-      bg-white
-      files-container
-      fixed
-      right-3
-      top-20
-      lg:top-4
-      overflow-y-auto
-    "
+    class="bg-white files-container fixed right-3 top-20 lg:top-4 overflow-y-auto"
   >
     <div id="my-files-container" class="transition-fade">
       <user-profile />
@@ -35,8 +27,8 @@ export default {
 
     onMounted(async () => {
       document.title = "Shared With Me | Arcana Demo";
-      await fetchStorageLimits();
       await fetchSharedFiles();
+      await fetchStorageLimits();
     });
 
     return {

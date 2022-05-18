@@ -1,14 +1,6 @@
 <template>
   <div
-    class="
-      bg-white
-      files-container
-      fixed
-      right-3
-      top-20
-      lg:top-4
-      overflow-y-auto
-    "
+    class="bg-white files-container fixed right-3 top-20 lg:top-4 overflow-y-auto"
   >
     <div id="my-files-container" class="transition-fade">
       <user-profile />
@@ -29,6 +21,7 @@ import FilesList from "../components/FilesList.vue";
 import UploadButton from "../components/UploadButton.vue";
 import useArcanaStorage from "../use/arcanaStorage";
 import UserProfile from "../components/UserProfile.vue";
+import InlineLoader from "../components/InlineLoader.vue";
 
 export default {
   name: "MyFiles",
@@ -40,14 +33,14 @@ export default {
 
     onMounted(async () => {
       document.title = "My Files | Arcana Demo";
-      await fetchStorageLimits();
       await fetchMyFiles();
+      await fetchStorageLimits();
     });
 
     return {
       files,
     };
   },
-  components: { UploadButton, UserProfile, FilesList },
+  components: { UploadButton, UserProfile, FilesList, InlineLoader },
 };
 </script>

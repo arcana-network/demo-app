@@ -4,7 +4,7 @@ const GATEWAY_URL = import.meta.env.VITE_GATEWAY_URL;
 const { StorageProvider } = window.arcana.storage;
 
 function createStorageService() {
-  let storage
+  let storage;
 
   async function init() {
     if (!storage) {
@@ -34,15 +34,25 @@ function createStorageService() {
     return await storage.sharedFiles();
   }
 
+  async function upload(fileBlob, { onSuccess, onError, onProgress }) {
+    const uploader = await storage.getUploader();
+    if (onSuccess) uploader.onSuccess = onSuccess;
+    if (onError) uploader.onError = onError;
+    if (onProgress) uploader.onProgres = onProgress;
+    const fileDid = await uploader.upload(fileBlob);
+    return fileDid;
+  }
+
   return {
     init,
     getUploadLimit,
     getDownloadLimit,
     myFiles,
     sharedFiles,
-  }
+    upload,
+  };
 }
 
-const StorageService = Object.freeze(createStorageService())
+const StorageService = Object.freeze(createStorageService());
 
-export default StorageService
+export default StorageService;
