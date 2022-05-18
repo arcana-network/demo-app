@@ -13,15 +13,16 @@
 </template>
 
 <script>
-import { computed, onBeforeMount, inject, ref } from "vue";
+import { computed, onBeforeMount, ref } from "vue";
 import { useRouter, useRoute } from "vue-router";
 import { useStore } from "vuex";
 
 import AppSidebar from "./components/AppSidebar.vue";
 import FullScreenLoader from "./components/FullScreenLoader.vue";
 import FullsizeBackground from "./components/FullsizeBackground.vue";
-import useArcanaWallet from "./use/arcanaWallet";
 import useArcanaStorage from "./use/arcanaStorage";
+import useArcanaWallet from "./use/arcanaWallet";
+import useToast from "./use/toast";
 
 export default {
   setup() {
@@ -29,9 +30,9 @@ export default {
     const route = useRoute();
     const router = useRouter();
 
-    const toast = inject("$toast");
+    const { toastSuccess } = useToast();
 
-    const isAppInitialised = ref(false)
+    const isAppInitialised = ref(false);
 
     const { initWallet, isLoggedIn, fetchUserDetails } = useArcanaWallet();
     const { initStorage } = useArcanaStorage();
@@ -46,19 +47,13 @@ export default {
 
         if (route.path === "/login") {
           await router.push("/my-files");
-
-          toast("Login Success", {
-            styles: {
-              backgroundColor: "green",
-            },
-            type: "success",
-          });
+          toastSuccess("Login Success");
         }
       } else {
         await router.push("/login");
       }
 
-      isAppInitialised.value = true
+      isAppInitialised.value = true;
     });
 
     let loader = computed(() => {

@@ -73,13 +73,14 @@
 </style>
 
 <script>
-import { onMounted, inject } from "vue";
+import { onMounted } from "vue";
 
 import useArcanaWallet from "../use/arcanaWallet";
+import useToast from "../use/toast";
 
 export default {
   setup() {
-    const toast = inject("$toast");
+    const { toastError } = useToast();
     const { requestSocialLogin } = useArcanaWallet();
 
     onMounted(async () => {
@@ -91,12 +92,7 @@ export default {
         await requestSocialLogin("google");
       } catch (e) {
         console.error("error", e);
-        toast("Something went wrong. Try again", {
-          styles: {
-            backgroundColor: "red",
-          },
-          type: "error",
-        });
+        toastError("Something went wrong. Try again");
       }
     }
 
