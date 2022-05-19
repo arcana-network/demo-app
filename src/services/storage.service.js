@@ -38,7 +38,7 @@ function createStorageService() {
     const uploader = await storage.getUploader();
     if (onSuccess) uploader.onSuccess = onSuccess;
     if (onError) uploader.onError = onError;
-    if (onProgress) uploader.onProgres = onProgress;
+    if (onProgress) uploader.onProgress = onProgress;
     const fileDid = await uploader.upload(fileBlob);
     return fileDid;
   }
