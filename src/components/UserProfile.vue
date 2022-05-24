@@ -126,10 +126,8 @@
 
 <script>
 import { ClipboardCopyIcon } from "@heroicons/vue/outline";
-import { onMounted, computed } from "@vue/runtime-core";
+import { ref, onMounted, computed } from "vue";
 import { NTooltip } from "naive-ui";
-import { ref } from "@vue/reactivity";
-import { useRouter } from "vue-router";
 import { useStore } from "vuex";
 
 import copyToClipboard from "../utils/copyToClipboard";
@@ -142,7 +140,6 @@ import UserProfileIcon from "../assets/user-profile.svg";
 export default {
   setup() {
     const store = useStore();
-    const router = useRouter();
     const { toastSuccess, toastError } = useToast();
 
     const { logout } = useArcanaWallet();
@@ -170,7 +167,6 @@ export default {
 
     async function handleLogout() {
       await logout();
-      router.push("/login");
     }
 
     function copy(value) {

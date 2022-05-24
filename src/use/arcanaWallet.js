@@ -13,8 +13,9 @@ function useArcanaWallet() {
     await WalletService.init();
 
     WalletService.setHook("disconnect", async () => {
-      await logout();
+      store.dispatch("clearStore");
       router.push("/login");
+      router.go();
     });
 
     store.dispatch("hideFullScreenLoader");
@@ -45,7 +46,6 @@ function useArcanaWallet() {
 
   async function logout() {
     await WalletService.logout();
-    store.dispatch("clearStore");
   }
 
   return {
