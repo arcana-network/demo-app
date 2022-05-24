@@ -5,10 +5,10 @@ const state = {
 
 const getters = {
   userInfo: (state) => {
-    return state.userInfo
+    return state.userInfo;
   },
   walletInfo: (state) => {
-    return state.walletInfo
+    return state.walletInfo;
   },
 };
 
@@ -29,7 +29,7 @@ const actions = {
     commit("addWalletInfo", walletInfo);
   },
   clearStore({ commit }) {
-    commit("userInfo", {});
+    commit("addUserInfo", {});
     commit("addWalletInfo", {});
   },
 };
