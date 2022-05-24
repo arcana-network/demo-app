@@ -27,8 +27,8 @@ export default {
 
     onMounted(async () => {
       document.title = "Shared With Me | Arcana Demo";
-      await fetchSharedFiles();
       await fetchStorageLimits();
+      await fetchSharedFiles();
     });
 
     return {

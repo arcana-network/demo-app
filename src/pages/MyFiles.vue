@@ -33,8 +33,8 @@ export default {
 
     onMounted(async () => {
       document.title = "My Files | Arcana Demo";
-      await fetchMyFiles();
       await fetchStorageLimits();
+      await fetchMyFiles();
     });
 
     return {

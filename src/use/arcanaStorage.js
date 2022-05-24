@@ -33,6 +33,7 @@ function useArcanaStorage() {
       });
     } catch (error) {
       console.log(error);
+      toastError(error.message || "Something went wrong.");
     }
   }
 
@@ -42,6 +43,7 @@ function useArcanaStorage() {
       store.dispatch("updateMyFiles", myFiles);
     } catch (error) {
       console.log(error);
+      toastError(error.message || "Something went wrong.");
     }
   }
 
@@ -51,6 +53,7 @@ function useArcanaStorage() {
       store.dispatch("updateSharedWithMe", sharedFiles);
     } catch (error) {
       console.log(error);
+      toastError(error.message || "Something went wrong.");
     }
   }
 
@@ -99,55 +102,37 @@ function useArcanaStorage() {
       toastError(error.message || "Something went wrong.");
     } finally {
       console.timeEnd("Upload");
+      store.dispatch("hideInlineLoader");
     }
   }
 
-  // async function download(file) {
-  //   const downloadStart = Date.now();
-  //   store.dispatch(
-  //     "showLoader",
-  //     "Downloading chunks from distributed storage..."
-  //   );
-  //   const downloder = await storageInstance.getDownloader();
-  //   let did = file.fileId;
-  //   did = did.substring(0, 2) !== "0x" ? "0x" + did : did;
-  //   downloder.download(did).catch((error) => {
-  //     console.error(error);
-  //     if (error.message === NO_SPACE) {
-  //       toast(
-  //         "Download failed. Bandwidth limit exceeded. Upgrade your account to continue",
-  //         errorToast
-  //       );
-  //       store.dispatch("hideLoader");
-  //     } else if (error.code === UNAUTHORIZED) {
-  //       toast(
-  //         "Seems like you don't have access to download this file",
-  //         errorToast
-  //       );
-  //       store.dispatch("hideLoader");
-  //     } else {
-  //       toast("Something went wrong. Try again", errorToast);
-  //       store.dispatch("hideLoader");
-  //     }
-  //   });
-  //   downloder.onSuccess = () => {
-  //     fetchStorageLimits();
-  //     toast("All chunks downloaded", successToast);
-  //     toast(
-  //       "Transaction successfully updated in arcana network's blockchain",
-  //       successToast
-  //     );
-  //     store.dispatch("hideLoader");
-  //     const downloadEnd = Date.now();
-  //     console.log(
-  //       "DOWNLOAD COMPLETED",
-  //       `${(downloadEnd - downloadStart) / 1000}s`
-  //     );
-  //   };
-  //   downloder.onProgress = (a, b) => {
-  //     store.dispatch("showLoader", `Completed ${bytes(a)} out of ${bytes(b)}`);
-  //   };
-  // }
+  async function download(file) {
+    console.time("Download");
+
+    try {
+      store.dispatch("showInlineLoader", "Downloading file");
+
+      await StorageService.download(file.fileId, {
+        onProgress: (downloaded, total) => {
+          store.dispatch(
+            "showInlineLoader",
+            `Downloaded ${bytes(downloaded)} / ${bytes(total)}`
+          );
+        },
+        onSuccess: () => {
+          fetchStorageLimits();
+          toastSuccess("Download success");
+          store.dispatch("hideInlineLoader");
+        },
+      });
+    } catch (error) {
+      console.error(error);
+      toastError(error.message || "Something went wrong.");
+    } finally {
+      console.timeEnd("Download");
+      store.dispatch("hideInlineLoader");
+    }
+  }
 
   // async function share(fileToShare, email) {
   //   const shareStart = Date.now();
@@ -235,7 +220,7 @@ function useArcanaStorage() {
 
   return {
     initStorage,
-    // download,
+    download,
     fetchMyFiles,
     fetchSharedFiles,
     fetchStorageLimits,

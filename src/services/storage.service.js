@@ -43,6 +43,13 @@ function createStorageService() {
     return fileDid;
   }
 
+  async function download(fileDid, { onSuccess, onProgress }) {
+    const downloader = await storage.getDownloader();
+    if (onSuccess) downloader.onSuccess = onSuccess;
+    if (onProgress) downloader.onProgress = onProgress;
+    await downloader.download(fileDid);
+  }
+
   return {
     init,
     getUploadLimit,
@@ -50,6 +57,7 @@ function createStorageService() {
     myFiles,
     sharedFiles,
     upload,
+    download,
   };
 }
 
