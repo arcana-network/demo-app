@@ -134,6 +134,28 @@ function useArcanaStorage() {
     }
   }
 
+  async function remove(file) {
+    console.time("Delete");
+
+    try {
+      store.dispatch("showInlineLoader", "Deleting file");
+
+      await StorageService.remove(file.fileId);
+      let myFiles = [...store.getters.myFiles];
+      myFiles = myFiles.filter((myFile) => myFile.fileId !== file.fileId);
+      store.dispatch("updateMyFiles", myFiles);
+
+      fetchStorageLimits();
+      toastSuccess("Delete success");
+    } catch (error) {
+      console.error(error);
+      toastError(error.message || "Something went wrong.");
+    } finally {
+      console.timeEnd("Delete");
+      store.dispatch("hideInlineLoader");
+    }
+  }
+
   // async function share(fileToShare, email) {
   //   const shareStart = Date.now();
   //   store.dispatch("showLoader", "Sharing file...");
@@ -195,29 +217,6 @@ function useArcanaStorage() {
   //   }
   // }
 
-  // async function remove(fileToDelete) {
-  //   const deleteStart = Date.now();
-  //   store.dispatch("showLoader", "Deleting file...");
-  //   const access = await storageInstance.getAccess();
-  //   try {
-  //     let did = fileToDelete.fileId;
-  //     did = did.substring(0, 2) != "0x" ? "0x" + did : did;
-  //     await access.deleteFile(did);
-  //     fetchStorageLimits();
-  //     let myFiles = [...store.getters.myFiles];
-  //     myFiles = myFiles.filter((file) => file.fileId !== fileToDelete.fileId);
-  //     store.dispatch("updateMyFiles", myFiles);
-  //     toast(`File Deleted`, successToast);
-  //     store.dispatch("hideLoader");
-  //     const deleteEnd = Date.now();
-  //     console.log("DELETE COMPLETED", `${(deleteEnd - deleteStart) / 1000}s`);
-  //   } catch (e) {
-  //     console.error(e);
-  //     toast("Something went wrong. Try again", errorToast);
-  //     store.dispatch("hideLoader");
-  //   }
-  // }
-
   return {
     initStorage,
     download,
@@ -225,7 +224,7 @@ function useArcanaStorage() {
     fetchSharedFiles,
     fetchStorageLimits,
     // getSharedUsers,
-    // remove,
+    remove,
     // revoke,
     // share,
     upload,

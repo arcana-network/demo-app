@@ -50,6 +50,11 @@ function createStorageService() {
     await downloader.download(fileDid);
   }
 
+  async function remove(fileDid) {
+    const access = await storage.getAccess();
+    await access.deleteFile(fileDid);
+  }
+
   return {
     init,
     getUploadLimit,
@@ -58,6 +63,7 @@ function createStorageService() {
     sharedFiles,
     upload,
     download,
+    remove,
   };
 }
 
