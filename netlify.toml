@@ -9,7 +9,7 @@
     default-src 'self';
 
     font-src 'self' fonts.gstatic.com gstatic.com *.gstatic.com;
-    img-src 'self' data: *.googleusercontent.com;
+    img-src 'self' data: *.googleusercontent.com *.arcana.network;
     script-src 'self' 'unsafe-inline' 'unsafe-eval' googletagmanager.com *.googletagmanager.com apis.google.com;
     style-src 'self' 'unsafe-inline' fonts.googleapis.com;
     frame-src 'self' *.arcana.network;
