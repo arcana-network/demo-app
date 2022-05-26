@@ -1,8 +1,10 @@
 import bytes from "bytes";
+import { ethers } from "ethers";
 import { useStore } from "vuex";
 
-import StorageService from "../services/storage.service";
 import padPublicKey from "../utils/padPublicKey";
+import StorageService from "../services/storage.service";
+import useArcanaWallet from "../use/arcanaWallet";
 import useToast from "../use/toast";
 
 const NO_SPACE = "No space left for user";
@@ -13,6 +15,7 @@ const FILE_SIZE_LIMIT = bytes("100MB");
 function useArcanaStorage() {
   const store = useStore();
   const { toastSuccess, toastError } = useToast();
+  const { requestPublicKey } = useArcanaWallet();
 
   function initStorage() {
     StorageService.init();
@@ -57,8 +60,8 @@ function useArcanaStorage() {
     }
   }
 
-  async function upload(fileToUpload) {
-    if (fileToUpload.size > FILE_SIZE_LIMIT) {
+  async function upload(file) {
+    if (file.size > FILE_SIZE_LIMIT) {
       toastError("You are not allowed to upload files bigger than 100MiB.");
       throw new Error("File size exceeded maximum");
     }
@@ -71,7 +74,7 @@ function useArcanaStorage() {
 
       store.dispatch("showInlineLoader", "Uploading file");
 
-      const did = await StorageService.upload(fileToUpload, {
+      const did = await StorageService.upload(file, {
         onProgress: (uploaded, total) => {
           store.dispatch(
             "showInlineLoader",
@@ -156,32 +159,24 @@ function useArcanaStorage() {
     }
   }
 
-  // async function share(fileToShare, email) {
-  //   const shareStart = Date.now();
-  //   store.dispatch("showLoader", "Sharing file...");
-  //   try {
-  //     store.dispatch(
-  //       "showLoader",
-  //       "Encrypting file data with recipient's public key......"
-  //     );
-  //     const publicKey = '000' // await getPublicKey(email);
-  //     const actualPublicKey = padPublicKey(publicKey);
-  //     const access = await storageInstance.getAccess();
-  //     let did = fileToShare.fileId;
-  //     did = did.substring(0, 2) != "0x" ? "0x" + did : did;
-  //     store.dispatch("showLoader", `Sharing file with ${email}`);
-  //     await access.share([did], [actualPublicKey], [1000000]);
-  //     toast(`Shared file successfully with ${email}`, successToast);
-  //     store.dispatch("hideLoader");
-  //     const shareEnd = Date.now();
-  //     console.log("SHARE COMPLETED", `${(shareEnd - shareStart) / 1000}s`);
-  //   } catch (e) {
-  //     console.error(e);
-  //     toast("Something went wrong. Try again", errorToast);
-  //     store.dispatch("hideLoader");
-  //   }
-  //   return;
-  // }
+  async function share(file, email) {
+    console.time("Share");
+
+    try {
+      store.dispatch("showInlineLoader", "Sharing file");
+
+      const publicKey = await requestPublicKey(email);
+      const address = ethers.utils.computeAddress("0x" + publicKey);
+      await StorageService.share(file.fileId, address);
+      toastSuccess(`Shared file successfully with ${email}`);
+    } catch (error) {
+      console.error(error);
+      toastError(error.message || "Something went wrong.");
+    } finally {
+      console.timeEnd("Share");
+      store.dispatch("hideInlineLoader");
+    }
+  }
 
   // async function getSharedUsers(did) {
   //   try {
@@ -226,7 +221,7 @@ function useArcanaStorage() {
     // getSharedUsers,
     remove,
     // revoke,
-    // share,
+    share,
     upload,
   };
 }

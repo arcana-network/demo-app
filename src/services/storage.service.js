@@ -55,6 +55,11 @@ function createStorageService() {
     await access.deleteFile(fileDid);
   }
 
+  async function share(fileDid, address) {
+    const access = await storage.getAccess();
+    await access.share(fileDid, address);
+  }
+
   return {
     init,
     getUploadLimit,
@@ -64,6 +69,7 @@ function createStorageService() {
     upload,
     download,
     remove,
+    share,
   };
 }
 

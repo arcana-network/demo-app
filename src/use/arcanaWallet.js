@@ -48,12 +48,17 @@ function useArcanaWallet() {
     await WalletService.logout();
   }
 
+  async function requestPublicKey(email) {
+    return await WalletService.requestPublicKey(email);
+  }
+
   return {
+    fetchUserDetails,
     initWallet,
     isLoggedIn,
-    requestSocialLogin,
-    fetchUserDetails,
     logout,
+    requestPublicKey,
+    requestSocialLogin,
   };
 }
 

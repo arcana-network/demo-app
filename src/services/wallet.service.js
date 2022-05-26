@@ -24,6 +24,10 @@ function createWalletService() {
     await wallet.logout();
   }
 
+  async function requestPublicKey(email) {
+    return await wallet.requestPublicKey(email);
+  }
+
   async function requestSocialLogin(type) {
     await wallet.requestSocialLogin(type);
   }
@@ -46,6 +50,7 @@ function createWalletService() {
     init,
     isLoggedIn,
     logout,
+    requestPublicKey,
     requestSocialLogin,
     requestUserInfo,
     requestWalletInfo,
