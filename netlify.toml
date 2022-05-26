@@ -5,7 +5,7 @@
     Referrer-Policy = "strict-origin-when-cross-origin"
     X-Frame-Options = "DENY"
     X-Content-Type-Options = "nosniff"
-    Content-Security-Policy = '''
+    Content-Security-Policy-Report-Only = '''
     default-src 'self';
 
     font-src 'self' fonts.gstatic.com gstatic.com *.gstatic.com;
@@ -14,7 +14,7 @@
     style-src 'self' 'unsafe-inline' fonts.googleapis.com;
     frame-src 'self' *.arcana.network;
 
-    connect-src 'self' arcana.network *.arcana.network google-analytics.com *.google-analytics.com googleapis.com *.googleapis.com list-manage.com *.list-manage.com sentry.io *.sentry.io;
+    connect-src 'self' arcana.network *.arcana.network *.arcana.network:9000 google-analytics.com *.google-analytics.com googleapis.com *.googleapis.com list-manage.com *.list-manage.com sentry.io *.sentry.io;
 
     object-src 'none';'''
 
