@@ -6,7 +6,10 @@ import { Integrations } from "@sentry/tracing";
 import store from "./store";
 import DKToast from "vue-dk-toast";
 import VueGtag from "vue-gtag";
+import { ethers } from "ethers";
 import "@/index.css";
+
+window.ethers = ethers;
 
 function getDSN() {
   if (import.meta.env.PROD) {
