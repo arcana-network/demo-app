@@ -2,7 +2,7 @@ const ARCANA_APP_ID = import.meta.env.VITE_ARCANA_APP_ID;
 const ARCANA_AUTH_NETWORK = import.meta.env.VITE_ARCANA_AUTH_NETWORK;
 const ARCANA_WALLET_URL = import.meta.env.VITE_ARCANA_WALLET_URL;
 
-const { AppMode, WalletProvider } = window.arcana.wallet;
+const { AppMode, WalletProvider, computeAddress } = window.arcana.wallet;
 
 function createWalletService() {
   const wallet = new WalletProvider({
@@ -47,6 +47,7 @@ function createWalletService() {
   }
 
   return {
+    computeAddress,
     init,
     isLoggedIn,
     logout,

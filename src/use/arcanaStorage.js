@@ -1,8 +1,8 @@
 import bytes from "bytes";
-import { ethers } from "ethers";
 import { useStore } from "vuex";
 
 import StorageService from "../services/storage.service";
+import WalletService from "../services/wallet.service";
 import useArcanaWallet from "../use/arcanaWallet";
 import useToast from "../use/toast";
 
@@ -162,7 +162,7 @@ function useArcanaStorage() {
       store.dispatch("showInlineLoader", "Sharing file");
 
       const publicKey = await requestPublicKey(email);
-      const address = ethers.utils.computeAddress("0x" + publicKey);
+      const address = WalletService.computeAddress("0x" + publicKey);
       await StorageService.share(file.fileId, address);
       toastSuccess(`Shared file successfully with ${email}`);
     } catch (error) {
