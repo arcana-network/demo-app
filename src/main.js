@@ -9,6 +9,8 @@ import VueGtag from "vue-gtag";
 import { ethers } from "ethers";
 import "@/index.css";
 
+// Note: Fagun needs this for testing.
+// Remove and uninstall ethers after QA.
 window.ethers = ethers;
 
 function getDSN() {
