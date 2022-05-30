@@ -57,7 +57,7 @@ function createStorageService() {
 
   async function share(fileDid, address) {
     const access = await storage.getAccess();
-    await access.share(fileDid, address);
+    await access.share(fileDid, address, 1000);
   }
 
   async function getSharedUsers(fileDid) {
