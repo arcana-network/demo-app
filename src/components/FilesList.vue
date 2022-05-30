@@ -27,7 +27,7 @@
       >
         <img
           class="inline-block mb-2"
-          src="@/assets/file_image.png"
+          src="@/assets/file-icon.png"
           style="
             min-width: 160px;
             max-width: 300px;
