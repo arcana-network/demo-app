@@ -67,7 +67,7 @@ function createStorageService() {
 
   async function revoke(fileDid, address) {
     const access = await storage.getAccess();
-    await access.revoke(fileDid);
+    await access.revoke(fileDid, address);
   }
 
   return {
