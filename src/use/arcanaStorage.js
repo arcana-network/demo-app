@@ -2,13 +2,9 @@ import bytes from "bytes";
 import { ethers } from "ethers";
 import { useStore } from "vuex";
 
-import padPublicKey from "../utils/padPublicKey";
 import StorageService from "../services/storage.service";
 import useArcanaWallet from "../use/arcanaWallet";
 import useToast from "../use/toast";
-
-const NO_SPACE = "No space left for user";
-const UNAUTHORIZED = "UNAUTHORIZED";
 
 const FILE_SIZE_LIMIT = bytes("100MB");
 
@@ -181,6 +177,7 @@ function useArcanaStorage() {
   async function getSharedUsers(did) {
     try {
       store.dispatch("showInlineLoader", "Fetch shared users");
+
       return await StorageService.getSharedUsers("0x" + did);
     } catch (error) {
       console.error(error);
@@ -190,34 +187,30 @@ function useArcanaStorage() {
     }
   }
 
-  // async function revoke(fileToRevoke, address) {
-  //   const did = fileToRevoke.fileId;
-  //   const revokeStart = Date.now();
-  //   store.dispatch("showLoader", "Revoking file access...");
-  //   try {
-  //     const access = await storageInstance.getAccess();
-  //     const fileId = did.substring(0, 2) !== "0x" ? "0x" + did : did;
-  //     await access.revoke(fileId, address);
-  //     toast(`File Access Revoked`, successToast);
-  //     store.dispatch("hideLoader");
-  //     const revokeEnd = Date.now();
-  //     console.log("REVOKE COMPLETED", `${(revokeEnd - revokeStart) / 1000}s`);
-  //   } catch (e) {
-  //     console.error(e);
-  //     toast("Something went wrong. Try again", errorToast);
-  //     store.dispatch("hideLoader");
-  //   }
-  // }
+  async function revoke(fileToRevoke, address) {
+    try {
+      store.dispatch("showInlineLoader", "Revoking file access");
+
+      await StorageService.revoke(fileToRevoke.fileId, address);
+      toastSuccess("File access revoked");
+    } catch (error) {
+      console.error(error);
+      toastError(error.message || "Something went wrong.");
+    } finally {
+      console.timeEnd("Revoke");
+      store.dispatch("hideInlineLoader");
+    }
+  }
 
   return {
-    initStorage,
     download,
     fetchMyFiles,
     fetchSharedFiles,
     fetchStorageLimits,
     getSharedUsers,
+    initStorage,
     remove,
-    // revoke,
+    revoke,
     share,
     upload,
   };

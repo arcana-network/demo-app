@@ -65,6 +65,11 @@ function createStorageService() {
     return await access.getSharedUsers(fileDid);
   }
 
+  async function revoke(fileDid, address) {
+    const access = await storage.getAccess();
+    await access.revoke(fileDid);
+  }
+
   return {
     download,
     getDownloadLimit,
@@ -73,6 +78,7 @@ function createStorageService() {
     init,
     myFiles,
     remove,
+    revoke,
     share,
     sharedFiles,
     upload,
