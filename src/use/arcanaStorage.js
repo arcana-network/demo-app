@@ -178,20 +178,17 @@ function useArcanaStorage() {
     }
   }
 
-  // async function getSharedUsers(did) {
-  //   try {
-  //     const access = await storageInstance.getAccess();
-  //     const fileId = did.substring(0, 2) !== "0x" ? "0x" + did : did;
-  //     const users = await access.getSharedUsers(fileId);
-  //     return users;
-  //   } catch (e) {
-  //     console.error(e);
-  //     toast(
-  //       "Something went wrong while fetching shared users list",
-  //       errorToast
-  //     );
-  //   }
-  // }
+  async function getSharedUsers(did) {
+    try {
+      store.dispatch("showInlineLoader", "Fetch shared users");
+      return await StorageService.getSharedUsers("0x" + did);
+    } catch (error) {
+      console.error(error);
+      toastError(error.message || "Something went wrong.");
+    } finally {
+      store.dispatch("hideInlineLoader");
+    }
+  }
 
   // async function revoke(fileToRevoke, address) {
   //   const did = fileToRevoke.fileId;
@@ -218,7 +215,7 @@ function useArcanaStorage() {
     fetchMyFiles,
     fetchSharedFiles,
     fetchStorageLimits,
-    // getSharedUsers,
+    getSharedUsers,
     remove,
     // revoke,
     share,

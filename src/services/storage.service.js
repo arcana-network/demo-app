@@ -60,16 +60,22 @@ function createStorageService() {
     await access.share(fileDid, address);
   }
 
+  async function getSharedUsers(fileDid) {
+    const access = await storage.getAccess();
+    return await access.getSharedUsers(fileDid);
+  }
+
   return {
-    init,
-    getUploadLimit,
-    getDownloadLimit,
-    myFiles,
-    sharedFiles,
-    upload,
     download,
+    getDownloadLimit,
+    getSharedUsers,
+    getUploadLimit,
+    init,
+    myFiles,
     remove,
     share,
+    sharedFiles,
+    upload,
   };
 }
 
