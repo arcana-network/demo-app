@@ -202,7 +202,34 @@ function useArcanaStorage() {
     }
   }
 
+  async function changeFileOwner(fileToTransfer, email) {
+    console.time("Transfer");
+
+    try {
+      store.dispatch("showInlineLoader", "Transfering file");
+
+      const publicKey = await requestPublicKey(email);
+      const address = WalletService.computeAddress("0x" + publicKey);
+      await StorageService.changeFileOwner(fileToTransfer.fileId, address);
+
+      let myFiles = [...store.getters.myFiles];
+      myFiles = myFiles.filter((file) => file.did !== fileToTransfer.fileId);
+      store.dispatch("updateMyFiles", myFiles);
+
+      await fetchStorageLimits();
+
+      toastSuccess(`Transferred file ownership to ${email}`);
+    } catch (error) {
+      console.error(error);
+      toastError(error.message || "Something went wrong.");
+    } finally {
+      console.timeEnd("Transfer");
+      store.dispatch("hideInlineLoader");
+    }
+  }
+
   return {
+    changeFileOwner,
     download,
     fetchMyFiles,
     fetchSharedFiles,

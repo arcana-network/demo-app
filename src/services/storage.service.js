@@ -70,7 +70,13 @@ function createStorageService() {
     await access.revoke(fileDid, address);
   }
 
+  async function changeFileOwner(fileDid, address) {
+    const access = await storage.getAccess();
+    await access.changeFileOwner(fileDid, address);
+  }
+
   return {
+    changeFileOwner,
     download,
     getDownloadLimit,
     getSharedUsers,
