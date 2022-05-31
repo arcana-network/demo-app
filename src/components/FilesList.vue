@@ -484,11 +484,11 @@ export default {
     }
 
     async function shareFile() {
-      closeDialog();
       const emails = shareEmail.value.split(",").map((email) => email.trim());
       for (let email of emails) {
         await share(fileToShare, email);
       }
+      closeDialog();
     }
 
     async function revokeAccess(fileToRevoke, address) {
@@ -497,9 +497,9 @@ export default {
     }
 
     async function transferFile() {
-      closeDialog();
       const email = transferEmail.value.trim();
       await changeFileOwner(fileToTransfer, email);
+      closeDialog();
     }
 
     function fetchSharedUsers(file) {
