@@ -1,56 +1,74 @@
 <template>
   <fullsize-background>
     <full-screen-loader
-      v-if="loader || !isAuthLoaded"
+      v-if="isLoadingFullScreen || !isAppInitialised"
       :key="'arcana-demo-app-loader'"
-      :message="loadingMessage"
+      :message="fullScreenLoadingMessage"
     />
-    <div v-if="isAuthLoaded">
-      <app-sidebar v-if="privateKey && $route.name !== 'Login'" />
-      <router-view></router-view>
+    <div v-else="isAppInitialised">
+      <app-sidebar v-if="$route.name !== 'Login'" />
+      <router-view />
     </div>
   </fullsize-background>
 </template>
 
 <script>
-import FullsizeBackground from "./components/FullsizeBackground.vue";
+import { computed, onBeforeMount, ref } from "vue";
+import { useRouter, useRoute } from "vue-router";
+import { useStore } from "vuex";
+
 import AppSidebar from "./components/AppSidebar.vue";
 import FullScreenLoader from "./components/FullScreenLoader.vue";
-import { useStore } from "vuex";
-import { computed, onBeforeMount, ref } from "vue";
-import useArcanaAuth from "./use/arcanaAuth";
+import FullsizeBackground from "./components/FullsizeBackground.vue";
+import useArcanaStorage from "./use/arcanaStorage";
+import useArcanaWallet from "./use/arcanaWallet";
+import useToast from "./use/toast";
 
 export default {
   setup() {
     const store = useStore();
-    const isAuthLoaded = ref(false);
-    const { init } = useArcanaAuth();
+    const route = useRoute();
+    const router = useRouter();
+
+    const { toastSuccess } = useToast();
+
+    const isAppInitialised = ref(false);
+
+    const { initWallet, isLoggedIn, fetchUserDetails } = useArcanaWallet();
+    const { initStorage } = useArcanaStorage();
 
     onBeforeMount(async () => {
-      await init();
-      isAuthLoaded.value = true;
+      await initWallet();
+      const hasLoggedIn = await isLoggedIn();
+      if (hasLoggedIn) {
+        await fetchUserDetails();
+
+        initStorage();
+
+        if (route.path === "/login") {
+          await router.push("/my-files");
+          toastSuccess("Login Success");
+        }
+      } else {
+        await router.push("/login");
+      }
+
+      isAppInitialised.value = true;
     });
 
-    let loader = computed(() => {
-      return store.getters.loader;
+    let isLoadingFullScreen = computed(() => {
+      return store.getters.isLoadingFullScreen;
     });
-    let loadingMessage = computed(() => {
-      return store.getters.loadingMessage;
-    });
-    let privateKey = computed(() => {
-      return store.getters.privateKey;
+    let fullScreenLoadingMessage = computed(() => {
+      return store.getters.fullScreenLoadingMessage;
     });
 
     return {
-      loader,
-      loadingMessage,
-      privateKey,
-      isAuthLoaded,
+      isAppInitialised,
+      isLoadingFullScreen,
+      fullScreenLoadingMessage,
     };
   },
   components: { FullsizeBackground, AppSidebar, FullScreenLoader },
 };
 </script>
-
-<style>
-</style>

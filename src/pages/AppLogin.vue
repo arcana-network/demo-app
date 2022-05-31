@@ -10,22 +10,11 @@
       &
       <a href="/" style="color: #058aff; text-decoration: none"> Terms </a>
     </div>
-    <div
-      id="google-signin-button"
-      @click.stop="overrideClick"
-      class="font-ubuntu"
-    ></div>
     <a class="google-button" @click.stop="onSignInClick">Sign In with Google</a>
   </div>
 </template>
 
 <style scoped>
-#google-signin-button {
-  position: relative;
-  margin: 0 auto;
-  margin-top: 2rem;
-  width: 240px;
-}
 .login-container {
   min-width: 320px;
   max-width: 480px;
@@ -69,13 +58,14 @@
 }
 
 .google-button {
+  display: inline-block;
   padding: 0.8em 1.2em;
   border: 1px solid rgb(5, 138, 255);
   background-color: rgb(5, 138, 255);
   color: white;
   border-radius: 10px;
   cursor: pointer;
-  margin: 1em 0;
+  margin-top: 2rem;
   white-space: nowrap;
   font-weight: 800;
   font-size: 1.2em;
@@ -83,45 +73,26 @@
 </style>
 
 <script>
-import { onMounted, inject } from "vue";
-import { useRouter } from "vue-router";
+import { onMounted } from "vue";
 
-import useArcanaAuth from "../use/arcanaAuth";
+import useArcanaWallet from "../use/arcanaWallet";
+import useToast from "../use/toast";
 
 export default {
   setup() {
-    const router = useRouter();
-    const toast = inject("$toast");
-    const { login, isLoggedIn, fetchUserDetails } = useArcanaAuth();
+    const { toastError } = useToast();
+    const { requestSocialLogin } = useArcanaWallet();
 
     onMounted(async () => {
       document.title = "Login | Arcana Demo";
-      if (isLoggedIn()) {
-        await fetchUserDetails();
-        await router.push({ name: "My Files" });
-        toast("Login Success", {
-          styles: {
-            backgroundColor: "green",
-          },
-          type: "success",
-        });
-      }
     });
 
     async function onSignInClick() {
       try {
-        const loginStart = Date.now();
-        await login();
-        const loginEnd = Date.now();
-        console.log("LOGIN COMPLETED", (loginEnd - loginStart) / 1000);
+        await requestSocialLogin("google");
       } catch (e) {
         console.error("error", e);
-        toast("Something went wrong. Try again", {
-          styles: {
-            backgroundColor: "red",
-          },
-          type: "error",
-        });
+        toastError("Something went wrong. Try again");
       }
     }
 

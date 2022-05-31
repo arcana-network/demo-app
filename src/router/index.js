@@ -1,11 +1,8 @@
 import { createWebHistory, createRouter } from "vue-router";
-import store from "../store";
 
 const AppLogin = () => import("@/pages/AppLogin.vue");
 const MyFiles = () => import("@/pages/MyFiles.vue");
 const SharedWithMe = () => import("@/pages/SharedWithMe.vue");
-const TrashBin = () => import("@/pages/TrashBin.vue");
-const AuthRedirect = () => import("@/pages/AuthRedirect.vue");
 
 const routes = [
   {
@@ -19,11 +16,6 @@ const routes = [
     component: SharedWithMe,
   },
   {
-    name: "Bin",
-    path: "/bin",
-    component: TrashBin,
-  },
-  {
     name: "Login",
     path: "/login",
     component: AppLogin,
@@ -31,11 +23,6 @@ const routes = [
   {
     path: "/",
     redirect: "/login",
-  },
-  {
-    name: "Auth Redirect",
-    path: "/auth/redirect",
-    component: AuthRedirect,
   },
 ];
 
@@ -45,16 +32,6 @@ const router = createRouter({
   scrollBehavior() {
     return { top: 0 };
   },
-});
-
-router.beforeEach((to, from, next) => {
-  if (to.name !== "Login" && to.name !== "Auth Redirect") {
-    if (!store.getters.publicKey || !store.getters.privateKey) {
-      store.dispatch("updateRedirect", to);
-      router.replace({ name: "Login" });
-    }
-  }
-  return next();
 });
 
 export default router;
