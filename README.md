@@ -41,7 +41,7 @@ npm run build
 ```
 ## Local environment setup
 
-#### Prerequisits
+#### Prerequisites
 
 - [Docker](https://docs.docker.com/engine/install/)
 
