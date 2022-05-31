@@ -3,7 +3,6 @@ import { createWebHistory, createRouter } from "vue-router";
 const AppLogin = () => import("@/pages/AppLogin.vue");
 const MyFiles = () => import("@/pages/MyFiles.vue");
 const SharedWithMe = () => import("@/pages/SharedWithMe.vue");
-const TrashBin = () => import("@/pages/TrashBin.vue");
 
 const routes = [
   {
@@ -15,11 +14,6 @@ const routes = [
     name: "Shared With Me",
     path: "/shared-with-me",
     component: SharedWithMe,
-  },
-  {
-    name: "Bin",
-    path: "/bin",
-    component: TrashBin,
   },
   {
     name: "Login",

@@ -40,10 +40,6 @@
         Shared With Me
       </router-link>
       <br />
-      <!-- <router-link to="/bin" class="inline-block mx-10 my-2 font-bold">
-        <TrashIcon class="h-6 w-6 inline -mt-1 mr-2" />
-        Bin
-      </router-link> -->
     </div>
     <div
       class="absolute menu-liquid-interaction hidden lg:block"
@@ -86,46 +82,55 @@
         ></div>
       </div>
     </div>
-    <div class="absolute bottom-10 mx-auto footer">
-      <div class="mt-8 font-ubuntu font-bold" style="font-size: 1.5em">
-        Storage Status
+    <div
+      class="absolute bottom-10 mx-auto footer flex flex-col items-center justify-end"
+    >
+      <div class="mt-8" v-if="isLoadingInline">
+        <inline-loader class="justify-center" :message="inlineLoadingMessage" />
       </div>
-      <div class="my-2">
-        <div class="progress-container mx-auto">
-          <div
-            class="progress-success-container"
-            :style="{ width: storage.percentage + '%' }"
-          ></div>
+      <div v-if="hasApprovedStorageLimitsRequest">
+        <div class="mt-8 font-ubuntu font-bold" style="font-size: 1.5em">
+          Storage Status
+        </div>
+        <div class="my-2">
+          <div class="progress-container mx-auto">
+            <div
+              class="progress-success-container"
+              :style="{ width: storage.percentage + '%' }"
+            ></div>
+          </div>
+        </div>
+        <div class="my-2 font-ubuntu" style="font-weight: 300">
+          <span style="font-weight: 800">{{
+            readableBytes(storage.storageUsed)
+          }}</span>
+          of
+          <span style="font-weight: 800">{{
+            readableBytes(storage.totalStorage)
+          }}</span>
         </div>
       </div>
-      <div class="my-2 font-ubuntu" style="font-weight: 300">
-        <span style="font-weight: 800">{{
-          readableBytes(storage.storageUsed)
-        }}</span>
-        of
-        <span style="font-weight: 800">{{
-          readableBytes(storage.totalStorage)
-        }}</span>
-      </div>
-      <div class="mt-8 font-ubuntu font-bold" style="font-size: 1.5em">
-        Bandwidth Status
-      </div>
-      <div class="my-2">
-        <div class="progress-container mx-auto">
-          <div
-            class="progress-success-container"
-            :style="{ width: bandwidth.percentage + '%' }"
-          ></div>
+      <div v-if="hasApprovedBandwidthLimitsRequest">
+        <div class="mt-8 font-ubuntu font-bold" style="font-size: 1.5em">
+          Bandwidth Status
         </div>
-      </div>
-      <div class="my-2 font-ubuntu" style="font-weight: 300">
-        <span style="font-weight: 800">{{
-          readableBytes(bandwidth.bandwidthUsed)
-        }}</span>
-        of
-        <span style="font-weight: 800">{{
-          readableBytes(bandwidth.totalBandwidth)
-        }}</span>
+        <div class="my-2">
+          <div class="progress-container mx-auto">
+            <div
+              class="progress-success-container"
+              :style="{ width: bandwidth.percentage + '%' }"
+            ></div>
+          </div>
+        </div>
+        <div class="my-2 font-ubuntu" style="font-weight: 300">
+          <span style="font-weight: 800">{{
+            readableBytes(bandwidth.bandwidthUsed)
+          }}</span>
+          of
+          <span style="font-weight: 800">{{
+            readableBytes(bandwidth.totalBandwidth)
+          }}</span>
+        </div>
       </div>
     </div>
   </div>
@@ -244,13 +249,13 @@ import { useStore } from "vuex";
 import {
   FolderOpenIcon,
   UsersIcon,
-  TrashIcon,
   MenuIcon,
   XIcon,
 } from "@heroicons/vue/outline";
 
 import bytes from "bytes";
 import FullScreenOverlay from "./FullScreenOverlay.vue";
+import InlineLoader from "./InlineLoader.vue";
 
 const UNLIMITED = "Unlimited";
 const TEN_TB = "10 TB";
@@ -259,38 +264,52 @@ export default {
   setup() {
     const route = useRoute();
     const store = useStore();
-    let liquidMenuTranslate = ref("");
-    let menu = ref(false);
-    let storage = computed(() => {
-      const storageState = store.getters.storage;
-      if (storageState.totalStorage >= bytes(TEN_TB)) {
-        storageState.totalStorage = UNLIMITED;
+    const liquidMenuTranslate = ref("");
+    const menu = ref(false);
+
+    let isLoadingInline = computed(() => {
+      return store.getters.isLoadingInline;
+    });
+    let inlineLoadingMessage = computed(() => {
+      return store.getters.inlineLoadingMessage;
+    });
+
+    const hasApprovedStorageLimitsRequest = computed(
+      () => store.getters.hasApprovedStorageLimitsRequest
+    );
+    const storage = computed(() => {
+      const storageLimits = store.getters.storageLimits;
+      if (storageLimits.totalStorage >= bytes(TEN_TB)) {
+        storageLimits.totalStorage = UNLIMITED;
         return {
-          ...storageState,
-          percentage: storageState.storageUsed === 0 ? 0 : 1,
+          ...storageLimits,
+          percentage: storageLimits.storageUsed === 0 ? 0 : 1,
         };
       }
       const percentage =
-        (storageState.storageUsed / storageState.totalStorage) * 100;
+        (storageLimits.storageUsed / storageLimits.totalStorage) * 100;
       return {
-        ...storageState,
+        ...storageLimits,
         percentage,
       };
     });
 
-    let bandwidth = computed(() => {
-      const bandwidthState = store.getters.bandwidth;
-      if (bandwidthState.totalBandwidth >= bytes(TEN_TB)) {
-        bandwidthState.totalBandwidth = UNLIMITED;
+    const hasApprovedBandwidthLimitsRequest = computed(
+      () => store.getters.hasApprovedBandwidthLimitsRequest
+    );
+    const bandwidth = computed(() => {
+      const bandwidthLimits = store.getters.bandwidthLimits;
+      if (bandwidthLimits.totalBandwidth >= bytes(TEN_TB)) {
+        bandwidthLimits.totalBandwidth = UNLIMITED;
         return {
-          ...bandwidthState,
-          percentage: bandwidthState.bandwidthUsed === 0 ? 0 : 1,
+          ...bandwidthLimits,
+          percentage: bandwidthLimits.bandwidthUsed === 0 ? 0 : 1,
         };
       }
       const percentage =
-        (bandwidthState.bandwidthUsed / bandwidthState.totalBandwidth) * 100;
+        (bandwidthLimits.bandwidthUsed / bandwidthLimits.totalBandwidth) * 100;
       return {
-        ...bandwidthState,
+        ...bandwidthLimits,
         percentage,
       };
     });
@@ -344,15 +363,19 @@ export default {
       storage,
       bandwidth,
       readableBytes,
+      hasApprovedStorageLimitsRequest,
+      hasApprovedBandwidthLimitsRequest,
+      isLoadingInline,
+      inlineLoadingMessage,
     };
   },
   components: {
     FolderOpenIcon,
     UsersIcon,
-    TrashIcon,
     MenuIcon,
     XIcon,
     FullScreenOverlay,
+    InlineLoader,
   },
 };
 </script>

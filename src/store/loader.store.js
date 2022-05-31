@@ -1,34 +1,60 @@
 const state = {
-  loader: false,
-  loadingMessage: "",
+  fullScreen: {
+    isLoading: false,
+    loadingMessage: "",
+  },
+  inline: {
+    isLoading: false,
+    loadingMessage: "",
+  },
 };
 
 const getters = {
-  loader: (state) => {
-    return state.loader;
+  isLoadingFullScreen: (state) => {
+    return state.fullScreen.isLoading;
   },
-  loadingMessage: (state) => {
-    return state.loadingMessage;
+  fullScreenLoadingMessage: (state) => {
+    return state.fullScreen.loadingMessage;
+  },
+  isLoadingInline: (state) => {
+    return state.inline.isLoading;
+  },
+  inlineLoadingMessage: (state) => {
+    return state.inline.loadingMessage;
   },
 };
 
 const mutations = {
-  updateLoader(state, loader) {
-    state.loader = loader;
+  updateIsLoadingFullScreen(state, isLoading) {
+    state.fullScreen.isLoading = isLoading;
   },
-  updateLoadingMessage(state, loadingMessage) {
-    state.loadingMessage = loadingMessage;
+  updateFullScreenLoadingMessage(state, loadingMessage) {
+    state.fullScreen.loadingMessage = loadingMessage;
+  },
+  updateIsLoadingInline(state, isLoading) {
+    state.inline.isLoading = isLoading;
+  },
+  updateFullScreenInline(state, loadingMessage) {
+    state.inline.loadingMessage = loadingMessage;
   },
 };
 
 const actions = {
-  showLoader({ commit }, loadingMessage) {
-    commit("updateLoader", true);
-    commit("updateLoadingMessage", loadingMessage);
+  showFullScreenLoader({ commit }, loadingMessage) {
+    commit("updateIsLoadingFullScreen", true);
+    commit("updateFullScreenLoadingMessage", loadingMessage);
   },
-  hideLoader({ commit }) {
-    commit("updateLoader", false);
-    commit("updateLoadingMessage", "");
+  hideFullScreenLoader({ commit }) {
+    commit("updateIsLoadingFullScreen", false);
+    commit("updateFullScreenLoadingMessage", "");
+  },
+  showInlineLoader({ commit }, loadingMessage) {
+    commit("updateIsLoadingInline", true);
+    commit("updateFullScreenInline", loadingMessage);
+  },
+  hideInlineLoader({ commit }, loadingMessage) {
+    commit("updateIsLoadingInline", false);
+    commit("updateFullScreenInline", "");
   },
 };
 

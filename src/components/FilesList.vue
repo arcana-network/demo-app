@@ -1,15 +1,20 @@
 <template>
-  <div class="mt-6 ml-6 lg:ml-16">
-    <div
-      class="inline-block px-6 py-1 font-bold"
-      style="
-        background: #eef1f6;
-        font-size: 0.9rem;
-        border-radius: 12px;
-        color: #4b4b4b;
-      "
-    >
-      {{ pageTitle }}
+  <div class="mt-6 mx-6 lg:mx-16">
+    <div class="flex items-center justify-between">
+      <div
+        class="inline-block px-6 py-1 font-bold"
+        style="
+          background: #eef1f6;
+          font-size: 0.9rem;
+          border-radius: 12px;
+          color: #4b4b4b;
+        "
+      >
+        {{ pageTitle }}
+      </div>
+      <div>
+        <slot name="controls" />
+      </div>
     </div>
     <div v-if="!files.length">
       <div
@@ -22,7 +27,7 @@
       >
         <img
           class="inline-block mb-2"
-          src="@/assets/file_image.png"
+          src="@/assets/file-icon.png"
           style="
             min-width: 160px;
             max-width: 300px;
@@ -38,7 +43,7 @@
         <span v-else>No files added to Bin</span>
       </div>
     </div>
-    <div v-else class="mt-6 lg:ml-4 mr-6 lg:mr-16">
+    <div v-else class="mt-6">
       <div
         v-if="listType === 'table'"
         class="overflow-x-auto transition-fade lg:mb-20 mb-20"
@@ -48,9 +53,15 @@
           <thead style="color: #b9b8b8">
             <tr>
               <th class="uppercase text-left">File ID</th>
-              <th class="uppercase" style="width: 140px">Last Modified</th>
-              <th class="uppercase mb-6 text-left" style="width: 80px">Size</th>
-              <th class="uppercase mb-6" style="width: 240px">Actions</th>
+              <th class="uppercase text-right" style="width: 140px">
+                Last Modified
+              </th>
+              <th class="uppercase mb-6 text-right" style="width: 100px">
+                Size
+              </th>
+              <th class="uppercase mb-6 text-right pr-3" style="width: 180px">
+                Actions
+              </th>
             </tr>
           </thead>
           <tbody style="color: #707070">
@@ -59,18 +70,12 @@
               :key="file.fileId"
               style="border-bottom: 2px solid #a1cdf8"
             >
-              <td class="pt-6 pb-3" style="width: calc(30vw + 3em)">
+              <td class="pt-6 pb-3" style="width: calc(25vw + 3em)">
                 <n-tooltip trigger="hover">
                   <template #trigger>
                     <span
-                      class="
-                        inline-block
-                        overflow-ellipsis overflow-hidden
-                        whitespace-nowrap
-                        pr-3
-                        align-middle
-                      "
-                      style="width: 30vw; max-width: max-content"
+                      class="inline-block overflow-ellipsis overflow-hidden whitespace-nowrap pr-3 align-middle"
+                      style="width: 25vw; max-width: max-content"
                     >
                       {{ file.fileId }}
                     </span>
@@ -86,14 +91,14 @@
                   Pseudonymous File ID
                 </n-tooltip>
               </td>
-              <td class="pt-6 pb-3 align-middle text-center">
+              <td class="pt-6 pb-3 align-middle text-right">
                 {{ getReadableDate(file.uploaded_on) }}
               </td>
-              <td class="pt-6 pb-3 align-middle">
+              <td class="pt-6 pb-3 align-middle text-right">
                 {{ getReadableSize(file.size) }}
               </td>
               <td>
-                <div class="mt-2 py-2 text-center">
+                <div class="mt-2 py-2 text-right">
                   <n-tooltip
                     trigger="hover"
                     v-for="item in menuItems"
@@ -172,13 +177,7 @@
         <n-tooltip trigger="hover">
           <template #trigger>
             <span
-              class="
-                inline-block
-                overflow-hidden overflow-ellipsis
-                align-middle
-                font-black
-                text-base
-              "
+              class="inline-block overflow-hidden overflow-ellipsis align-middle font-black text-base"
               style="width: calc(100% - 2em); color: #707070"
             >
               {{ user }}
@@ -248,8 +247,7 @@
 import bytes from "bytes";
 import isValidEmail from "pragmatic-email-regex";
 import moment from "moment";
-import { ref } from "@vue/reactivity";
-import { inject, onMounted, watch } from "@vue/runtime-core";
+import { ref, onMounted, watch } from "vue";
 import { NTooltip } from "naive-ui";
 import {
   ViewGridIcon,

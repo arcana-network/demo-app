@@ -1,15 +1,11 @@
 <template>
   <button
     class="
-      fixed
       rounded-3xl
-      right-8
-      lg:right-14 lg:bottom-12
-      bottom-8
       px-6
       py-2
       cursor-pointer
-      upload-fab
+      upload-btn
       focus:outline-none
       ripple
       font-ubuntu
@@ -21,12 +17,11 @@
 </template>
 
 <style scoped>
-.upload-fab {
+.upload-btn {
   background-color: #058aff;
   color: white;
   font-weight: 500;
   box-shadow: 0px 3px 20px #058aff66;
-  z-index: 3000;
 }
 </style>
 

@@ -1,79 +1,65 @@
 import { useStore } from "vuex";
-import { useRouter } from 'vue-router';
+import { useRouter } from "vue-router";
 
-const ARCANA_APP_ID = import.meta.env.VITE_ARCANA_APP_ID;
-const ARCANA_AUTH_NETWORK = import.meta.env.VITE_ARCANA_AUTH_NETWORK;
-const ARCANA_WALLET_URL = import.meta.env.VITE_ARCANA_WALLET_URL;
-
-const { WalletProvider } = window.arcana.wallet;
-
-let wallet = new WalletProvider({
-  appId: ARCANA_APP_ID,
-  iframeUrl: ARCANA_WALLET_URL,
-  network: ARCANA_AUTH_NETWORK,
-});
-
-const themeConfig = {
-  assets: {
-    logo: {
-      dark: {
-        horizontal: "./logo-horizontal-dark.png",
-        vertical: "./logo-vertical-dark.png",
-      },
-      light: {
-        horizontal: "./logo-horizontal-light.png",
-        vertical: "./logo-vertical-light.png",
-      },
-    },
-  },
-  theme: "dark",
-};
+import WalletService from "../services/wallet.service";
 
 function useArcanaWallet() {
   const store = useStore();
   const router = useRouter();
 
-  async function init() {
-    store.dispatch("showLoader", "Initialising web wallet...");
+  async function initWallet() {
+    store.dispatch("showFullScreenLoader", "Initialising Arcana wallet...");
 
-    await wallet.init(themeConfig);
+    await WalletService.init();
 
-    const provider = wallet.getProvider();
-    provider.on("disconnect", async () => {
-      await logout();
+    WalletService.setHook("disconnect", async () => {
+      store.dispatch("clearStore");
       router.push("/login");
+      router.go();
     });
 
-    store.dispatch("hideLoader");
+    store.dispatch("hideFullScreenLoader");
   }
 
   async function isLoggedIn() {
-    store.dispatch("showLoader", "Checking login status...");
-    const loginStatus = await wallet.isLoggedIn();
-    store.dispatch("hideLoader");
+    store.dispatch("showFullScreenLoader", "Checking login status...");
+    const loginStatus = await WalletService.isLoggedIn();
+    store.dispatch("hideFullScreenLoader");
     return loginStatus;
   }
 
   async function requestSocialLogin(type) {
-    await wallet.requestSocialLogin(type);
+    await WalletService.requestSocialLogin(type);
   }
 
   async function fetchUserDetails() {
-    store.dispatch("showLoader", "Fetching account details...");
+    store.dispatch("showFullScreenLoader", "Fetching account details...");
 
-    const provider = wallet.getProvider();
-    const [walletAddress] = await provider.request({ method: "eth_accounts" });
-    store.dispatch("addWalletAddress", walletAddress)
+    const userInfo = await WalletService.requestUserInfo();
+    store.dispatch("addUserInfo", JSON.parse(userInfo));
 
-    store.dispatch("hideLoader");
+    const [walletAddress] = await WalletService.requestWalletInfo();
+    store.dispatch("addWalletInfo", { address: walletAddress });
+
+    store.dispatch("hideFullScreenLoader");
   }
 
   async function logout() {
-    await wallet.logout();
-    store.dispatch("clearStore");
+    await WalletService.logout();
   }
 
-  return { init, isLoggedIn, requestSocialLogin, fetchUserDetails, logout };
+  async function requestPublicKey(email) {
+    return await WalletService.requestPublicKey(email);
+  }
+
+  return {
+    fetchUserDetails,
+    initWallet,
+    isLoggedIn,
+    logout,
+    requestPublicKey,
+    requestSocialLogin,
+  };
 }
 
 export default useArcanaWallet;
