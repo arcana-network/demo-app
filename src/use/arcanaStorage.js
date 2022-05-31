@@ -58,7 +58,7 @@ function useArcanaStorage() {
 
   async function upload(file) {
     if (file.size > FILE_SIZE_LIMIT) {
-      toastError("You are not allowed to upload files bigger than 100MiB.");
+      toastError("You are not allowed to upload files bigger than 100MB.");
       throw new Error("File size exceeded maximum");
     }
 
