@@ -32,7 +32,7 @@ function useArcanaStorage() {
       });
     } catch (error) {
       console.log(error);
-      toastError(error.message || "Something went wrong.");
+      toastError(error.message);
     }
   }
 
@@ -42,7 +42,7 @@ function useArcanaStorage() {
       store.dispatch("updateMyFiles", myFiles);
     } catch (error) {
       console.log(error);
-      toastError(error.message || "Something went wrong.");
+      toastError(error.message);
     }
   }
 
@@ -52,7 +52,7 @@ function useArcanaStorage() {
       store.dispatch("updateSharedWithMe", sharedFiles);
     } catch (error) {
       console.log(error);
-      toastError(error.message || "Something went wrong.");
+      toastError(error.message);
     }
   }
 
@@ -80,7 +80,7 @@ function useArcanaStorage() {
         },
         onError: (error) => {
           console.error(error);
-          toastError(error.message || "Something went wrong.");
+          toastError(error.message);
           store.dispatch("hideInlineLoader");
         },
         onSuccess: () => {
@@ -98,7 +98,7 @@ function useArcanaStorage() {
       });
     } catch (error) {
       console.error(error);
-      toastError(error.message || "Something went wrong.");
+      toastError(error.message);
     } finally {
       console.timeEnd("Upload");
       store.dispatch("hideInlineLoader");
@@ -126,7 +126,7 @@ function useArcanaStorage() {
       });
     } catch (error) {
       console.error(error);
-      toastError(error.message || "Something went wrong.");
+      toastError(error.message);
     } finally {
       console.timeEnd("Download");
       store.dispatch("hideInlineLoader");
@@ -148,7 +148,7 @@ function useArcanaStorage() {
       toastSuccess("Delete success");
     } catch (error) {
       console.error(error);
-      toastError(error.message || "Something went wrong.");
+      toastError(error.message);
     } finally {
       console.timeEnd("Delete");
       store.dispatch("hideInlineLoader");
@@ -167,7 +167,7 @@ function useArcanaStorage() {
       toastSuccess(`Shared file successfully with ${email}`);
     } catch (error) {
       console.error(error);
-      toastError(error.message || "Something went wrong.");
+      toastError(error.message);
     } finally {
       console.timeEnd("Share");
       store.dispatch("hideInlineLoader");
@@ -181,7 +181,7 @@ function useArcanaStorage() {
       return await StorageService.getSharedUsers("0x" + did);
     } catch (error) {
       console.error(error);
-      toastError(error.message || "Something went wrong.");
+      toastError(error.message);
     } finally {
       store.dispatch("hideInlineLoader");
     }
@@ -195,7 +195,7 @@ function useArcanaStorage() {
       toastSuccess("File access revoked");
     } catch (error) {
       console.error(error);
-      toastError(error.message || "Something went wrong.");
+      toastError(error.message);
     } finally {
       console.timeEnd("Revoke");
       store.dispatch("hideInlineLoader");
@@ -221,7 +221,7 @@ function useArcanaStorage() {
       toastSuccess(`Transferred file ownership to ${email}`);
     } catch (error) {
       console.error(error);
-      toastError(error.message || "Something went wrong.");
+      toastError(error.message);
     } finally {
       console.timeEnd("Transfer");
       store.dispatch("hideInlineLoader");

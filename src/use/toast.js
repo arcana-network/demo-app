@@ -21,7 +21,7 @@ function useToast() {
     toast(msg, SUCCESS_OPTIONS);
   }
 
-  function toastError(msg) {
+  function toastError(msg = "Something went wrong.") {
     toast(msg, ERROR_OPTIONS);
   }
 
