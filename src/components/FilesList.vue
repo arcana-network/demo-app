@@ -70,12 +70,12 @@
               :key="file.fileId"
               style="border-bottom: 2px solid #a1cdf8"
             >
-              <td class="pt-6 pb-3" style="width: calc(25vw + 3em)">
+              <td class="pt-6 pb-3" style="width: calc(10vw + 3em)">
                 <n-tooltip trigger="hover">
                   <template #trigger>
                     <span
                       class="inline-block overflow-ellipsis overflow-hidden whitespace-nowrap pr-3 align-middle"
-                      style="width: 25vw; max-width: max-content"
+                      style="width: 14vw; max-width: max-content"
                     >
                       {{ file.fileId }}
                     </span>
@@ -159,6 +159,41 @@
     </div>
   </dialog-box>
 
+  <dialog-box v-if="transferDialog" @close="closeDialog">
+    <h3 class="font-ubuntu font-bold" style="color: #253d52; font-size: 1.5em">
+      Transfer file ownership
+    </h3>
+    <label
+      class="block mt-4 mb-2 font-semibold"
+      for="transfer-email"
+      style="color: #707070; font-size: 1.2em"
+    >
+      Recipient Email
+    </label>
+    <input
+      type="email"
+      id="transfer-email"
+      v-model="transferEmail"
+      class="focus:outline-none rounded-full px-4 py-2 w-full"
+    />
+    <div class="text-center mt-5 mb-3">
+      <button
+        class="focus:outline-none py-2 px-5 rounded-full font-bold shadow-2xl"
+        :class="
+          !isTransferEmailInvalid ? 'cursor-pointer' : 'cursor-not-allowed'
+        "
+        :style="{
+          background: !isTransferEmailInvalid ? '#058aff' : '#a1cdf8',
+          color: 'white',
+        }"
+        :disabled="isTransferEmailInvalid"
+        @click.stop="transferFile"
+      >
+        Transfer
+      </button>
+    </div>
+  </dialog-box>
+
   <dialog-box v-if="revokeDialog" @close="closeDialog">
     <h3 class="font-ubuntu font-bold" style="color: #253d52; font-size: 1.5em">
       List of user addresses
@@ -229,11 +264,13 @@
   border-radius: 20px;
 }
 
-#recipient-email {
+#recipient-email,
+#transfer-email {
   border: 2px solid #a1cdf8;
 }
 
-#recipient-email:focus {
+#recipient-email:focus,
+#transfer-email:focus {
   border: 2px solid #058aff;
 }
 
@@ -262,6 +299,7 @@ import {
   SearchIcon,
   BackspaceIcon,
   InformationCircleIcon,
+  ArrowCircleRightIcon,
 } from "@heroicons/vue/outline";
 
 import DialogBox from "./DialogBox.vue";
@@ -292,12 +330,18 @@ export default {
       users: [],
     });
     let isShareEmailInvalid = ref(true);
-    const { download, remove, share, revoke, getSharedUsers } =
+
+    const transferDialog = ref(false);
+    const transferEmail = ref("");
+    const isTransferEmailInvalid = ref(true);
+
+    const { download, remove, share, revoke, getSharedUsers, changeFileOwner } =
       useArcanaStorage();
     const GENESIS_ADDRESS = "0x0000000000000000000000000000000000000000";
 
     let menuItem = {};
     let fileToShare;
+    let fileToTransfer;
     menuItem.verify = {
       label: "Verify",
       icon: PencilAltIcon,
@@ -355,12 +399,22 @@ export default {
       command: () => {},
     };
 
+    menuItem.transfer = {
+      label: "Transfer",
+      icon: ArrowCircleRightIcon,
+      command: (selectedFile) => {
+        fileToTransfer = selectedFile;
+        transferDialog.value = true;
+      },
+    };
+
     let menuItemsArr = [];
     if (props.pageTitle === "My Files") {
       menuItemsArr = [
         menuItem.download,
         menuItem.share,
         menuItem.revoke,
+        menuItem.transfer,
         menuItem.remove,
       ];
     } else if (props.pageTitle === "Shared With Me") {
@@ -417,24 +471,35 @@ export default {
       shareEmail.value = "";
       isShareEmailInvalid.value = false;
       shareDialog.value = false;
-      revokeDialog.value = false;
       sharedUsers.value = {
         file: {},
         users: [],
       };
+
+      revokeDialog.value = false;
+
+      transferEmail.value = "";
+      isTransferEmailInvalid.value = false;
+      transferDialog.value = false;
     }
 
     async function shareFile() {
+      closeDialog();
       const emails = shareEmail.value.split(",").map((email) => email.trim());
       for (let email of emails) {
         await share(fileToShare, email);
       }
-      closeDialog();
     }
 
     async function revokeAccess(fileToRevoke, address) {
       await revoke(fileToRevoke, address);
       fetchSharedUsers(fileToRevoke);
+    }
+
+    async function transferFile() {
+      closeDialog();
+      const email = transferEmail.value.trim();
+      await changeFileOwner(fileToTransfer, email);
     }
 
     function fetchSharedUsers(file) {
@@ -461,6 +526,14 @@ export default {
       }
     );
 
+    watch(
+      () => transferEmail.value,
+      () => {
+        const email = transferEmail.value.trim();
+        isTransferEmailInvalid.value = !isValidEmail(email);
+      }
+    );
+
     return {
       listType,
       bytes,
@@ -473,6 +546,10 @@ export default {
       shareEmail,
       isShareEmailInvalid,
       revokeAccess,
+      transferDialog,
+      transferEmail,
+      transferFile,
+      isTransferEmailInvalid,
       fileMenu,
       closeDropdown,
       getReadableDate,
