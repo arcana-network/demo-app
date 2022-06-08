@@ -162,7 +162,7 @@ function useArcanaStorage() {
       store.dispatch("showInlineLoader", "Sharing file");
 
       const publicKey = await requestPublicKey(email);
-      const address = WalletService.computeAddress("0x" + publicKey);
+      const address = WalletService.computeAddress(publicKey);
       await StorageService.share(file.fileId, address);
       toastSuccess(`Shared file successfully with ${email}`);
     } catch (error) {
@@ -178,7 +178,7 @@ function useArcanaStorage() {
     try {
       store.dispatch("showInlineLoader", "Fetch shared users");
 
-      return await StorageService.getSharedUsers("0x" + did);
+      return await StorageService.getSharedUsers(did);
     } catch (error) {
       console.error(error);
       toastError(error.message);
@@ -209,7 +209,7 @@ function useArcanaStorage() {
       store.dispatch("showInlineLoader", "Transfering file");
 
       const publicKey = await requestPublicKey(email);
-      const address = WalletService.computeAddress("0x" + publicKey);
+      const address = WalletService.computeAddress(publicKey);
       await StorageService.changeFileOwner(fileToTransfer.fileId, address);
 
       let myFiles = [...store.getters.myFiles];
