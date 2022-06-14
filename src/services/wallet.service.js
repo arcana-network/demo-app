@@ -1,6 +1,7 @@
 const ARCANA_APP_ID = import.meta.env.VITE_ARCANA_APP_ID;
 const ARCANA_AUTH_NETWORK = import.meta.env.VITE_ARCANA_AUTH_NETWORK;
 const ARCANA_WALLET_URL = import.meta.env.VITE_ARCANA_WALLET_URL;
+const ARCANA_WALLET_APP_MODE = import.meta.env.VITE_ARCANA_WALLET_APP_MODE;
 
 const { AppMode, WalletProvider, computeAddress } = window.arcana.wallet;
 
@@ -13,7 +14,7 @@ function createWalletService() {
   });
 
   async function init() {
-    await wallet.init({ appMode: AppMode.Full });
+    await wallet.init({ appMode: Number(ARCANA_WALLET_APP_MODE) });
   }
 
   async function isLoggedIn() {
