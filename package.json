@@ -4,7 +4,8 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "serve": "vite preview"
+    "serve": "vite preview",
+    "copy-deps": "cp ./node_modules/@arcana/wallet/dist/standalone/wallet.min.js ./public & cp ./node_modules/@arcana/storage/dist/standalone/storage.umd.js ./public"
   },
   "dependencies": {
     "@arcana/storage": "^0.1.8",
