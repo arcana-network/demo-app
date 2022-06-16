@@ -16,8 +16,6 @@ function createStorageService() {
         provider: window.arcana.provider,
       });
     }
-
-    console.log({ BLOCKCHAIN_ID })
   }
 
   async function getUploadLimit() {
