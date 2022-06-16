@@ -1,4 +1,5 @@
 const ARCANA_APP_ID = import.meta.env.VITE_ARCANA_APP_ID;
+const BLOCKCHAIN_ID = import.meta.env.VITE_ARCANA_BLOCKCHAIN_ID;
 const GATEWAY_URL = import.meta.env.VITE_GATEWAY_URL;
 
 const { StorageProvider } = window.arcana.storage;
@@ -11,6 +12,7 @@ function createStorageService() {
       storage = new StorageProvider({
         appId: ARCANA_APP_ID,
         gateway: GATEWAY_URL,
+        chainId: Number(BLOCKCHAIN_ID),
         provider: window.arcana.provider,
       });
     }
