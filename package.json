@@ -8,7 +8,7 @@
     "copy-deps": "cp ./node_modules/@arcana/wallet/dist/standalone/wallet.min.js ./public & cp ./node_modules/@arcana/storage/dist/standalone/storage.umd.js ./public"
   },
   "dependencies": {
-    "@arcana/storage": "^0.1.9",
+    "@arcana/storage": "^0.1.13",
     "@arcana/wallet": "^0.0.7-beta1",
     "@heroicons/vue": "^1.0.1",
     "@sentry/tracing": "^6.16.1",
