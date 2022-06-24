@@ -24,10 +24,12 @@
     "vuex": "^4.0.1"
   },
   "devDependencies": {
+    "@rollup/plugin-inject": "^4.0.4",
     "@vitejs/plugin-vue": "^1.2.3",
     "@vue/compiler-sfc": "^3.0.5",
     "autoprefixer": "^10.2.6",
     "naive-ui": "^2.11.11",
+    "node-stdlib-browser": "^1.2.0",
     "postcss": "^8.3.0",
     "tailwindcss": "^2.1.4",
     "vite": "^2.3.5"
