@@ -1,4 +1,4 @@
-import { StorageProvider } from "@arcana/storage/dist/standalone/storage.umd";
+import { StorageProvider } from "@arcana/storage";
 
 const ARCANA_APP_ID = import.meta.env.VITE_ARCANA_APP_ID;
 const BLOCKCHAIN_ID = import.meta.env.VITE_ARCANA_BLOCKCHAIN_ID;
