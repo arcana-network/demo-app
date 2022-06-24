@@ -1,7 +1,7 @@
 import { useStore } from "vuex";
 import { useRouter } from "vue-router";
 
-import WalletService from "../services/wallet.service";
+import AuthService from "../services/auth.service";
 
 function useArcanaWallet() {
   const store = useStore();
@@ -10,9 +10,9 @@ function useArcanaWallet() {
   async function initWallet() {
     store.dispatch("showFullScreenLoader", "Initialising Arcana wallet...");
 
-    await WalletService.init();
+    await AuthService.init();
 
-    WalletService.setHook("disconnect", async () => {
+    AuthService.setHook("disconnect", async () => {
       store.dispatch("clearStore");
       router.push("/login");
       router.go();
@@ -23,33 +23,33 @@ function useArcanaWallet() {
 
   async function isLoggedIn() {
     store.dispatch("showFullScreenLoader", "Checking login status...");
-    const loginStatus = await WalletService.isLoggedIn();
+    const loginStatus = await AuthService.isLoggedIn();
     store.dispatch("hideFullScreenLoader");
     return loginStatus;
   }
 
   async function requestSocialLogin(type) {
-    await WalletService.requestSocialLogin(type);
+    await AuthService.requestSocialLogin(type);
   }
 
   async function fetchUserDetails() {
     store.dispatch("showFullScreenLoader", "Fetching account details...");
 
-    const userInfo = await WalletService.requestUserInfo();
+    const userInfo = await AuthService.requestUserInfo();
     store.dispatch("addUserInfo", JSON.parse(userInfo));
 
-    const [walletAddress] = await WalletService.requestWalletInfo();
+    const [walletAddress] = await AuthService.requestWalletInfo();
     store.dispatch("addWalletInfo", { address: walletAddress });
 
     store.dispatch("hideFullScreenLoader");
   }
 
   async function logout() {
-    await WalletService.logout();
+    await AuthService.logout();
   }
 
   async function requestPublicKey(email) {
-    return await WalletService.requestPublicKey(email);
+    return await AuthService.requestPublicKey(email);
   }
 
   return {
