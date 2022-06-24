@@ -1,8 +1,8 @@
+import { StorageProvider } from "@arcana/storage/dist/standalone/storage.umd";
+
 const ARCANA_APP_ID = import.meta.env.VITE_ARCANA_APP_ID;
 const BLOCKCHAIN_ID = import.meta.env.VITE_ARCANA_BLOCKCHAIN_ID;
 const GATEWAY_URL = import.meta.env.VITE_GATEWAY_URL;
-
-const { StorageProvider } = window.arcana.storage;
 
 function createStorageService() {
   let storage;
