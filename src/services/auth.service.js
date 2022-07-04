@@ -1,10 +1,14 @@
 import { AuthProvider, computeAddress } from "@arcana/auth";
 
 const ARCANA_APP_ID = import.meta.env.VITE_ARCANA_APP_ID;
+const ARCANA_AUTH_NETWORK = import.meta.env.VITE_ARCANA_AUTH_NETWORK;
 const ARCANA_WALLET_APP_MODE = import.meta.env.VITE_ARCANA_WALLET_APP_MODE;
 
 function createAuthService() {
-  const wallet = new AuthProvider(ARCANA_APP_ID);
+  const wallet = new AuthProvider(ARCANA_APP_ID, {
+    network: ARCANA_AUTH_NETWORK,
+    inpageProvider: true,
+  });
 
   async function init() {
     await wallet.init({
