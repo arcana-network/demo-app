@@ -14,6 +14,7 @@ function createStorageService() {
         gateway: GATEWAY_URL,
         chainId: Number(BLOCKCHAIN_ID),
         provider: window.arcana.provider,
+        debug: true,
       });
     }
   }

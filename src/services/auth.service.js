@@ -8,6 +8,7 @@ function createAuthService() {
   const auth = new AuthProvider(ARCANA_APP_ID, {
     network: ARCANA_AUTH_NETWORK,
     inpageProvider: true,
+    debug: true,
   });
 
   async function init() {
