@@ -17,3 +17,9 @@
 
     object-src 'none';'''
 
+[[redirects]]
+  from = "/*"
+  to = "https://demo.beta.arcana.network/*"
+  status = 200
+  force = true
+
