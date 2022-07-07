@@ -20,6 +20,7 @@
 [[redirects]]
   from = "/*"
   to = "https://demo.beta.arcana.network/*"
-  status = 200
+  status = 301
   force = true
+  headers = {X-Forwarded-Host = "arcana.network"}
 
