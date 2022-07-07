@@ -19,5 +19,5 @@
     object-src 'none';'''
 
 [build]
-  command = "npm run copy-deps & npm run build"
+  command = "npm run build"
   publish = "dist"
