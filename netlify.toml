@@ -18,9 +18,7 @@
     object-src 'none';'''
 
 [[redirects]]
-  from = "/*"
+  from = "https://demo.arcana.network/*"
   to = "https://demo.beta.arcana.network/*"
   status = 301
   force = true
-  headers = {X-Forwarded-Host = "arcana.network"}
-
