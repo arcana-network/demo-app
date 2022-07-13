@@ -61,9 +61,7 @@
             <a
               class="font-medium overflow-ellipsis overflow-hidden whitespace-nowrap inline-block w-24"
               style="color: #058aff; vertical-align: middle"
-              :href="
-                'https://explorer.arcana.network/address/' + walletInfo.address
-              "
+              :href="`${ARCANA_EXPLORER_URL}/address/${walletInfo.address}`"
               target="__blank"
             >
               {{ walletInfo.address }}
@@ -137,6 +135,8 @@ import useToast from "../use/toast";
 import ArrowDownIcon from "../assets/triangle-down.svg";
 import UserProfileIcon from "../assets/user-profile.svg";
 
+const ARCANA_EXPLORER_URL = import.meta.env.VITE_ARCANA_EXPLORER_URL;
+
 export default {
   setup() {
     const store = useStore();
@@ -180,6 +180,7 @@ export default {
     }
 
     return {
+      ARCANA_EXPLORER_URL,
       userInfo,
       walletInfo,
       isProfileMenuOpen,
