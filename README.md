@@ -36,7 +36,7 @@ You can access the [public deployment](https://demo-app.beta.arcana.network) or 
 
 ## Public Deployment
 
-You can try out Arcana Network Drive here: [https://demo-app.beta.arcana.network](https://demo-app.beta.arcana.network)
+You can try out Arcana Network Drive here: [https://demo.beta.arcana.network](https://demo.beta.arcana.network)
 
 ## Local Development
 
