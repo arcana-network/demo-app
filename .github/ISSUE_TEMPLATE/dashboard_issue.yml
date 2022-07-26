@@ -1,0 +1,65 @@
+name: Sample Demo App Bug Report
+description: File an bug report for Demo App
+title: "[Demo_App_Issue]: "
+labels: ["docs", "bug", "triage"]
+assignees:
+  - ajithranka
+body:
+  - type: markdown
+    attributes:
+      value: |
+
+        :wave:  **Hey, there!**
+        *Thank you for using Arcana's sample Demo App.*
+        Help us timely address and prioritize your issue by going through this checklist and providing all the requisite issue details.
+  - type: markdown
+    attributes:
+      value: "## Create GitHub Issue for Demo App"
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened?
+      description: Describe the scenario and the bug.
+      placeholder: Tell us what you see!
+      value: "Something did not work when you tried..."
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected Behavior
+      description: Tell us, what did you expect to happen?
+      placeholder: Tell us about the expected behavior!
+      value: "This error should show up or this value should be returned, etc."
+    validations:
+      required: true
+  - type: markdown
+    attributes:
+      value: "## Help us Recreate the Bug"
+  - type: textarea
+    id: steps
+    attributes:
+      label: List the Steps
+      description: Describe how to reproduce the bug step by step.
+      placeholder: Details
+      value: |
+         1. Do this...
+         2. Next do this...
+         3. ...
+    validations:
+        required: true
+  - type: textarea
+    id: dev-env
+    attributes:
+      label: Development Environment
+      description: Describe your development environment package version and other details.
+      placeholder: placeholder data
+      value: |
+        * Which browser / version you were using to access the Demo App?
+        * Does this issue show up on iOS, Android or both mobile platforms?
+        * Are you using Mac, Linux or Windows desktop platform?
+        * Was browser incognito mode used?
+        * Was access restricted to cookies or local storage in browser settings?
+        * Are there any browser extensions that might interfere?
+    validations:
+        required: false
