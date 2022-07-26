@@ -1,6 +1,6 @@
 <p align="center">
 <a href="#start"><img height="30rem" src="https://raw.githubusercontent.com/arcana-network/branding/main/an_logo_light_temp.png"/></a>
-<h2 align="center"> <a href="https://arcana.network/">Arcana Network Drive </a></h2>
+<h2 align="center"> <a href="https://arcana.network/">Sample Demo App: Arcana Drive </a></h2>
 </p>
 <br/>
 <p id="banner" align="center">
