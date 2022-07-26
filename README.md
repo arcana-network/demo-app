@@ -39,3 +39,26 @@ npm run dev
 ```bash
 npm run build
 ```
+## Local environment setup
+
+#### Prerequisites
+
+- [Docker](https://docs.docker.com/engine/install/)
+
+1. Clone the repository
+
+```
+git clone git@github.com:arcana-network/demo-app.git
+```
+
+2. Create environment file
+
+```
+cp .env.example .env
+```
+
+3. Run local environment with demo-app
+
+```
+make run-local
+```

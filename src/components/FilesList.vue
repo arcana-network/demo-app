@@ -1,15 +1,20 @@
 <template>
-  <div class="mt-6 ml-6 lg:ml-16">
-    <div
-      class="inline-block px-6 py-1 font-bold"
-      style="
-        background: #eef1f6;
-        font-size: 0.9rem;
-        border-radius: 12px;
-        color: #4b4b4b;
-      "
-    >
-      {{ pageTitle }}
+  <div class="mt-6 mx-6 lg:mx-16">
+    <div class="flex items-center justify-between">
+      <div
+        class="inline-block px-6 py-1 font-bold"
+        style="
+          background: #eef1f6;
+          font-size: 0.9rem;
+          border-radius: 12px;
+          color: #4b4b4b;
+        "
+      >
+        {{ pageTitle }}
+      </div>
+      <div>
+        <slot name="controls" />
+      </div>
     </div>
     <div v-if="!files.length">
       <div
@@ -22,7 +27,7 @@
       >
         <img
           class="inline-block mb-2"
-          src="@/assets/file_image.png"
+          src="@/assets/file-icon.png"
           style="
             min-width: 160px;
             max-width: 300px;
@@ -38,7 +43,7 @@
         <span v-else>No files added to Bin</span>
       </div>
     </div>
-    <div v-else class="mt-6 lg:ml-4 mr-6 lg:mr-16">
+    <div v-else class="mt-6">
       <div
         v-if="listType === 'table'"
         class="overflow-x-auto transition-fade lg:mb-20 mb-20"
@@ -48,9 +53,15 @@
           <thead style="color: #b9b8b8">
             <tr>
               <th class="uppercase text-left">File ID</th>
-              <th class="uppercase" style="width: 140px">Last Modified</th>
-              <th class="uppercase mb-6 text-left" style="width: 80px">Size</th>
-              <th class="uppercase mb-6" style="width: 240px">Actions</th>
+              <th class="uppercase text-right" style="width: 140px">
+                Last Modified
+              </th>
+              <th class="uppercase mb-6 text-right" style="width: 100px">
+                Size
+              </th>
+              <th class="uppercase mb-6 text-right pr-3" style="width: 180px">
+                Actions
+              </th>
             </tr>
           </thead>
           <tbody style="color: #707070">
@@ -59,18 +70,12 @@
               :key="file.fileId"
               style="border-bottom: 2px solid #a1cdf8"
             >
-              <td class="pt-6 pb-3" style="width: calc(30vw + 3em)">
+              <td class="pt-6 pb-3" style="width: calc(10vw + 3em)">
                 <n-tooltip trigger="hover">
                   <template #trigger>
                     <span
-                      class="
-                        inline-block
-                        overflow-ellipsis overflow-hidden
-                        whitespace-nowrap
-                        pr-3
-                        align-middle
-                      "
-                      style="width: 30vw; max-width: max-content"
+                      class="inline-block overflow-ellipsis overflow-hidden whitespace-nowrap pr-3 align-middle"
+                      style="width: 14vw; max-width: max-content"
                     >
                       {{ file.fileId }}
                     </span>
@@ -86,14 +91,14 @@
                   Pseudonymous File ID
                 </n-tooltip>
               </td>
-              <td class="pt-6 pb-3 align-middle text-center">
+              <td class="pt-6 pb-3 align-middle text-right">
                 {{ getReadableDate(file.uploaded_on) }}
               </td>
-              <td class="pt-6 pb-3 align-middle">
+              <td class="pt-6 pb-3 align-middle text-right">
                 {{ getReadableSize(file.size) }}
               </td>
               <td>
-                <div class="mt-2 py-2 text-center">
+                <div class="mt-2 py-2 text-right">
                   <n-tooltip
                     trigger="hover"
                     v-for="item in menuItems"
@@ -154,6 +159,41 @@
     </div>
   </dialog-box>
 
+  <dialog-box v-if="transferDialog" @close="closeDialog">
+    <h3 class="font-ubuntu font-bold" style="color: #253d52; font-size: 1.5em">
+      Transfer file ownership
+    </h3>
+    <label
+      class="block mt-4 mb-2 font-semibold"
+      for="transfer-email"
+      style="color: #707070; font-size: 1.2em"
+    >
+      Recipient Email
+    </label>
+    <input
+      type="email"
+      id="transfer-email"
+      v-model="transferEmail"
+      class="focus:outline-none rounded-full px-4 py-2 w-full"
+    />
+    <div class="text-center mt-5 mb-3">
+      <button
+        class="focus:outline-none py-2 px-5 rounded-full font-bold shadow-2xl"
+        :class="
+          !isTransferEmailInvalid ? 'cursor-pointer' : 'cursor-not-allowed'
+        "
+        :style="{
+          background: !isTransferEmailInvalid ? '#058aff' : '#a1cdf8',
+          color: 'white',
+        }"
+        :disabled="isTransferEmailInvalid"
+        @click.stop="transferFile"
+      >
+        Transfer
+      </button>
+    </div>
+  </dialog-box>
+
   <dialog-box v-if="revokeDialog" @close="closeDialog">
     <h3 class="font-ubuntu font-bold" style="color: #253d52; font-size: 1.5em">
       List of user addresses
@@ -172,13 +212,7 @@
         <n-tooltip trigger="hover">
           <template #trigger>
             <span
-              class="
-                inline-block
-                overflow-hidden overflow-ellipsis
-                align-middle
-                font-black
-                text-base
-              "
+              class="inline-block overflow-hidden overflow-ellipsis align-middle font-black text-base"
               style="width: calc(100% - 2em); color: #707070"
             >
               {{ user }}
@@ -230,11 +264,13 @@
   border-radius: 20px;
 }
 
-#recipient-email {
+#recipient-email,
+#transfer-email {
   border: 2px solid #a1cdf8;
 }
 
-#recipient-email:focus {
+#recipient-email:focus,
+#transfer-email:focus {
   border: 2px solid #058aff;
 }
 
@@ -248,8 +284,7 @@
 import bytes from "bytes";
 import isValidEmail from "pragmatic-email-regex";
 import moment from "moment";
-import { ref } from "@vue/reactivity";
-import { inject, onMounted, watch } from "@vue/runtime-core";
+import { ref, onMounted, watch } from "vue";
 import { NTooltip } from "naive-ui";
 import {
   ViewGridIcon,
@@ -264,6 +299,7 @@ import {
   SearchIcon,
   BackspaceIcon,
   InformationCircleIcon,
+  ArrowCircleRightIcon,
 } from "@heroicons/vue/outline";
 
 import DialogBox from "./DialogBox.vue";
@@ -294,12 +330,18 @@ export default {
       users: [],
     });
     let isShareEmailInvalid = ref(true);
-    const { download, remove, share, revoke, getSharedUsers } =
+
+    const transferDialog = ref(false);
+    const transferEmail = ref("");
+    const isTransferEmailInvalid = ref(true);
+
+    const { download, remove, share, revoke, getSharedUsers, changeFileOwner } =
       useArcanaStorage();
     const GENESIS_ADDRESS = "0x0000000000000000000000000000000000000000";
 
     let menuItem = {};
     let fileToShare;
+    let fileToTransfer;
     menuItem.verify = {
       label: "Verify",
       icon: PencilAltIcon,
@@ -357,12 +399,22 @@ export default {
       command: () => {},
     };
 
+    menuItem.transfer = {
+      label: "Transfer",
+      icon: ArrowCircleRightIcon,
+      command: (selectedFile) => {
+        fileToTransfer = selectedFile;
+        transferDialog.value = true;
+      },
+    };
+
     let menuItemsArr = [];
     if (props.pageTitle === "My Files") {
       menuItemsArr = [
         menuItem.download,
         menuItem.share,
         menuItem.revoke,
+        menuItem.transfer,
         menuItem.remove,
       ];
     } else if (props.pageTitle === "Shared With Me") {
@@ -419,11 +471,16 @@ export default {
       shareEmail.value = "";
       isShareEmailInvalid.value = false;
       shareDialog.value = false;
-      revokeDialog.value = false;
       sharedUsers.value = {
         file: {},
         users: [],
       };
+
+      revokeDialog.value = false;
+
+      transferEmail.value = "";
+      isTransferEmailInvalid.value = false;
+      transferDialog.value = false;
     }
 
     async function shareFile() {
@@ -437,6 +494,12 @@ export default {
     async function revokeAccess(fileToRevoke, address) {
       await revoke(fileToRevoke, address);
       fetchSharedUsers(fileToRevoke);
+    }
+
+    async function transferFile() {
+      const email = transferEmail.value.trim();
+      await changeFileOwner(fileToTransfer, email);
+      closeDialog();
     }
 
     function fetchSharedUsers(file) {
@@ -463,6 +526,14 @@ export default {
       }
     );
 
+    watch(
+      () => transferEmail.value,
+      () => {
+        const email = transferEmail.value.trim();
+        isTransferEmailInvalid.value = !isValidEmail(email);
+      }
+    );
+
     return {
       listType,
       bytes,
@@ -475,6 +546,10 @@ export default {
       shareEmail,
       isShareEmailInvalid,
       revokeAccess,
+      transferDialog,
+      transferEmail,
+      transferFile,
+      isTransferEmailInvalid,
       fileMenu,
       closeDropdown,
       getReadableDate,

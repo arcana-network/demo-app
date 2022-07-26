@@ -1,19 +1,14 @@
 <template>
   <div
-    class="
-      bg-white
-      files-container
-      fixed
-      right-3
-      top-20
-      lg:top-4
-      overflow-y-auto
-    "
+    class="bg-white files-container fixed right-3 top-20 lg:top-4 overflow-y-auto"
   >
     <div id="my-files-container" class="transition-fade">
       <user-profile />
-      <upload-fab />
-      <files-list :files="files" pageTitle="My Files" />
+      <files-list :files="files" pageTitle="My Files">
+        <template #controls>
+          <upload-button />
+        </template>
+      </files-list>
     </div>
   </div>
 </template>
@@ -23,9 +18,10 @@ import { computed, onMounted } from "vue";
 import { useStore } from "vuex";
 
 import FilesList from "../components/FilesList.vue";
-import UploadFab from "../components/UploadFab.vue";
+import UploadButton from "../components/UploadButton.vue";
 import useArcanaStorage from "../use/arcanaStorage";
 import UserProfile from "../components/UserProfile.vue";
+import InlineLoader from "../components/InlineLoader.vue";
 
 export default {
   name: "MyFiles",
@@ -45,6 +41,6 @@ export default {
       files,
     };
   },
-  components: { UploadFab, UserProfile, FilesList },
+  components: { UploadButton, UserProfile, FilesList, InlineLoader },
 };
 </script>
