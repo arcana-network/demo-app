@@ -36,7 +36,7 @@ function useArcanaWallet() {
     store.dispatch("showFullScreenLoader", "Fetching account details...");
 
     const userInfo = await AuthService.requestUserInfo();
-    store.dispatch("addUserInfo", JSON.parse(userInfo));
+    store.dispatch("addUserInfo", userInfo);
 
     const [walletAddress] = await AuthService.requestWalletInfo();
     store.dispatch("addWalletInfo", { address: walletAddress });
