@@ -87,7 +87,7 @@ npm run build
 
 - [Docker](https://docs.docker.com/engine/install/)
 
-#### Clone the repository
+#### Clone the Repository
 
 ```
 git clone git@github.com:arcana-network/demo-app.git
