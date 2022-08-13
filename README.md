@@ -108,7 +108,7 @@ make run-local
 ```
 ## 📚 Usage
 
-Check out [Demo App Usage Guide](https://docs.beta.arcana.network/docs/demo-app) for usage details.
+Check out the [Demo App Usage Guide](https://docs.beta.arcana.network/docs/demo-app) for usage details.
 
 For other code samples and templates to help developers speed up Arcana SDK integration, visit [Code Samples](https://docs.beta.arcana.network/docs/overview_cs) section of Arcana Network documentation.
 
