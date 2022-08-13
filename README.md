@@ -116,7 +116,7 @@ For other code samples and templates to help developers speed up Arcana SDK inte
 
 For any support or integration related queries, contact [Arcana support team](mailto:support@arcana.network).
 
-## 🤝 Contributing
+## 🤝 Contributing Guide
 
 We welcome all contributions to this public repository from the community.
 
