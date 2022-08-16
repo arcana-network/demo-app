@@ -124,6 +124,6 @@ Read our [contributing guide](https://github.com/arcana-network/license/blob/mai
 
 ## ℹ️ License
 
-This public repository from Arcana Networks is distributed under the [MIT License](https://fossa.com/blog/open-source-licenses-101-mit-license/).
+This public repository from Arcana Network is distributed under the [MIT License](https://fossa.com/blog/open-source-licenses-101-mit-license/).
 
 For details see [Arcana License](https://github.com/arcana-network/license/blob/main/LICENSE.md).
