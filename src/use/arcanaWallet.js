@@ -59,6 +59,7 @@ function useArcanaWallet() {
     logout,
     requestPublicKey,
     requestSocialLogin,
+    setHook: AuthService.setHook,
   };
 }
 

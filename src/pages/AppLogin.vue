@@ -74,22 +74,29 @@
 
 <script>
 import { onMounted } from "vue";
+import { useRouter } from "vue-router";
 
 import useArcanaWallet from "../use/arcanaWallet";
 import useToast from "../use/toast";
 
 export default {
   setup() {
-    const { toastError } = useToast();
-    const { requestSocialLogin } = useArcanaWallet();
+    const router = useRouter();
+    const { toastSuccess, toastError } = useToast();
+    const { requestSocialLogin, setHook } = useArcanaWallet();
 
     onMounted(async () => {
       document.title = "Login | Arcana Demo";
+      setHook("accountsChanged", (params) =>
+        console.log({ type: "accountsChanged", params })
+      );
     });
 
     async function onSignInClick() {
       try {
         await requestSocialLogin("google");
+        await router.push("/my-files");
+        toastSuccess("Login Success");
       } catch (e) {
         console.error("error", e);
         toastError("Something went wrong. Try again");
