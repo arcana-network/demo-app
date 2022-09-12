@@ -87,9 +87,9 @@ export default {
 
     onMounted(async () => {
       document.title = "Login | Arcana Demo";
-      setHook("accountsChanged", (params) =>
-        console.log({ type: "accountsChanged", params })
-      );
+      setHook("connect", () => {
+        router.push("/my-files");
+      });
     });
 
     async function onSignInClick() {
