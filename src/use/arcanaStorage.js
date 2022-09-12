@@ -83,7 +83,7 @@ function useArcanaStorage() {
           toastError(error.message);
           store.dispatch("hideInlineLoader");
         },
-        onSuccess: () => {
+        onSuccess: (did) => {
           fetchStorageLimits();
           toastSuccess("Upload success");
           let myFiles = [...store.getters.myFiles];
