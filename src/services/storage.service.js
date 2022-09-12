@@ -41,7 +41,7 @@ function createStorageService() {
   async function upload(fileBlob, { onSuccess, onError, onProgress }) {
     try {
       const fileDid = await storage.upload(fileBlob, onProgress);
-      onSuccess();
+      onSuccess(fileDid);
       return fileDid;
     } catch (error) {
       onError(error);
