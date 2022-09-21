@@ -8,7 +8,7 @@
   },
   "dependencies": {
     "@arcana/auth": "^0.1.2-beta.12",
-    "@arcana/storage": "^0.3.4",
+    "@arcana/storage": "^0.3.5",
     "@heroicons/vue": "^1.0.1",
     "@sentry/tracing": "^6.16.1",
     "@sentry/vue": "^6.16.1",
