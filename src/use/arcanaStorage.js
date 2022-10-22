@@ -2,9 +2,9 @@ import bytes from "bytes";
 import { useStore } from "vuex";
 
 import StorageService from "../services/storage.service";
-import AuthService from "../services/auth.service";
 import useArcanaWallet from "../use/arcanaWallet";
 import useToast from "../use/toast";
+import { ethers } from "ethers";
 
 const FILE_SIZE_LIMIT = bytes("100MB");
 
@@ -162,7 +162,7 @@ function useArcanaStorage() {
       store.dispatch("showInlineLoader", "Sharing file");
 
       const publicKey = await requestPublicKey(email);
-      const address = AuthService.computeAddress(publicKey);
+      const address = ethers.utils.computeAddress(publicKey);
       await StorageService.share(file.fileId, address);
       toastSuccess(`Shared file successfully with ${email}`);
     } catch (error) {
@@ -209,7 +209,7 @@ function useArcanaStorage() {
       store.dispatch("showInlineLoader", "Transfering file");
 
       const publicKey = await requestPublicKey(email);
-      const address = AuthService.computeAddress(publicKey);
+      const address = ethers.utils.computeAddress(publicKey);
       await StorageService.changeOwner(fileToTransfer.fileId, address);
 
       let myFiles = [...store.getters.myFiles];
