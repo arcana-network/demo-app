@@ -1,9 +1,6 @@
 <template>
   <div class="bg-white absolute login-container p-10 text-center">
-    <img
-      src="@/assets/rocket-science.png"
-      style="height: 120px; display: inline"
-    />
+    <img src="@/assets/rocket-science.png" style="height: 120px; display: inline" />
     <div class="inline-block mt-12">
       By clicking on signin with google, you agree to Arcana Network's
       <a href="/" style="color: #058aff; text-decoration: none"> Privacy </a>
@@ -39,10 +36,11 @@
   background-position: center;
   transition: background 0.8s;
 }
+
 .ripple:hover {
-  background: #47a7f5 radial-gradient(circle, transparent 1%, #47a7f5 1%)
-    center/15000%;
+  background: #47a7f5 radial-gradient(circle, transparent 1%, #47a7f5 1%) center/15000%;
 }
+
 .ripple:active {
   background-color: #6eb9f7;
   background-size: 100%;
@@ -83,7 +81,7 @@ export default {
   setup() {
     const router = useRouter();
     const { toastSuccess, toastError } = useToast();
-    const { requestSocialLogin, setHook } = useArcanaWallet();
+    const { requestSocialLogin, fetchUserDetails, setHook } = useArcanaWallet();
 
     onMounted(async () => {
       document.title = "Login | Arcana Demo";
@@ -95,6 +93,7 @@ export default {
     async function onSignInClick() {
       try {
         await requestSocialLogin("google");
+        await fetchUserDetails();
         await router.push("/my-files");
         toastSuccess("Login Success");
       } catch (e) {
