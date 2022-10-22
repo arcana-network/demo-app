@@ -1,4 +1,4 @@
-import { AuthProvider, computeAddress } from "@arcana/auth";
+import { AuthProvider } from "@arcana/auth";
 
 const ARCANA_APP_ID = import.meta.env.VITE_ARCANA_APP_ID;
 const ARCANA_AUTH_NETWORK = import.meta.env.VITE_ARCANA_AUTH_NETWORK;
@@ -27,7 +27,11 @@ function createAuthService() {
   }
 
   async function requestPublicKey(email) {
-    return await auth.getPublicKey(email);
+    const publicKey = await auth.getPublicKey(email);
+    if (!publicKey.startsWith("0x")) {
+      return `0x${publicKey}`;
+    }
+    return publicKey;
   }
 
   async function requestSocialLogin(type) {
@@ -49,7 +53,6 @@ function createAuthService() {
   }
 
   return {
-    computeAddress,
     init,
     isLoggedIn,
     logout,
