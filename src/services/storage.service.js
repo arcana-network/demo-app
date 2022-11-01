@@ -3,7 +3,7 @@ import {
   AccessTypeEnum,
 } from "@arcana/storage/dist/standalone/storage.umd";
 
-const ARCANA_APP_ID = import.meta.env.VITE_ARCANA_APP_ID;
+const ARCANA_APP_ADDRESS = import.meta.env.VITE_ARCANA_APP_ADDRESS;
 const BLOCKCHAIN_ID = import.meta.env.VITE_ARCANA_BLOCKCHAIN_ID;
 const GATEWAY_URL = import.meta.env.VITE_GATEWAY_URL;
 
@@ -13,7 +13,7 @@ function createStorageService() {
   async function init() {
     if (!storage) {
       storage = await StorageProvider.init({
-        appId: ARCANA_APP_ID,
+        appAddress: ARCANA_APP_ADDRESS,
         gateway: GATEWAY_URL,
         chainId: Number(BLOCKCHAIN_ID),
         provider: window.arcana.provider,
@@ -58,17 +58,11 @@ function createStorageService() {
   }
 
   async function share(fileDid, address) {
-    // TODO: Replace with storage.files.share() when support
-    // is added to the storage SDK.
-    const access = await storage.getAccess();
-    await access.share(fileDid, address, 1000);
+    await storage.files.share(fileDid, address);
   }
 
   async function getSharedUsers(fileDid) {
-    // TODO: Replace with storage.files.getSharedUsers() when support
-    // is added to the storage SDK.
-    const access = await storage.getAccess();
-    return await access.getSharedUsers(fileDid);
+    return await storage.files.getSharedUsers(fileDid);
   }
 
   async function revoke(fileDid, address) {
