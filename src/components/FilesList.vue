@@ -233,6 +233,8 @@ import {
 import DialogBox from "./DialogBox.vue";
 import useArcanaStorage from "../use/arcanaStorage";
 
+const ARCANA_EXPLORER_URL = import.meta.env.VITE_ARCANA_EXPLORER_URL;
+
 export default {
   name: "FilesList",
   props: ["files", "pageTitle"],
@@ -275,7 +277,7 @@ export default {
       icon: PencilAltIcon,
       command: (selectedFile) => {
         window.open(
-          "https://explorer.arcana.network/did/" + selectedFile.did,
+          `${ARCANA_EXPLORER_URL}/did/${selectedFile.did}`,
           "__blank"
         );
       },

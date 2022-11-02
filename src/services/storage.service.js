@@ -5,7 +5,7 @@ import {
 
 const ARCANA_APP_ADDRESS = import.meta.env.VITE_ARCANA_APP_ADDRESS;
 const BLOCKCHAIN_ID = import.meta.env.VITE_ARCANA_BLOCKCHAIN_ID;
-const GATEWAY_URL = import.meta.env.VITE_GATEWAY_URL;
+const GATEWAY_URL = import.meta.env.VITE_ARCANA_GATEWAY_URL;
 
 function createStorageService() {
   let storage;
