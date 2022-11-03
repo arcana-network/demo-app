@@ -2,9 +2,9 @@ import bytes from "bytes";
 import { useStore } from "vuex";
 
 import StorageService from "../services/storage.service";
-import AuthService from "../services/auth.service";
 import useArcanaWallet from "../use/arcanaWallet";
 import useToast from "../use/toast";
+import { ethers } from "ethers";
 
 const FILE_SIZE_LIMIT = bytes("100MB");
 
@@ -13,8 +13,8 @@ function useArcanaStorage() {
   const { toastSuccess, toastError } = useToast();
   const { requestPublicKey } = useArcanaWallet();
 
-  function initStorage() {
-    StorageService.init();
+  async function initStorage() {
+    await StorageService.init();
   }
 
   async function fetchStorageLimits() {
@@ -83,7 +83,7 @@ function useArcanaStorage() {
           toastError(error.message);
           store.dispatch("hideInlineLoader");
         },
-        onSuccess: () => {
+        onSuccess: (did) => {
           fetchStorageLimits();
           toastSuccess("Upload success");
           let myFiles = [...store.getters.myFiles];
@@ -162,7 +162,7 @@ function useArcanaStorage() {
       store.dispatch("showInlineLoader", "Sharing file");
 
       const publicKey = await requestPublicKey(email);
-      const address = AuthService.computeAddress(publicKey);
+      const address = ethers.utils.computeAddress(publicKey);
       await StorageService.share(file.fileId, address);
       toastSuccess(`Shared file successfully with ${email}`);
     } catch (error) {
@@ -202,15 +202,15 @@ function useArcanaStorage() {
     }
   }
 
-  async function changeFileOwner(fileToTransfer, email) {
+  async function changeOwner(fileToTransfer, email) {
     console.time("Transfer");
 
     try {
       store.dispatch("showInlineLoader", "Transfering file");
 
       const publicKey = await requestPublicKey(email);
-      const address = AuthService.computeAddress(publicKey);
-      await StorageService.changeFileOwner(fileToTransfer.fileId, address);
+      const address = ethers.utils.computeAddress(publicKey);
+      await StorageService.changeOwner(fileToTransfer.fileId, address);
 
       let myFiles = [...store.getters.myFiles];
       myFiles = myFiles.filter((file) => file.did !== fileToTransfer.fileId);
@@ -229,7 +229,7 @@ function useArcanaStorage() {
   }
 
   return {
-    changeFileOwner,
+    changeOwner,
     download,
     fetchMyFiles,
     fetchSharedFiles,

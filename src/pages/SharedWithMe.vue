@@ -21,12 +21,14 @@ export default {
   name: "SharedWithMe",
   setup() {
     const store = useStore();
-    const { fetchStorageLimits, fetchSharedFiles } = useArcanaStorage();
+    const { initStorage, fetchStorageLimits, fetchSharedFiles } =
+      useArcanaStorage();
 
     const files = computed(() => store.getters.sharedWithMe);
 
     onMounted(async () => {
       document.title = "Shared With Me | Arcana Demo";
+      await initStorage();
       await fetchStorageLimits();
       await fetchSharedFiles();
     });

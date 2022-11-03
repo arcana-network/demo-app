@@ -1,16 +1,19 @@
-import { StorageProvider } from "@arcana/storage/dist/standalone/storage.umd";
+import {
+  StorageProvider,
+  AccessTypeEnum,
+} from "@arcana/storage/dist/standalone/storage.umd";
 
-const ARCANA_APP_ID = import.meta.env.VITE_ARCANA_APP_ID;
+const ARCANA_APP_ADDRESS = import.meta.env.VITE_ARCANA_APP_ADDRESS;
 const BLOCKCHAIN_ID = import.meta.env.VITE_ARCANA_BLOCKCHAIN_ID;
-const GATEWAY_URL = import.meta.env.VITE_GATEWAY_URL;
+const GATEWAY_URL = import.meta.env.VITE_ARCANA_GATEWAY_URL;
 
 function createStorageService() {
   let storage;
 
   async function init() {
     if (!storage) {
-      storage = new StorageProvider({
-        appId: ARCANA_APP_ID,
+      storage = await StorageProvider.init({
+        appAddress: ARCANA_APP_ADDRESS,
         gateway: GATEWAY_URL,
         chainId: Number(BLOCKCHAIN_ID),
         provider: window.arcana.provider,
@@ -20,66 +23,58 @@ function createStorageService() {
   }
 
   async function getUploadLimit() {
-    const access = await storage.getAccess();
-    return await access.getUploadLimit();
+    return await storage.files.getUploadLimit();
   }
 
   async function getDownloadLimit() {
-    const access = await storage.getAccess();
-    return await access.getDownloadLimit();
+    return await storage.files.getDownloadLimit();
   }
 
   async function myFiles() {
-    return await storage.myFiles();
+    return await storage.files.list(AccessTypeEnum.MY_FILES);
   }
 
   async function sharedFiles() {
-    return await storage.sharedFiles();
+    return await storage.files.list(AccessTypeEnum.SHARED_FILES);
   }
 
   async function upload(fileBlob, { onSuccess, onError, onProgress }) {
-    const uploader = await storage.getUploader();
-    if (onSuccess) uploader.onSuccess = onSuccess;
-    if (onError) uploader.onError = onError;
-    if (onProgress) uploader.onProgress = onProgress;
-    const fileDid = await uploader.upload(fileBlob);
-    return fileDid;
+    try {
+      const fileDid = await storage.upload(fileBlob, { onProgress });
+      onSuccess(fileDid);
+      return fileDid;
+    } catch (error) {
+      onError(error);
+    }
   }
 
   async function download(fileDid, { onSuccess, onProgress }) {
-    const downloader = await storage.getDownloader();
-    if (onSuccess) downloader.onSuccess = onSuccess;
-    if (onProgress) downloader.onProgress = onProgress;
-    await downloader.download(fileDid);
+    await storage.download(fileDid, onProgress);
+    onSuccess();
   }
 
   async function remove(fileDid) {
-    const access = await storage.getAccess();
-    await access.deleteFile(fileDid);
+    await storage.files.delete(fileDid);
   }
 
   async function share(fileDid, address) {
-    const access = await storage.getAccess();
-    await access.share(fileDid, address, 1000);
+    await storage.files.share(fileDid, address);
   }
 
   async function getSharedUsers(fileDid) {
-    const access = await storage.getAccess();
-    return await access.getSharedUsers(fileDid);
+    return await storage.files.getSharedUsers(fileDid);
   }
 
   async function revoke(fileDid, address) {
-    const access = await storage.getAccess();
-    await access.revoke(fileDid, address);
+    await storage.files.revoke(fileDid, address);
   }
 
-  async function changeFileOwner(fileDid, address) {
-    const access = await storage.getAccess();
-    await access.changeFileOwner(fileDid, address);
+  async function changeOwner(fileDid, address) {
+    await storage.files.changeOwner(fileDid, address);
   }
 
   return {
-    changeFileOwner,
+    changeOwner,
     download,
     getDownloadLimit,
     getSharedUsers,

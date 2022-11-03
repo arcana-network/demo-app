@@ -1,13 +1,12 @@
-import { AuthProvider, computeAddress } from "@arcana/auth";
+import { AuthProvider } from "@arcana/auth";
 
-const ARCANA_APP_ID = import.meta.env.VITE_ARCANA_APP_ID;
+const ARCANA_APP_ADDRESS = import.meta.env.VITE_ARCANA_APP_ADDRESS;
 const ARCANA_AUTH_NETWORK = import.meta.env.VITE_ARCANA_AUTH_NETWORK;
 const ARCANA_WALLET_APP_MODE = import.meta.env.VITE_ARCANA_WALLET_APP_MODE;
 
 function createAuthService() {
-  const auth = new AuthProvider(ARCANA_APP_ID, {
+  const auth = new AuthProvider(ARCANA_APP_ADDRESS, {
     network: ARCANA_AUTH_NETWORK,
-    inpageProvider: true,
     debug: true,
   });
 
@@ -27,7 +26,11 @@ function createAuthService() {
   }
 
   async function requestPublicKey(email) {
-    return await auth.getPublicKey(email);
+    const publicKey = await auth.getPublicKey(email);
+    if (!publicKey.startsWith("0x")) {
+      return `0x${publicKey}`;
+    }
+    return publicKey;
   }
 
   async function requestSocialLogin(type) {
@@ -49,7 +52,6 @@ function createAuthService() {
   }
 
   return {
-    computeAddress,
     init,
     isLoggedIn,
     logout,
