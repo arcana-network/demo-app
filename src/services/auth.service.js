@@ -8,13 +8,11 @@ function createAuthService() {
   const auth = new AuthProvider(ARCANA_APP_ADDRESS, {
     network: ARCANA_AUTH_NETWORK,
     debug: true,
+    alwaysShowWidget: true,
   });
 
   async function init() {
-    await auth.init({
-      appMode: Number(ARCANA_WALLET_APP_MODE),
-      position: "right",
-    });
+    await auth.init();
   }
 
   async function isLoggedIn() {
