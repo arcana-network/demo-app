@@ -7,7 +7,7 @@
     "serve": "vite preview"
   },
   "dependencies": {
-    "@arcana/auth": "^0.2.0-beta.2",
+    "@arcana/auth": "^0.2.0",
     "@arcana/storage": "^0.3.17",
     "@heroicons/vue": "^1.0.1",
     "@sentry/tracing": "^6.16.1",
