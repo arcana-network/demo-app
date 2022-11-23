@@ -88,8 +88,7 @@ export default {
   setup() {
     const router = useRouter();
     const { toastSuccess, toastError } = useToast();
-    const { requestConnectWallet, fetchUserDetails, setHook } =
-      useArcanaWallet();
+    const { requestAuthPopup, fetchUserDetails, setHook } = useArcanaWallet();
 
     onMounted(async () => {
       document.title = "Login | Arcana Demo";
@@ -100,7 +99,7 @@ export default {
 
     async function onConnect() {
       try {
-        await requestConnectWallet();
+        await requestAuthPopup();
         await fetchUserDetails();
         await router.push("/my-files");
         toastSuccess("Login Success");

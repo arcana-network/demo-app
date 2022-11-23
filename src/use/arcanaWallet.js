@@ -21,8 +21,8 @@ function useArcanaWallet() {
     store.dispatch("hideFullScreenLoader");
   }
 
-  async function requestConnectWallet() {
-    return await AuthService.connect();
+  async function requestAuthPopup() {
+    await AuthService.connect();
   }
 
   async function isLoggedIn() {
@@ -62,7 +62,7 @@ function useArcanaWallet() {
     isLoggedIn,
     logout,
     requestPublicKey,
-    requestConnectWallet,
+    requestAuthPopup,
     requestSocialLogin,
     setHook: AuthService.setHook,
   };
