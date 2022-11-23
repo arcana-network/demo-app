@@ -19,6 +19,10 @@ function createAuthService() {
     await auth.init();
   }
 
+  async function connect() {
+    await auth.connect();
+  }
+
   async function isLoggedIn() {
     return await auth.isLoggedIn();
   }
@@ -62,6 +66,7 @@ function createAuthService() {
     requestUserInfo,
     requestWalletInfo,
     setHook,
+    connect,
   };
 }
 

@@ -1,13 +1,16 @@
 <template>
   <div class="bg-white absolute login-container p-10 text-center">
-    <img src="@/assets/rocket-science.png" style="height: 120px; display: inline" />
+    <img
+      src="@/assets/rocket-science.png"
+      style="height: 120px; display: inline"
+    />
     <div class="inline-block mt-12">
-      By clicking on signin with google, you agree to Arcana Network's
+      By clicking on Login, you agree to Arcana Network's
       <a href="/" style="color: #058aff; text-decoration: none"> Privacy </a>
       &
       <a href="/" style="color: #058aff; text-decoration: none"> Terms </a>
     </div>
-    <a class="google-button" @click.stop="onSignInClick">Sign In with Google</a>
+    <a class="google-button" @click.stop="onConnect">Login</a>
   </div>
 </template>
 
@@ -38,7 +41,8 @@
 }
 
 .ripple:hover {
-  background: #47a7f5 radial-gradient(circle, transparent 1%, #47a7f5 1%) center/15000%;
+  background: #47a7f5 radial-gradient(circle, transparent 1%, #47a7f5 1%)
+    center/15000%;
 }
 
 .ripple:active {
@@ -56,8 +60,7 @@
 }
 
 .google-button {
-  display: inline-block;
-  padding: 0.8em 1.2em;
+  display: inline-flex;
   border: 1px solid rgb(5, 138, 255);
   background-color: rgb(5, 138, 255);
   color: white;
@@ -67,6 +70,10 @@
   white-space: nowrap;
   font-weight: 800;
   font-size: 1.2em;
+  width: 8rem;
+  height: 3rem;
+  justify-content: center;
+  align-items: center;
 }
 </style>
 
@@ -81,7 +88,8 @@ export default {
   setup() {
     const router = useRouter();
     const { toastSuccess, toastError } = useToast();
-    const { requestSocialLogin, fetchUserDetails, setHook } = useArcanaWallet();
+    const { requestConnectWallet, fetchUserDetails, setHook } =
+      useArcanaWallet();
 
     onMounted(async () => {
       document.title = "Login | Arcana Demo";
@@ -90,20 +98,22 @@ export default {
       });
     });
 
-    async function onSignInClick() {
+    async function onConnect() {
       try {
-        await requestSocialLogin("google");
+        await requestConnectWallet();
         await fetchUserDetails();
         await router.push("/my-files");
         toastSuccess("Login Success");
       } catch (e) {
         console.error("error", e);
-        toastError("Something went wrong. Try again");
+        if (e.message !== "User closed the connect modal") {
+          toastError("Something went wrong. Try again");
+        }
       }
     }
 
     return {
-      onSignInClick,
+      onConnect,
     };
   },
 };
