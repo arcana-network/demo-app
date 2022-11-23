@@ -10,7 +10,7 @@
       &
       <a href="/" style="color: #058aff; text-decoration: none"> Terms </a>
     </div>
-    <a class="google-button" @click.stop="onConnect">Login</a>
+    <a class="google-button" @click.stop="onLogin">Login</a>
   </div>
 </template>
 
@@ -97,7 +97,7 @@ export default {
       });
     });
 
-    async function onConnect() {
+    async function onLogin() {
       try {
         await requestAuthPopup();
         await fetchUserDetails();
@@ -112,7 +112,7 @@ export default {
     }
 
     return {
-      onConnect,
+      onLogin,
     };
   },
 };
