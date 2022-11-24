@@ -28,29 +28,6 @@
   transform: translate(-50%, -50%);
 }
 
-.upload-fab {
-  background-color: #058aff;
-  color: white;
-  font-weight: 500;
-  box-shadow: 0px 3px 20px #058aff66;
-}
-
-.ripple {
-  background-position: center;
-  transition: background 0.8s;
-}
-
-.ripple:hover {
-  background: #47a7f5 radial-gradient(circle, transparent 1%, #47a7f5 1%)
-    center/15000%;
-}
-
-.ripple:active {
-  background-color: #6eb9f7;
-  background-size: 100%;
-  transition: background 0s;
-}
-
 @media screen and (max-width: 1024px) {
   .files-container {
     width: calc(100% - 1.5rem);
